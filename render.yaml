@@ -1,0 +1,52 @@
+# ============================================================================
+# DDMX Credit Desk -- configuration Render
+# ============================================================================
+# Render lit ce fichier automatiquement quand tu connectes le depot.
+#
+# TROIS FICHIERS SUFFISENT :
+#     ddmx_tout_en_un.py      le serveur complet
+#     render.yaml             ce fichier
+#     README.md               la documentation
+#
+# AUCUNE DEPENDANCE A INSTALLER : le serveur n'utilise que la
+# bibliotheque standard de Python. Pas de pip install, pas de
+# requirements.txt.
+#
+# ATTENTION : le plan gratuit de Render endort le service apres
+# 15 minutes sans trafic. Le premier appel apres une pause prend
+# environ 30 secondes. Ce n'est pas bloquant : un agent qui recoit
+# un 402 attend de toute facon.
+# ============================================================================
+
+services:
+  - type: web
+    name: ddmx-credit-desk
+    runtime: python
+    plan: free
+    region: frankfurt
+    branch: main
+    # Aucune dependance : rien a installer.
+    buildCommand: "echo aucune dependance a installer"
+    startCommand: "python -u ddmx_tout_en_un.py"
+    healthCheckPath: /sante
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      # L'hebergeur impose le port. Le serveur le lit tout seul.
+      # Ne pas definir PORT ici : Render le fait.
+      #
+      # URL publique. A REMPLIR apres le premier deploiement, avec
+      # l'adresse que Render te donne. Sans elle, le serveur lit
+      # l'en-tete Host de chaque requete, ce qui marche aussi.
+      - key: X402_URL
+        sync: false
+      # --- Les contrats deployes le 11 octobre 2026 ---
+      - key: X402_GATEWAY
+        value: "0x490a9397d1e79dd0186771f162bf065da3d3d655"
+      - key: X402_JETON
+        value: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d"
+      - key: X402_BENEFICIAIRE
+        value: "0xe905752828DB27A9b5a07BB77091CDc5F5728144"
