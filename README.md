@@ -130,3 +130,63 @@ return. The contracts are public and verifiable.
 ## Licence
 
 MIT
+
+---
+
+# 🔍 BEP-20 Token Scanner — the free tool in this repository
+
+**Live: https://mickeentreprise-cell.github.io/ddmx-credit-desk/**
+
+The repository root is a **working token scanner**, served by GitHub Pages.
+One HTML file, no server, no dependencies, no account.
+
+### What it does
+
+Paste a BEP-20 token address. It reads the contract from BNB Chain and
+reports:
+
+| Check | What it looks for |
+|---|---|
+| **Owner** | Is there an `owner()` function? Can someone control the token? |
+| **Pause** | Can someone freeze all transfers? |
+| **Blacklist** | Can someone block your wallet from selling? |
+| **Mint** | Can the supply be increased, diluting your share? |
+| **Tax** | *reported honestly as UNKNOWN* |
+| **Code size** | Is the contract bigger than a normal token? |
+
+### What it does NOT do
+
+**It does not prove anything, and it says so on every result.**
+
+- It reads what is readable on-chain. Nothing more.
+- **Tax cannot be measured this way.** Tax is measured by simulating a buy
+  and a sell. A static scan cannot see it. The tool reports UNKNOWN rather
+  than guessing.
+- A contract can hide a mechanism this analysis does not detect.
+- **The only complete verification is reading the source on BscScan.**
+
+### Why this matters
+
+Most scanners give a token a green score, which implies a guarantee the
+tool cannot give. **This one shows the checks it ran, the evidence behind
+each, and the things it cannot check.**
+
+### Tested on
+
+| Token | Result | Score |
+|---|---|---|
+| **DDMX** | PROPRE | 8/10 |
+| **USDC** | PLUTOT SAIN | 8/10 |
+| **WBNB** | PROPRE | 8/10 |
+
+**DDMX is our own token.** The scanner gives it **8/10, not 10/10**, because
+two checks cannot be answered by static reading. It is not graded more
+favourably than anything else.
+
+### Use it
+
+- **Online:** https://mickeentreprise-cell.github.io/ddmx-credit-desk/
+- **Locally:** download `index.html` and open it
+- **On your site:** copy `index.html` to your web root
+
+Detailed documentation: [`scanner/README.md`](scanner/README.md)
