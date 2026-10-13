@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Boutique — Crypto Future Tech</title>
+<style>
+ *{box-sizing:border-box}
+ body{margin:0;background:#0b0e13;color:#e8eaed;
+   font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+   line-height:1.6}
+ header{border-bottom:1px solid #232936;padding:18px 22px;
+   display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+ header b{color:#fff} header a{color:#9db4ff;text-decoration:none;font-size:14px}
+ main{max-width:900px;margin:0 auto;padding:34px 22px 70px}
+ h1{font-size:30px;margin:0 0 8px} .sous{color:#8b949e;margin:0 0 30px}
+ h2{font-size:19px;margin:40px 0 14px;color:#ffd166}
+ .grille{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+ .carte{background:#141922;border:1px solid #232936;border-radius:12px;padding:20px;
+   display:flex;flex-direction:column}
+ .carte h3{margin:0 0 6px;font-size:17px}
+ .prix{font-size:26px;font-weight:700;color:#fff;margin:6px 0 2px}
+ .deux{color:#8b949e;font-size:13px;margin-bottom:12px}
+ .carte p{color:#b9c1cc;font-size:14px;margin:0 0 14px}
+ ul{margin:0 0 18px;padding-left:18px;color:#b9c1cc;font-size:14px}
+ li{margin:4px 0}
+ .bouton{display:block;text-align:center;background:#2f6feb;color:#fff;
+   text-decoration:none;padding:12px;border-radius:8px;font-weight:600;
+   margin-top:auto}
+ .bouton:hover{background:#3b7cf7}
+ .note{background:#141922;border:1px solid #232936;border-left:3px solid #ffd166;
+   border-radius:8px;padding:14px 16px;margin:26px 0;font-size:14px;color:#b9c1cc}
+ footer{border-top:1px solid #232936;padding:22px;color:#8b949e;font-size:13px;
+   max-width:900px;margin:0 auto}
+ a{color:#9db4ff}
+</style>
+</head>
+<body>
+<!-- Barre de navigation — ajoutee le 13/10/2026 -->
+<div style="background:#111318;border-bottom:1px solid #2a2f3a;padding:10px 16px;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;font-size:14px;display:flex;gap:18px;flex-wrap:wrap;align-items:center">
+<span style="color:#8b949e;font-weight:600">Crypto Future Tech</span>
+<a href="../index.html" style="color:#9db4ff;text-decoration:none">Scanner de jetons</a>
+<a href="index.html" style="color:#9db4ff;text-decoration:none">Service Web3</a>
+<a href="boutique.html" style="color:#8b949e;text-decoration:none">Boutique</a>
+<a href="coffret/index.html" style="color:#9db4ff;text-decoration:none">Coffret</a>
+</div>
+
+<header>
+  <b>Crypto Future Tech</b>
+  <a href="../index.html">Scanner de jetons</a>
+  <a href="#numerique">Produits numériques</a>
+  <a href="#service">Prestations</a>
+  <a href="#infos">Informations</a>
+</header>
+<main>
+  <h1>Boutique</h1>
+  <p class="sous">Paiement par carte ou par virement. Livraison immédiate
+  pour les produits numériques.</p>
+
+  <h2 id="numerique">Produits numériques</h2>
+  <div class="grille">
+    <div class="carte">
+      <h3>Coffret — L'Empereur Céleste, Saison 1</h3>
+      <div class="prix">15,00 €</div>
+      <div class="deux">ou 2 × 7,50 €</div>
+      <p>Les 12 épisodes et la bande-annonce, en MP4 1920x1080.</p>
+      <ul><li>12 épisodes + bande-annonce</li><li>Téléchargement immédiat</li><li>Sommes de contrôle SHA-256 fournies</li><li>Usage personnel</li></ul>
+      <a class="bouton" href="mailto:micke.entreprise@gmail.com?subject=Commande%20-%20Coffret%20-%20L'Empereur%20Céleste,%20Saison%201">Commander</a>
+    </div>
+    <div class="carte">
+      <h3>Pack d'images — L'Empereur Céleste</h3>
+      <div class="prix">19,00 €</div>
+      <div class="deux">ou 2 × 9,50 €</div>
+      <p>Les visuels de la série, classés par épisode, en haute définition.</p>
+      <ul><li>741 images HD</li><li>Classées par épisode</li><li>PNG et JPG</li><li>Usage personnel et illustration</li></ul>
+      <a class="bouton" href="mailto:micke.entreprise@gmail.com?subject=Commande%20-%20Pack%20d'images%20-%20L'Empereur%20Céleste">Commander</a>
+    </div>
+  </div>
+
+  <h2 id="service">Prestations</h2>
+  <div class="grille">
+    <div class="carte">
+      <h3>Essentiel</h3>
+      <div class="prix">250,00 €</div>
+      <div class="deux">ou 2 fois sur demande €</div>
+      <p>Jeton BEP-20 vérifié sur BscScan. Aucune frappe, aucune taxe, aucune liste noire, aucun propriétaire.</p>
+      <ul><li>Contrat déployé sur BNB Chain</li><li>Code source public sur BscScan</li><li>Page de transparence</li><li>Vérification indépendante fournie</li></ul>
+      <a class="bouton" href="mailto:micke.entreprise@gmail.com?subject=Devis%20-%20Essentiel">Demander un devis</a>
+    </div>
+    <div class="carte">
+      <h3>Lancement sécurisé</h3>
+      <div class="prix">500,00 €</div>
+      <div class="deux">ou 2 fois sur demande €</div>
+      <p>Le lancement complet : jeton, liquidité, verrouillage et calendrier de déblocage.</p>
+      <ul><li>Tout l'Essentiel</li><li>Création de la liquidité</li><li>Verrouillage des jetons de liquidité</li><li>Calendrier de déblocage pour l'équipe</li></ul>
+      <a class="bouton" href="mailto:micke.entreprise@gmail.com?subject=Devis%20-%20Lancement%20sécurisé">Demander un devis</a>
+    </div>
+    <div class="carte">
+      <h3>Lancement accompagné</h3>
+      <div class="prix">900,00 €</div>
+      <div class="deux">ou 2 fois sur demande €</div>
+      <p>Le lancement plus l'identité visuelle et l'accompagnement jusqu'à la mise en ligne.</p>
+      <ul><li>Tout le Lancement sécurisé</li><li>Logo et identité visuelle</li><li>Visuels et vidéo de présentation 30-60 s</li><li>Accompagnement jusqu'à la mise en ligne</li></ul>
+      <a class="bouton" href="mailto:micke.entreprise@gmail.com?subject=Devis%20-%20Lancement%20accompagné">Demander un devis</a>
+    </div>
+  </div>
+
+  <div class="note" id="infos">
+    <b>Informations de commande.</b> Le paiement par carte sera disponible
+    très prochainement. En attendant, écris à
+    <a href="mailto:micke.entreprise@gmail.com">micke.entreprise@gmail.com</a> : tu reçois le lien de
+    téléchargement dès réception du paiement. Les fichiers sont fournis avec
+    leurs sommes de contrôle, pour vérifier qu'ils sont intacts.
+  </div>
+
+  <div class="note">
+    <b>Conditions.</b> Produits numériques : remboursement intégral dans les
+    14 jours, sans justification, à condition de ne pas avoir redistribué le
+    contenu. Usage personnel uniquement : la revente, la redistribution et
+    l'entraînement de modèles sont interdits. Les prestations déjà exécutées
+    ne sont pas remboursables.
+  </div>
+</main>
+<footer>
+  Crypto Future Tech — raison individuelle, Genève (Suisse) ·
+  <a href="mailto:micke.entreprise@gmail.com">micke.entreprise@gmail.com</a><br>
+  Prix en euros, taxes comprises lorsqu'elles s'appliquent.
+  Aucun résultat financier n'est promis.
+</footer>
+</body>
+</html>
