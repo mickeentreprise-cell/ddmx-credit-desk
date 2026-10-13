@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DDMX — console Web3</title>
+<meta name="description" content="Console Web3 DDMX : lecture en direct de la BNB Chain et signature dans le portefeuille. Aucune cle privee, aucune bibliotheque externe.">
+<style>
+  :root{
+    --fond:#0b0f14; --carte:#121922; --bord:#1e2a38; --texte:#dce6f2; --gris:#7d8fa3;
+    --vert:#2ecc71; --rouge:#e74c3c; --orange:#f39c12; --bleu:#3b82f6; --jaune:#f1c40f;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fond);color:var(--texte);
+       font:15px/1.55 "Segoe UI",system-ui,-apple-system,sans-serif}
+  a{color:var(--bleu)}
+  header{position:sticky;top:0;z-index:10;background:#0b0f14ee;backdrop-filter:blur(6px);
+         border-bottom:1px solid var(--bord);padding:14px 20px;
+         display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  header h1{font-size:19px;margin:0;letter-spacing:.5px}
+  header h1 span{color:var(--gris);font-weight:400;font-size:13px;letter-spacing:0}
+  .pousse{margin-left:auto}
+  main{max-width:1180px;margin:0 auto;padding:20px}
+  section{background:var(--carte);border:1px solid var(--bord);border-radius:10px;
+          padding:18px 20px;margin-bottom:18px}
+  h2{font-size:15px;margin:0 0 14px;text-transform:uppercase;letter-spacing:1.1px;color:var(--gris)}
+  h3{font-size:14px;margin:18px 0 8px;color:var(--texte)}
+  button{background:#1b2735;color:var(--texte);border:1px solid #2a3d52;border-radius:7px;
+         padding:8px 14px;font-size:14px;cursor:pointer;font-family:inherit}
+  button:hover:not(:disabled){background:#243447;border-color:#3a5470}
+  button:disabled{opacity:.4;cursor:not-allowed}
+  button.principal{background:#1d4ed8;border-color:#2563eb}
+  button.principal:hover:not(:disabled){background:#2563eb}
+  button.danger{background:#7f1d1d;border-color:#b91c1c}
+  button.danger:hover:not(:disabled){background:#991b1b}
+  button.ok{background:#14532d;border-color:#15803d}
+  button.ok:hover:not(:disabled){background:#166534}
+  input,select{background:#0d141c;color:var(--texte);border:1px solid #2a3d52;
+               border-radius:6px;padding:7px 9px;font-family:ui-monospace,Consolas,monospace;
+               font-size:13px;width:100%}
+  input:focus,select:focus{outline:none;border-color:var(--bleu)}
+  label{display:block;font-size:12px;color:var(--gris);margin:10px 0 4px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  td,th{padding:7px 8px;border-bottom:1px solid #18222e;text-align:left;vertical-align:top}
+  th{color:var(--gris);font-weight:500;font-size:12px;text-transform:uppercase;letter-spacing:.6px}
+  td:last-child,th:last-child{text-align:right}
+  code,.mono{font-family:ui-monospace,Consolas,monospace;font-size:12.5px}
+  .grille{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+  .case{background:#0d141c;border:1px solid var(--bord);border-radius:8px;padding:12px 14px}
+  .case .t{font-size:11.5px;color:var(--gris);text-transform:uppercase;letter-spacing:.7px}
+  .case .v{font-size:20px;font-weight:600;margin-top:5px}
+  .case .n{font-size:12px;color:var(--gris);margin-top:3px}
+  .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11.5px;
+         border:1px solid;letter-spacing:.3px}
+  .b-vert{color:var(--vert);border-color:#166534;background:#052e16}
+  .b-rouge{color:#ff9b8f;border-color:#7f1d1d;background:#2a0d0d}
+  .b-orange{color:var(--orange);border-color:#78350f;background:#2a1a05}
+  .b-gris{color:var(--gris);border-color:#2a3d52}
+  .b-bleu{color:#93c5fd;border-color:#1e40af;background:#0c1a33}
+  .etape{border:1px solid var(--bord);border-radius:9px;padding:15px 17px;margin-bottom:13px;
+         background:#0f1620}
+  .etape.verrouille{opacity:.5}
+  .etape h3{margin:0 0 4px;font-size:14.5px}
+  .etape .desc{font-size:13px;color:var(--gris);margin-bottom:11px}
+  .etape .champs{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+                 gap:9px;margin-bottom:11px}
+  .etape .actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+  .res{margin-top:10px;font-size:13px;padding:9px 11px;border-radius:7px;
+       background:#0a1017;border:1px solid var(--bord);white-space:pre-wrap;
+       font-family:ui-monospace,Consolas,monospace;font-size:12px}
+  .res.ok{border-color:#166534;color:#86efac}
+  .res.err{border-color:#7f1d1d;color:#fca5a5}
+  .res.att{border-color:#78350f;color:#fcd34d}
+  #journal{max-height:340px;overflow:auto}
+  #journal div{padding:7px 0;border-bottom:1px solid #18222e;font-size:13px}
+  .alerte{background:#2a1408;border:1px solid #78350f;border-radius:8px;padding:12px 14px;
+          font-size:13px;margin-bottom:14px;color:#fcd34d}
+  .danger-zone{border-color:#7f1d1d;background:#150c0c}
+  .aide{font-size:12px;color:var(--gris);margin-top:5px}
+  .ligne{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  hr{border:0;border-top:1px solid var(--bord);margin:16px 0}
+  .pastille{width:8px;height:8px;border-radius:50%;display:inline-block;background:var(--gris)}
+  .pastille.on{background:var(--vert);box-shadow:0 0 7px var(--vert)}
+  @media(max-width:640px){main{padding:12px}section{padding:14px}}
+</style>
+</head>
+<body>
+<!-- Barre de navigation -->
+<div style="background:#111318;border-bottom:1px solid #2a2f3a;padding:10px 16px;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;font-size:14px;display:flex;gap:18px;flex-wrap:wrap;align-items:center">
+<span style="color:#8b949e;font-weight:600">Crypto Future Tech</span>
+<a href="../index.html" style="color:#9db4ff;text-decoration:none">Scanner</a>
+<a href="index.html" style="color:#8b949e;text-decoration:none">Le jeton DDMX</a>
+<a href="dashboard.html" style="color:#9db4ff;text-decoration:none">Transparence</a>
+<a href="dapp.html" style="color:#9db4ff;text-decoration:none">Console Web3</a>
+<a href="../boutique/boutique.html" style="color:#9db4ff;text-decoration:none">Boutique</a>
+</div>
+
+
+<div style="max-width:900px;margin:22px auto;padding:14px 18px;border:1px solid #b62324;border-left:4px solid #b62324;background:#1f1517;color:#ffd7d5;border-radius:8px;font-family:system-ui,sans-serif;font-size:14px;line-height:1.6">
+<b>Information essentielle sur la liquidité.</b>
+La seule pool DDMX/WBNB contient <b>0.023502506655493735 DDMX</b> et
+<b>0.023989895541615073 WBNB</b>, soit <b>17.87 $</b> au total (BNB à 744.74 $).
+Le prix affiché par cette pool (760 $ par DDMX) est un <b>artefact</b> :
+il résulte d'une réserve quasi vide, pas d'un marché. Aucun acheteur ne peut
+entrer à ce prix, et aucun détenteur ne peut sortir plus que ces 17.87 $.
+Sur 1,000,000,000 DDMX émis, 998,999,989.97 se trouvent sur un seul compte.
+Cette page ne présente pas DDMX comme un investissement.
+</div>
+
+
+<header>
+  <h1>DDMX <span>console Web3</span></h1>
+  <span id="reseau" class="badge b-gris">lecture seule</span>
+  <span id="bloc" class="mono" style="font-size:12px;color:var(--gris)"></span>
+  <span class="pousse"></span>
+  <span id="compte" class="mono" style="font-size:12.5px;color:var(--gris)">portefeuille non connecté</span>
+  <button id="btnConnect" class="principal">Connecter le portefeuille</button>
+</header>
+
+<main>
+
+  <div class="alerte">
+    <strong>Aucune clé privée ne passe par cette page.</strong> Elle ne fait que deux choses :
+    <em>lire</em> la BNB Chain via des nœuds publics, et <em>demander</em> à ton portefeuille de signer.
+    La signature se fait dans MetaMask, jamais ici. Ne colle jamais ta phrase de récupération
+    dans une page web, y compris celle-ci.
+  </div>
+
+  <!-- ============================ ETAT ============================ -->
+  <section>
+    <h2>État réel, lu sur la chaîne <span id="maj" style="float:right;text-transform:none;letter-spacing:0"></span></h2>
+    <div class="grille">
+      <div class="case"><div class="t">Valeur de la pool — côté WBNB</div>
+        <div class="v" id="vPoolReel">—</div>
+        <div class="n">l'argent réellement présent</div></div>
+      <div class="case"><div class="t">Valeur de la pool — deux côtés</div>
+        <div class="v" id="vPoolTotale">—</div>
+        <div class="n">ce qu'affichent les agrégateurs</div></div>
+      <div class="case"><div class="t">Prix unitaire</div>
+        <div class="v" id="vPrix">—</div>
+        <div class="n" id="vPrixBnb">—</div></div>
+      <div class="case"><div class="t">FDV affiché</div>
+        <div class="v" id="vFdv">—</div>
+        <div class="n">supply × prix</div></div>
+    </div>
+
+    <h3>Jeton et réserve</h3>
+    <table>
+      <tr><th>Élément</th><th>Valeur</th></tr>
+      <tr><td>Jeton officiel (B)</td><td class="mono">0xb946…9e2d</td></tr>
+      <tr><td>Nom / symbole / décimales</td><td id="tJeton">—</td></tr>
+      <tr><td>Supply total</td><td id="tSupply">—</td></tr>
+      <tr><td>Réserve DDMX dans la pool</td><td id="tResDdm">—</td></tr>
+      <tr><td>Réserve WBNB dans la pool</td><td id="tResWbnb">—</td></tr>
+      <tr><td>Cours du BNB utilisé</td><td id="tPrixBnb">—</td></tr>
+    </table>
+
+    <h3>Répartition des jetons LP (la liquidité)</h3>
+    <table>
+      <tr><th>Détenteur</th><th>Part</th></tr>
+      <tr><td>Supply LP total</td><td id="lpTotal">—</td></tr>
+      <tr><td class="mono">0x43cc…89d2 — opérateur</td><td id="lpOp">—</td></tr>
+      <tr><td class="mono">0xa72a…ffbc — tiers</td><td id="lpTiers">—</td></tr>
+      <tr><td>Verrouillé dans un contrat</td><td id="lpVerrou">—</td></tr>
+    </table>
+
+    <h3>Supply du créateur, sur les trois tokens</h3>
+    <table>
+      <tr><th>Token</th><th>Solde du créateur</th></tr>
+      <tr><td>B — officiel <span class="mono" style="color:var(--gris)">0xb946…9e2d</span></td><td id="solB">—</td></tr>
+      <tr><td>A — abandonné <span class="mono" style="color:var(--gris)">0x37b5…9618</span></td><td id="solA">—</td></tr>
+      <tr><td>C — abandonné <span class="mono" style="color:var(--gris)">0xe6a9…8bb8</span></td><td id="solC">—</td></tr>
+    </table>
+
+    <h3>Gaz disponible pour signer</h3>
+    <table>
+      <tr><th>Portefeuille</th><th>BNB</th></tr>
+      <tr><td class="mono">0x7acc…cc73 — créateur (signe les étapes 3 et 6)</td><td id="gazCreateur">—</td></tr>
+      <tr><td class="mono">0x43cc…89d2 — opérateur (signe l'étape 4)</td><td id="gazOperateur">—</td></tr>
+    </table>
+
+    <div style="margin-top:14px" class="ligne">
+      <button id="btnRafraichir">Rafraîchir maintenant</button>
+      <span class="aide" id="auto">rafraîchissement automatique toutes les 30 s</span>
+    </div>
+  </section>
+
+  <!-- ============================ CONTRATS ============================ -->
+  <section>
+    <h2>Contrats du projet</h2>
+    <p class="aide" style="margin-top:0">
+      Ces deux contrats ne sont <strong>pas encore déployés</strong>. Renseigne leur adresse
+      ici une fois déployés : la page affichera alors l'état du verrou et du calendrier.
+      Ces adresses sont enregistrées dans ton navigateur uniquement.
+    </p>
+    <div class="grille">
+      <div><label>DDMLpLocker — verrou du LP</label>
+        <input id="adrLocker" placeholder="0x… (vide si non déployé)"></div>
+      <div><label>DDMVestingVault — calendrier du supply</label>
+        <input id="adrVault" placeholder="0x… (vide si non déployé)"></div>
+    </div>
+    <div class="ligne" style="margin-top:11px">
+      <button id="btnContrats">Enregistrer et vérifier</button>
+      <span class="aide" id="etatContrats">—</span>
+    </div>
+  </section>
+
+  <!-- ============================ ETAPES ============================ -->
+  <section>
+    <h2>Console d'exécution</h2>
+    <p class="aide" style="margin-top:0">
+      Chaque bouton construit la transaction, la <strong>simule d'abord sur la chaîne</strong>
+      (si la simulation échoue, rien n'est envoyé), affiche le gaz, puis demande la signature
+      à ton portefeuille. Tu vois toujours le destinataire et le montant avant de signer.
+    </p>
+
+    <!-- ETAPE 2 -->
+    <div class="etape" id="e2">
+      <h3>Étape 2 — Déployer les contrats</h3>
+      <div class="desc">À faire depuis le portefeuille <span class="mono">0x43cc…89d2</span>.
+        Le bytecode est lu depuis <span class="mono">contracts/_solc/build/</span> et son
+        empreinte SHA-256 est vérifiée avant l'envoi.</div>
+      <div class="actions">
+        <button id="btnDeployLocker">Déployer DDMLpLocker</button>
+        <button id="btnDeployVault">Déployer DDMVestingVault</button>
+        <button id="btnBytecode" class="ok">Vérifier les empreintes</button>
+      </div>
+      <div class="res" id="rDeploy">bytecode non encore chargé</div>
+    </div>
+
+    <!-- ETAPE 3 -->
+    <div class="etape danger-zone" id="e3">
+      <h3>Étape 3 — Neutraliser les anciens tokens A et C <span class="badge b-rouge">irréversible</span></h3>
+      <div class="desc">À faire depuis <span class="mono">0x7acc…cc73</span>. Les jetons partent vers
+        <span class="mono">0x…dEaD</span> : plus personne ne pourra jamais les récupérer.
+        Le montant utilisé est <strong>le solde exact lu juste avant l'envoi</strong>, pas une valeur figée.</div>
+      <label>Tape <span class="mono">BRULER</span> pour autoriser les deux boutons ci-dessous</label>
+      <input id="confBrulage" placeholder="BRULER" autocomplete="off">
+      <div class="actions" style="margin-top:11px">
+        <button id="btnBrulerA" class="danger" disabled>Brûler le supply du créateur sur A</button>
+        <button id="btnBrulerC" class="danger" disabled>Brûler le supply du créateur sur C</button>
+      </div>
+      <div class="res" id="rBrulage">en attente</div>
+    </div>
+
+    <!-- ETAPE 4 -->
+    <div class="etape" id="e4">
+      <h3>Étape 4 — Verrouiller le LP</h3>
+      <div class="desc">À faire depuis <span class="mono">0x43cc…89d2</span>. Deux transactions :
+        d'abord l'approbation au contrat de verrou, puis le verrou lui-même.
+        Le montant est le solde LP exact lu au moment du clic.</div>
+      <div class="champs">
+        <div><label>Adresse du DDMLpLocker</label><input id="lockLocker" placeholder="0x…"></div>
+        <div><label>Durée du verrou</label>
+          <select id="lockDuree">
+            <option value="15552000">6 mois</option>
+            <option value="31536000" selected>1 an</option>
+            <option value="63072000">2 ans</option>
+          </select></div>
+        <div><label>Bénéficiaire (seul à pouvoir retirer après la date)</label>
+          <input id="lockBenef" placeholder="0x…"></div>
+      </div>
+      <div class="actions">
+        <button id="btnApproveLp">1. Approuver le LP</button>
+        <button id="btnLockLp" class="principal">2. Verrouiller le LP</button>
+        <button id="btnLireLock" class="ok">Lire l'état du verrou</button>
+      </div>
+      <div class="res" id="rLock">en attente</div>
+    </div>
+
+    <!-- ETAPE 6 -->
+    <div class="etape" id="e6">
+      <h3>Étape 6 — Encadrer le supply du créateur</h3>
+      <div class="desc">À faire depuis <span class="mono">0x7acc…cc73</span>.
+        Intervalles : 90 jours de blocage total, puis libération linéaire sur 730 jours —
+        soit une durée totale de 820 jours, conformément au contrat corrigé.</div>
+      <div class="champs">
+        <div><label>Adresse du DDMVestingVault</label><input id="vestVault" placeholder="0x…"></div>
+        <div><label>Bénéficiaire</label><input id="vestBenef" placeholder="0x…"></div>
+        <div><label>Blocage initial (jours)</label><input id="vestCliff" value="90"></div>
+        <div><label>Libération linéaire (jours)</label><input id="vestDuree" value="730"></div>
+      </div>
+      <div class="actions">
+        <button id="btnApproveSupply">1. Approuver le supply</button>
+        <button id="btnCreateVest" class="principal">2. Créer le calendrier</button>
+        <button id="btnLireVest" class="ok">Lire le calendrier</button>
+      </div>
+      <div class="res" id="rVest">en attente</div>
+    </div>
+  </section>
+
+  <!-- ============================ JOURNAL ============================ -->
+  <section>
+    <h2>Journal de la session</h2>
+    <div id="journal"><div style="color:var(--gris)">aucune action pour l'instant</div></div>
+  </section>
+
+  <section>
+    <h2>Ce que cette page ne fera jamais</h2>
+    <ul style="margin:0;padding-left:20px;font-size:14px;color:#b9c8d8">
+      <li>Elle ne demande, ne stocke et ne transmet <strong>aucune clé privée ni phrase de récupération</strong>.</li>
+      <li>Elle n'envoie jamais de transaction sans que tu aies cliqué, ni sans que MetaMask ait affiché les détails.</li>
+      <li>Elle n'invente aucune valeur : si une donnée n'est pas lue sur la chaîne, elle affiche <span class="mono">—</span>.</li>
+      <li>Elle ne promet aucun prix, ne fabrique aucun volume et n'effectue aucun achat automatisé.</li>
+    </ul>
+  </section>
+
+</main>
+
+<script>
+"use strict";
+
+/* ------------------------------------------------------------------ *
+ *  Constantes vérifiées le 8 octobre 2026 — bloc 126 504 000
+ * ------------------------------------------------------------------ */
+const CFG = {
+  chainId: "0x38",
+  chainNom: "BNB Smart Chain",
+  jeton:      "0x90e28b1c8f1534dd3dc1c5ce9475fb5737d46b53",
+  jetonA:     "0x37b53a16573dbfe9a1dcf5496c16e6c9d01b9618",
+  jetonC:     "0xe6a9c705165b27e5ac2570a7c727921aaea78bb8",
+  paire:      "0x3c2813d5482c69ef5176cf3997015d23dea31dcf",
+  createur:   "0x7acc2328567158ebe4566c32fa9562e79f78cc73",
+  operateur:  "0x43ccf918b5a60d74f3a0dd5f58a1e76393c689d2",
+  lpTiers:    "0xa72a6bd86831d8997a12fefee08b1bbbf7b9ffbc",
+  tiers20:    "0xed3b0772109ac72ab08273fc085a4a768d57efe3",
+  mort:       "0x000000000000000000000000000000000000dEaD",
+  wbnb:       "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+  routeur:    "0x10ed43c718714eb63d5aa57b78b54704e256024e",
+  supply:     10000000000000n * 10n ** 18n
+};
+
+/* Sélecteurs calculés par keccak256, jamais écrits de mémoire.
+   Contrôle croisé : transfer=0xa9059cbb, approve=0x095ea7b3, balanceOf=0x70a08231. */
+const SEL = {
+  nom:         "0x06fdde03",
+  symbole:     "0x95d89b41",
+  decimales:   "0x313ce567",
+  supply:      "0x18160ddd",
+  balanceOf:   "0x70a08231",
+  allowance:   "0xdd62ed3e",
+  transfer:    "0xa9059cbb",
+  approve:     "0x095ea7b3",
+  token0:      "0x0dfe1681",
+  token1:      "0xd21220a7",
+  reserves:    "0x0902f1ac",
+  lock:        "0x2d7fff29",  // lock(uint256,uint64,address)
+  create:      "0x74944380",  // create(address,uint256,uint64,uint64,uint64)
+  claimable:   "0xd1d58b25",
+  info:        "0x2e340599",
+  count:       "0x06661abd",
+  totalLocked: "0x56891412"
+};
+
+/* Adresses des nœuds publics : testées le 8 octobre 2026, toutes renvoient
+   Access-Control-Allow-Origin: * — donc utilisables depuis un navigateur. */
+const NOEUDS = [
+  "https://bsc-dataseed.binance.org",
+  "https://bsc-dataseed1.binance.org",
+  "https://bsc-dataseed2.binance.org",
+  "https://bsc-dataseed1.defibit.io",
+  "https://bsc-dataseed2.defibit.io",
+  "https://bsc-dataseed1.ninicoin.io"
+];
+
+const BUILD = "../../contracts/_solc/build/";
+const SHA_ATTENDU = {
+  "DDMLpLocker.bin":     "1911ba0f0380ffdc97823443aec966a6166fd44e0169dda6a123e905090fa8aa",
+  "DDMVestingVault.bin": "5fac20f1a73dcf948858f3d0b0771cee32b708cf3d5a72b233c8b053853e822c"
+};
+
+/* ------------------------------------------------------------------ *
+ *  Outils
+ * ------------------------------------------------------------------ */
+const $ = id => document.getElementById(id);
+const court = a => a ? a.slice(0,6) + "…" + a.slice(-4) : "—";
+const egales = (a,b) => !!(a && b && a.toLowerCase() === b.toLowerCase());
+
+function encAddr(a){
+  if(!/^0x[0-9a-fA-F]{40}$/.test(a)) throw new Error("adresse invalide : " + a);
+  return a.slice(2).toLowerCase().padStart(64,"0");
+}
+function encUint(v){
+  const n = BigInt(v);
+  if(n < 0n) throw new Error("valeur négative");
+  return n.toString(16).padStart(64,"0");
+}
+function mot(hex, i){ return hex.slice(2 + i*64, 2 + (i+1)*64); }
+function lireUint(hex, i){ return hex && hex.length >= 2+(i+1)*64 ? BigInt("0x"+mot(hex,i)) : 0n; }
+function lireAddr(hex, i){ return "0x" + mot(hex,i).slice(24); }
+
+function jeton(v, dec){
+  dec = (dec === undefined) ? 18 : dec;
+  v = BigInt(v);
+  const base = 10n ** BigInt(dec);
+  const entier = v / base;
+  const reste = v % base;
+  if(dec === 0) return entier.toLocaleString("fr-FR");
+  const frac = reste.toString().padStart(dec,"0").slice(0,6).replace(/0+$/,"");
+  return entier.toLocaleString("fr-FR") + (frac ? "," + frac : "");
+}
+function decimal(v, n){
+  const e = 10n ** BigInt(n);
+  const s = v / e, r = v % e;
+  const frac = r.toString().padStart(n,"0");
+  return s.toLocaleString("fr-FR") + "," + frac;
+}
+function dollars(v){
+  if(!isFinite(v)) return "—";
+  return v.toLocaleString("fr-FR",{minimumFractionDigits:2, maximumFractionDigits:2}) + " $";
+}
+function hexDe(v){ return "0x" + v.toString(16); }
+
+/* ------------------------------------------------------------------ *
+ *  Lecture de la chaîne : nœuds publics + repli sur le portefeuille
+ * ------------------------------------------------------------------ */
+let noeudCourant = 0;
+let idAppel = 1;
+
+async function rpc(methode, params){
+  let derniere = null;
+  for(let essai = 0; essai < NOEUDS.length; essai++){
+    const url = NOEUDS[(noeudCourant + essai) % NOEUDS.length];
+    try{
+      const rep = await fetch(url, {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({jsonrpc:"2.0", id:idAppel++, method:methode, params:params})
+      });
+      const j = await rep.json();
+      if(j.error) throw new Error(j.error.message || "erreur RPC");
+      noeudCourant = (noeudCourant + essai) % NOEUDS.length;
+      return j.result;
+    }catch(e){ derniere = e; }
+  }
+  throw new Error("aucun nœud public n'a répondu (" + (derniere && derniere.message) + ")");
+}
+
+async function appel(to, data){
+  return await rpc("eth_call", [{to:to, data:data}, "latest"]);
+}
+async function appelUint(to, data){
+  const r = await appel(to, data);
+  return (r && r !== "0x") ? BigInt(r) : 0n;
+}
+function texteDepuis(hex){
+  if(!hex || hex === "0x") return null;
+  const b = hex.slice(2);
+  try{
+    if(b.length === 64){
+      let s = "";
+      for(let i = 0; i < 64; i += 2){
+        const c = parseInt(b.substr(i,2),16);
+        if(c) s += String.fromCharCode(c);
+      }
+      return s.replace(/\0+$/,"") || null;
+    }
+    const len = parseInt(b.substr(64,64),16);
+    if(!len || len > 200) return null;
+    let s = "";
+    for(let i = 0; i < len; i++){
+      const c = parseInt(b.substr(128 + i*2, 2),16);
+      if(c) s += String.fromCharCode(c);
+    }
+    return s || null;
+  }catch(e){ return null; }
+}
+
+/* ------------------------------------------------------------------ *
+ *  Portefeuille
+ * ------------------------------------------------------------------ */
+let compte = null;
+
+function aPortefeuille(){ return typeof window.ethereum !== "undefined"; }
+
+async function connecter(){
+  if(!aPortefeuille()){
+    journal("aucun portefeuille détecté dans ce navigateur : installe MetaMask, ou ouvre la page dans un navigateur qui en a un.", "err");
+    return;
+  }
+  try{
+    const comptes = await window.ethereum.request({method:"eth_requestAccounts"});
+    compte = comptes && comptes[0] ? comptes[0] : null;
+    await assurerReseau();
+    $("compte").textContent = compte ? court(compte) : "non connecté";
+    $("compte").style.color = compte ? "#dce6f2" : "#7d8fa3";
+    $("btnConnect").textContent = compte ? "Changer de compte" : "Connecter le portefeuille";
+    preRemplirBeneficiaires();
+    journal("portefeuille connecté : " + compte, "ok");
+    await rafraichir();
+  }catch(e){
+    journal("connexion refusée ou impossible : " + (e.message || e), "err");
+  }
+}
+
+async function assurerReseau(){
+  const actuel = await window.ethereum.request({method:"eth_chainId"});
+  if(actuel === CFG.chainId) return;
+  try{
+    await window.ethereum.request({method:"wallet_switchEthereumChain",
+      params:[{chainId: CFG.chainId}]});
+    journal("réseau basculé sur " + CFG.chainNom, "ok");
+  }catch(e){
+    if(e && (e.code === 4902 || e.code === -32603)){
+      await window.ethereum.request({method:"wallet_addEthereumChain", params:[{
+        chainId: CFG.chainId, chainName: CFG.chainNom,
+        nativeCurrency:{name:"BNB", symbol:"BNB", decimals:18},
+        rpcUrls:["https://bsc-dataseed.binance.org"],
+        blockExplorerUrls:["https://bscscan.com"]
+      }]});
+      journal("réseau " + CFG.chainNom + " ajouté au portefeuille", "ok");
+    }else{
+      throw e;
+    }
+  }
+}
+
+function preRemplirBeneficiaires(){
+  if(!compte) return;
+  if(!$("lockBenef").value) $("lockBenef").value = compte;
+  if(!$("vestBenef").value) $("vestBenef").value = compte;
+}
+
+/* ------------------------------------------------------------------ *
+ *  Envoi : simulation d'abord, signature ensuite
+ * ------------------------------------------------------------------ */
+async function executer({titre, de, vers, data, valeur}){
+  if(!compte){ journal(titre + " : connecte d'abord le portefeuille.", "err"); return null; }
+  if(de && !egales(de, compte)){
+    journal(titre + " : ce portefeuille n'est pas le bon. Attendu " + court(de) +
+            ", connecté " + court(compte) + ".", "err");
+    return null;
+  }
+  const appelSim = {from: compte, data: data};
+  if(vers) appelSim.to = vers;
+  if(valeur) appelSim.value = valeur;
+
+  journal(titre + " — simulation en cours…", "att");
+
+  // 1) simulation : le nœud exécute réellement l'appel, sans rien écrire
+  try{
+    await rpc("eth_call", [appelSim, "latest"]);
+  }catch(e){
+    const msg = String(e.message || e);
+    journal(titre + " — SIMULATION REFUSÉE, rien n'a été envoyé.\n" + msg, "err");
+    return null;
+  }
+
+  // 2) chiffrage du gaz
+  let gaz = null, coutBnb = null;
+  try{
+    gaz = BigInt(await rpc("eth_estimateGas", [appelSim, "latest"]));
+    const prix = BigInt(await rpc("eth_gasPrice", []));
+    coutBnb = Number(gaz * prix) / 1e18;
+  }catch(e){ /* le portefeuille estimera lui-même */ }
+
+  const details = (vers ? ("vers " + vers) : "déploiement de contrat") +
+    (gaz ? ("\ngaz estimé " + gaz.toLocaleString("fr-FR") +
+            (coutBnb !== null ? "  ≈ " + coutBnb.toFixed(8) + " BNB" : "")) : "");
+
+  // 3) signature par le portefeuille
+  try{
+    const tx = {from: compte, data: data};
+    if(vers) tx.to = vers;
+    if(valeur) tx.value = valeur;
+    if(gaz) tx.gas = hexDe(gaz * 125n / 100n);   // +25 % de marge
+    const hash = await window.ethereum.request({method:"eth_sendTransaction", params:[tx]});
+    journal(titre + " — transaction envoyée.\n" + hash + "\n" + details, "ok");
+    hacher(hash);
+    return hash;
+  }catch(e){
+    journal(titre + " — refusé ou échoué.\n" + (e.message || e), "err");
+    return null;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ *  État
+ * ------------------------------------------------------------------ */
+async function lirePrixBnb(){
+  try{
+    const r = await fetch("https://api.binance.com/api/v3/ticker/price?symbol=BNBUSDT");
+    const j = await r.json();
+    const p = parseFloat(j.price);
+    return isFinite(p) && p > 0 ? p : null;
+  }catch(e){ return null; }
+}
+
+async function rafraichir(){
+  $("maj").textContent = "lecture…";
+  try{
+    const [blocHex, prixBnb] = await Promise.all([
+      rpc("eth_blockNumber", []),
+      lirePrixBnb()
+    ]);
+    const bloc = parseInt(blocHex,16);
+    $("bloc").textContent = "bloc " + bloc.toLocaleString("fr-FR");
+    $("reseau").textContent = "BNB Chain · lecture en direct";
+    $("reseau").className = "badge b-vert";
+
+    // --- jeton B ---
+    const [nom, sym, dec, supply] = await Promise.all([
+      appel(CFG.jeton, SEL.nom).then(texteDepuis),
+      appel(CFG.jeton, SEL.symbole).then(texteDepuis),
+      appelUint(CFG.jeton, SEL.decimales),
+      appelUint(CFG.jeton, SEL.supply)
+    ]);
+    const decN = Number(dec) || 18;
+    $("tJeton").textContent = (nom || "?") + " / " + (sym || "?") + " / " + decN;
+    $("tSupply").textContent = jeton(supply, decN) + " " + (sym || "");
+
+    // --- pool ---
+    const [t0, resHex] = await Promise.all([
+      appel(CFG.paire, SEL.token0),
+      appel(CFG.paire, SEL.reserves)
+    ]);
+    const res0 = lireUint(resHex,0), res1 = lireUint(resHex,1);
+    const t0a = lireAddr(t0,0);
+    const estB = egales(t0a, CFG.jeton);
+    const rDdm  = estB ? res0 : res1;
+    const rWbnb = estB ? res1 : res0;
+
+    const bnb = Number(rWbnb) / 1e18;
+    const ddm = Number(rDdm) / 1e18;
+    const prixParJeton = ddm > 0 ? bnb / ddm : 0;
+    const valeurReelle = prixBnb ? bnb * prixBnb : NaN;
+    const valeurTotale = valeurReelle * 2;
+
+    $("tResDdm").textContent  = jeton(rDdm, decN) + " " + (sym || "");
+    $("tResWbnb").textContent = (Number(rWbnb)/1e18).toFixed(9) + " WBNB";
+    $("tPrixBnb").textContent = prixBnb
+      ? prixBnb.toLocaleString("fr-FR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " $ (Binance)"
+      : "indisponible — aucun chiffre inventé";
+    $("vPoolReel").textContent   = dollars(valeurReelle);
+    $("vPoolTotale").textContent = dollars(valeurTotale);
+    $("vPrix").textContent = prixParJeton
+      ? "$" + (prixParJeton * (prixBnb || 0)).toPrecision(4)
+      : "—";
+    $("vPrixBnb").textContent = prixParJeton
+      ? prixParJeton.toExponential(4) + " BNB par DDMX"
+      : "—";
+    const fdv = prixParJeton * (prixBnb || 0) * Number(supply / 10n**BigInt(decN));
+    $("vFdv").textContent = prixBnb ? dollars(fdv) : "—";
+
+    // --- LP ---
+    const [lpTotal, lpOp, lpTiers] = await Promise.all([
+      appelUint(CFG.paire, SEL.supply),
+      appelUint(CFG.paire, SEL.balanceOf + encAddr(CFG.operateur)),
+      appelUint(CFG.paire, SEL.balanceOf + encAddr(CFG.lpTiers))
+    ]);
+    $("lpTotal").textContent = jeton(lpTotal);
+    $("lpOp").textContent = jeton(lpOp) + "  (" + (lpTotal? (Number(lpOp)*100/Number(lpTotal)).toFixed(4):"0") + " %)";
+    $("lpTiers").textContent = jeton(lpTiers) + "  (" + (lpTotal? (Number(lpTiers)*100/Number(lpTotal)).toFixed(4):"0") + " %)";
+
+    const locker = $("adrLocker").value.trim();
+    if(/^0x[0-9a-fA-F]{40}$/.test(locker)){
+      try{
+        const v = await appelUint(locker, SEL.totalLocked);
+        $("lpVerrou").textContent = jeton(v) + " LP dans le verrou";
+      }catch(e){ $("lpVerrou").textContent = "contrat illisible"; }
+    }else{
+      $("lpVerrou").textContent = "aucun verrou — LP non verrouillé";
+    }
+
+    // --- soldes du créateur ---
+    const [sb, sa, sc] = await Promise.all([
+      appelUint(CFG.jeton,  SEL.balanceOf + encAddr(CFG.createur)),
+      appelUint(CFG.jetonA, SEL.balanceOf + encAddr(CFG.createur)),
+      appelUint(CFG.jetonC, SEL.balanceOf + encAddr(CFG.createur))
+    ]);
+    $("solB").textContent = jeton(sb, decN) + "  (" + (Number(sb)*100/Number(supply)).toFixed(2) + " % du supply)";
+    $("solA").textContent = jeton(sa, decN);
+    $("solC").textContent = jeton(sc, decN);
+
+    // --- gaz ---
+    for(const [id, adr] of [["gazCreateur", CFG.createur], ["gazOperateur", CFG.operateur]]){
+      const b = BigInt(await rpc("eth_getBalance", [adr,"latest"]));
+      const n = Number(b)/1e18;
+      $(id).innerHTML = n.toFixed(9) + " BNB" +
+        (n < 0.0005 ? ' <span class="badge b-rouge">insuffisant</span>' : ' <span class="badge b-vert">suffisant</span>');
+    }
+
+    if(compte){
+      const b = BigInt(await rpc("eth_getBalance", [compte,"latest"]));
+      $("auto").textContent = "connecté · solde " + (Number(b)/1e18).toFixed(6) +
+        " BNB · rafraîchissement toutes les 30 s";
+    }
+    $("maj").textContent = "à jour";
+  }catch(e){
+    $("maj").textContent = "";
+    $("reseau").textContent = "lecture impossible";
+    $("reseau").className = "badge b-rouge";
+    journal("lecture impossible : " + (e.message || e), "err");
+  }
+  majBoutons();
+}
+
+/* ------------------------------------------------------------------ *
+ *  Boutons
+ * ------------------------------------------------------------------ */
+function majBoutons(){
+  const estCreateur  = egales(compte, CFG.createur);
+  const estOperateur = egales(compte, CFG.operateur);
+  $("btnBrulerA").disabled = !(estCreateur && $("confBrulage").value.trim() === "BRULER");
+  $("btnBrulerC").disabled = $("btnBrulerA").disabled;
+  $("btnApproveSupply").disabled = !estCreateur;
+  $("btnCreateVest").disabled = !estCreateur;
+  $("btnApproveLp").disabled = !estOperateur;
+  $("btnLockLp").disabled = !estOperateur;
+  $("btnDeployLocker").disabled = !compte;
+  $("btnDeployVault").disabled = !compte;
+  for(const id of ["e2","e3","e4","e6"]){
+    $(id).classList.toggle("verrouille", !compte);
+  }
+}
+
+const bytecodes = {};
+
+async function chargerBytecode(nom){
+  if(bytecodes[nom]) return bytecodes[nom];
+  const r = await fetch(BUILD + nom, {cache:"no-store"});
+  if(!r.ok) throw new Error("fichier introuvable : " + BUILD + nom +
+    " — ouvre cette page via le serveur local (http://127.0.0.1:8097/site/dapp.html)");
+  const texte = (await r.text()).trim().replace(/^0x/,"");
+  const octets = new Uint8Array(texte.length/2);
+  for(let i=0;i<octets.length;i++) octets[i] = parseInt(texte.substr(i*2,2),16);
+  const empreinte = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", octets)))
+    .map(b => b.toString(16).padStart(2,"0")).join("");
+  if(SHA_ATTENDU[nom] && empreinte !== SHA_ATTENDU[nom]){
+    throw new Error("EMPREINTE DIFFÉRENTE pour " + nom +
+      "\nattendue : " + SHA_ATTENDU[nom] + "\nobtenue  : " + empreinte +
+      "\nLe contrat a été modifié ou recompilé : NE DÉPLOIE PAS avant d'avoir relu le code.");
+  }
+  bytecodes[nom] = texte;
+  return texte;
+}
+
+async function verifierBytecodes(){
+  const res = $("rDeploy");
+  res.className = "res"; res.textContent = "lecture des fichiers…";
+  try{
+    const l = await chargerBytecode("DDMLpLocker.bin");
+    const v = await chargerBytecode("DDMVestingVault.bin");
+    res.className = "res ok";
+    res.textContent =
+      "empreintes conformes.\n" +
+      "DDMLpLocker.bin      " + (l.length/2) + " octets  sha256 " + SHA_ATTENDU["DDMLpLocker.bin"].slice(0,24) + "…\n" +
+      "DDMVestingVault.bin  " + (v.length/2) + " octets  sha256 " + SHA_ATTENDU["DDMVestingVault.bin"].slice(0,24) + "…\n" +
+      "Ces octets sont exactement ceux qui ont été recompilés depuis les sources relues.";
+  }catch(e){
+    res.className = "res err"; res.textContent = String(e.message || e);
+  }
+}
+
+async function deployer(nom, argument, cible){
+  const res = $(cible);
+  try{
+    res.className = "res"; res.textContent = "chargement et vérification du bytecode…";
+    const code = await chargerBytecode(nom);
+    res.textContent = "empreinte conforme. Simulation du déploiement…";
+    await executer({
+      titre: "Déploiement de " + nom.replace(".bin",""),
+      de: null, vers: null, data: "0x" + code + encAddr(argument)
+    });
+    res.className = "res ok";
+    res.textContent = "demande envoyée au portefeuille. Une fois confirmée, copie l'adresse du " +
+      "contrat depuis BscScan dans le champ correspondant ci-dessus.";
+  }catch(e){
+    res.className = "res err"; res.textContent = String(e.message || e);
+  }
+}
+
+async function bruler(jetonAdr, etiquette, cible){
+  const res = $("rBrulage");
+  try{
+    const solde = await appelUint(jetonAdr, SEL.balanceOf + encAddr(CFG.createur));
+    if(solde === 0n){ res.className="res att"; res.textContent = "solde déjà à zéro sur " + etiquette + " : rien à faire."; return; }
+    res.className = "res";
+    res.textContent = "solde lu à l'instant : " + jeton(solde) + " jetons\n" +
+      "destinataire : " + CFG.mort + "\nSIMULATION…";
+    const hash = await executer({
+      titre: "Brûlage " + etiquette,
+      de: CFG.createur, vers: jetonAdr,
+      data: SEL.transfer + encAddr(CFG.mort) + encUint(solde)
+    });
+    if(hash){
+      res.className = "res ok";
+      res.textContent = "envoyé : " + hash + "\nIRRÉVERSIBLE. Le solde disparaîtra après confirmation.";
+    }
+  }catch(e){
+    res.className = "res err"; res.textContent = String(e.message || e);
+  }
+}
+
+async function approuver(token, spender, montant, etiquette){
+  const res = $("rLock");
+  const hash = await executer({
+    titre: "Approbation " + etiquette,
+    de: egales(token, CFG.paire) ? CFG.operateur : CFG.createur,
+    vers: token,
+    data: SEL.approve + encAddr(spender) + encUint(montant)
+  });
+  return hash;
+}
+
+/* ------------------------------------------------------------------ *
+ *  Journal
+ * ------------------------------------------------------------------ */
+function journal(txt, genre){
+  const j = $("journal");
+  if(j.firstChild && j.firstChild.textContent === "aucune action pour l'instant") j.innerHTML = "";
+  const d = document.createElement("div");
+  const h = new Date().toLocaleTimeString("fr-FR");
+  d.innerHTML = '<span class="mono" style="color:#7d8fa3">' + h + '</span> ' +
+    '<span style="color:' + (genre === "err" ? "#fca5a5" : genre === "ok" ? "#86efac" : "#fcd34d") +
+    ';white-space:pre-wrap">' + String(txt).replace(/[<>&]/g, c => ({"<":"&lt;",">":"&gt;","&":"&amp;"}[c])) + '</span>';
+  j.prepend(d);
+}
+
+function hacher(hash){
+  const j = $("journal");
+  const d = document.createElement("div");
+  d.innerHTML = '<a class="mono" target="_blank" rel="noopener" href="https://bscscan.com/tx/' + hash +
+    '">suivre sur BscScan →</a>';
+  j.prepend(d);
+}
+
+/* ------------------------------------------------------------------ *
+ *  Branchements
+ * ------------------------------------------------------------------ */
+$("btnConnect").onclick = connecter;
+$("btnRafraichir").onclick = rafraichir;
+$("btnBytecode").onclick = verifierBytecodes;
+$("btnDeployLocker").onclick = () => deployer("DDMLpLocker.bin", CFG.paire, "rDeploy");
+$("btnDeployVault").onclick  = () => deployer("DDMVestingVault.bin", CFG.jeton, "rDeploy");
+$("confBrulage").oninput = majBoutons;
+$("btnBrulerA").onclick = () => bruler(CFG.jetonA, "token A (abandonné)", "rBrulage");
+$("btnBrulerC").onclick = () => bruler(CFG.jetonC, "token C (abandonné)", "rBrulage");
+
+$("btnApproveLp").onclick = async () => {
+  const res = $("rLock");
+  const locker = $("lockLocker").value.trim();
+  if(!/^0x[0-9a-fA-F]{40}$/.test(locker)){ res.className="res err"; res.textContent="adresse du DDMLpLocker manquante."; return; }
+  try{
+    const solde = await appelUint(CFG.paire, SEL.balanceOf + encAddr(CFG.operateur));
+    res.className="res"; res.textContent = "solde LP de l'opérateur : " + jeton(solde) + "\nSIMULATION…";
+    const h = await approuver(CFG.paire, locker, solde, "du LP au verrou");
+    if(h){ res.className="res ok"; res.textContent = "approuvé : " + h; }
+  }catch(e){ res.className="res err"; res.textContent = String(e.message||e); }
+};
+
+$("btnLockLp").onclick = async () => {
+  const res = $("rLock");
+  const locker = $("lockLocker").value.trim();
+  const benef  = $("lockBenef").value.trim();
+  if(!/^0x[0-9a-fA-F]{40}$/.test(locker)){ res.className="res err"; res.textContent="adresse du DDMLpLocker manquante."; return; }
+  if(!/^0x[0-9a-fA-F]{40}$/.test(benef)){ res.className="res err"; res.textContent="bénéficiaire invalide."; return; }
+  try{
+    const [solde, blocHex] = await Promise.all([
+      appelUint(CFG.paire, SEL.balanceOf + encAddr(CFG.operateur)),
+      rpc("eth_getBlockByNumber", ["latest", false])
+    ]);
+    const horodatage = BigInt(blocHex.timestamp);
+    const duree = BigInt($("lockDuree").value);
+    const fin = horodatage + duree + 60n;   // +60 s de marge
+    const date = new Date(Number(fin)*1000).toISOString().slice(0,19).replace("T"," ");
+    res.className="res";
+    res.textContent = "montant verrouillé : " + jeton(solde) + " LP\n" +
+      "date de déverrouillage : " + fin + "  (" + date + " UTC)\nSIMULATION…";
+    const h = await executer({
+      titre: "Verrouillage du LP",
+      de: CFG.operateur, vers: locker,
+      data: SEL.lock + encUint(solde) + encUint(fin) + encAddr(benef)
+    });
+    if(h){ res.className="res ok"; res.textContent = "verrou envoyé : " + h + "\nfin du verrou : " + date + " UTC"; }
+  }catch(e){ res.className="res err"; res.textContent = String(e.message||e); }
+};
+
+$("btnLireLock").onclick = async () => {
+  const res = $("rLock");
+  const locker = $("lockLocker").value.trim();
+  if(!/^0x[0-9a-fA-F]{40}$/.test(locker)){ res.className="res err"; res.textContent="adresse manquante."; return; }
+  try{
+    const n = await appelUint(locker, SEL.count);
+    const total = await appelUint(locker, SEL.totalLocked);
+    let t = "verrous enregistrés : " + n + "\ntotal encore verrouillé : " + jeton(total) + " LP\n";
+    for(let i = 0n; i < n && i < 10n; i++){
+      const r = await appel(locker, SEL.info + encUint(i));
+      const montant = lireUint(r,0), fin = lireUint(r,1);
+      const benef = lireAddr(r,2), retire = lireUint(r,3) === 1n;
+      t += "\n#" + i + "  " + jeton(montant) + " LP\n   bénéficiaire " + benef +
+           "\n   déverrouillage " + new Date(Number(fin)*1000).toISOString().slice(0,19).replace("T"," ") +
+           " UTC\n   " + (retire ? "déjà retiré" : "encore verrouillé") + "\n";
+    }
+    res.className="res ok"; res.textContent = t;
+  }catch(e){ res.className="res err"; res.textContent = String(e.message||e); }
+};
+
+$("btnApproveSupply").onclick = async () => {
+  const res = $("rVest");
+  const vault = $("vestVault").value.trim();
+  if(!/^0x[0-9a-fA-F]{40}$/.test(vault)){ res.className="res err"; res.textContent="adresse du DDMVestingVault manquante."; return; }
+  try{
+    const solde = await appelUint(CFG.jeton, SEL.balanceOf + encAddr(CFG.createur));
+    res.className="res"; res.textContent = "solde du créateur : " + jeton(solde) + " DDMX\nSIMULATION…";
+    const h = await executer({
+      titre: "Approbation du supply au coffre",
+      de: CFG.createur, vers: CFG.jeton,
+      data: SEL.approve + encAddr(vault) + encUint(solde)
+    });
+    if(h){ res.className="res ok"; res.textContent = "approuvé : " + h; }
+  }catch(e){ res.className="res err"; res.textContent = String(e.message||e); }
+};
+
+$("btnCreateVest").onclick = async () => {
+  const res = $("rVest");
+  const vault = $("vestVault").value.trim();
+  const benef = $("vestBenef").value.trim();
+  if(!/^0x[0-9a-fA-F]{40}$/.test(vault)){ res.className="res err"; res.textContent="adresse du DDMVestingVault manquante."; return; }
+  if(!/^0x[0-9a-fA-F]{40}$/.test(benef)){ res.className="res err"; res.textContent="bénéficiaire invalide."; return; }
+  try{
+    const [solde, bloc] = await Promise.all([
+      appelUint(CFG.jeton, SEL.balanceOf + encAddr(CFG.createur)),
+      rpc("eth_getBlockByNumber", ["latest", false])
+    ]);
+    const cliff   = BigInt(Math.round(parseFloat($("vestCliff").value) * 86400));
+    const duree   = BigInt(Math.round(parseFloat($("vestDuree").value) * 86400));
+    const debut   = BigInt(bloc.timestamp) + 300n;   // +5 min de marge
+    const fin     = debut + cliff + duree;
+    res.className="res";
+    res.textContent = "montant mis sous calendrier : " + jeton(solde) + " DDMX\n" +
+      "blocage total jusqu'au : " + new Date(Number(debut+cliff)*1000).toISOString().slice(0,10) + " UTC\n" +
+      "libération complète le : " + new Date(Number(fin)*1000).toISOString().slice(0,10) + " UTC\nSIMULATION…";
+    const h = await executer({
+      titre: "Création du calendrier de vesting",
+      de: CFG.createur, vers: vault,
+      data: SEL.create + encAddr(benef) + encUint(solde) + encUint(debut) + encUint(cliff) + encUint(duree)
+    });
+    if(h){ res.className="res ok"; res.textContent = "calendrier créé : " + h; }
+  }catch(e){ res.className="res err"; res.textContent = String(e.message||e); }
+};
+
+$("btnLireVest").onclick = async () => {
+  const res = $("rVest");
+  const vault = $("vestVault").value.trim();
+  if(!/^0x[0-9a-fA-F]{40}$/.test(vault)){ res.className="res err"; res.textContent="adresse manquante."; return; }
+  try{
+    const n = await appelUint(vault, SEL.count);
+    let t = "calendriers enregistrés : " + n + "\n";
+    for(let i = 0n; i < n && i < 10n; i++){
+      const r = await appel(vault, SEL.info + encUint(i));
+      const benef = lireAddr(r,0), total = lireUint(r,1), reclame = lireUint(r,2);
+      const debut = lireUint(r,3), cliff = lireUint(r,4), duree = lireUint(r,5);
+      const dispo = await appelUint(vault, SEL.claimable + encUint(i));
+      t += "\n#" + i + "  bénéficiaire " + benef +
+           "\n   total " + jeton(total) + " DDMX · déjà réclamé " + jeton(reclame) +
+           "\n   début " + new Date(Number(debut)*1000).toISOString().slice(0,10) +
+           " · blocage " + (Number(cliff)/86400) + " j · libération " + (Number(duree)/86400) + " j" +
+           "\n   fin de libération " + new Date(Number(debut+cliff+duree)*1000).toISOString().slice(0,10) +
+           "\n   réclamable maintenant : " + jeton(dispo) + " DDMX\n";
+    }
+    res.className="res ok"; res.textContent = t;
+  }catch(e){ res.className="res err"; res.textContent = String(e.message||e); }
+};
+
+$("btnContrats").onclick = async () => {
+  const l = $("adrLocker").value.trim(), v = $("adrVault").value.trim();
+  try{
+    localStorage.setItem("ddm.locker", /^0x[0-9a-fA-F]{40}$/.test(l) ? l : "");
+    localStorage.setItem("ddm.vault",  /^0x[0-9a-fA-F]{40}$/.test(v) ? v : "");
+  }catch(e){}
+  if(/^0x[0-9a-fA-F]{40}$/.test(l)) $("lockLocker").value = l;
+  if(/^0x[0-9a-fA-F]{40}$/.test(v)) $("vestVault").value = v;
+  const faits = [];
+  for(const [id, adr, quoi] of [["l", l, "verrou"], ["v", v, "coffre"]]){
+    if(!/^0x[0-9a-fA-F]{40}$/.test(adr)) continue;
+    const code = await rpc("eth_getCode", [adr, "latest"]);
+    faits.push(quoi + " " + court(adr) + " : " + ((code && code !== "0x") ? "contrat présent, " + ((code.length-2)/2) + " octets" : "AUCUN CODE à cette adresse"));
+  }
+  $("etatContrats").textContent = faits.length ? faits.join(" · ") : "aucune adresse saisie";
+  await rafraichir();
+};
+
+/* --- écoute du portefeuille --- */
+if(aPortefeuille()){
+  window.ethereum.on && window.ethereum.on("accountsChanged", async comptes => {
+    compte = comptes && comptes[0] ? comptes[0] : null;
+    $("compte").textContent = compte ? court(compte) : "non connecté";
+    preRemplirBeneficiaires();
+    journal("compte changé : " + (compte || "déconnecté"), "att");
+    await rafraichir();
+  });
+  window.ethereum.on && window.ethereum.on("chainChanged", () => location.reload());
+}
+
+/* --- démarrage --- */
+(async function demarrer(){
+  try{
+    const l = localStorage.getItem("ddm.locker") || "";
+    const v = localStorage.getItem("ddm.vault")  || "";
+    if(l){ $("adrLocker").value = l; $("lockLocker").value = l; }
+    if(v){ $("adrVault").value  = v; $("vestVault").value  = v; }
+  }catch(e){}
+  if(aPortefeuille()){
+    try{
+      const comptes = await window.ethereum.request({method:"eth_accounts"});
+      if(comptes && comptes[0]){
+        compte = comptes[0];
+        $("compte").textContent = court(compte);
+        $("btnConnect").textContent = "Changer de compte";
+        preRemplirBeneficiaires();
+      }
+    }catch(e){}
+  }else{
+    $("btnConnect").textContent = "Aucun portefeuille détecté";
+  }
+  await rafraichir();
+  setInterval(() => { if(document.visibilityState === "visible") rafraichir(); }, 30000);
+})();
+</script>
+</body>
+</html>

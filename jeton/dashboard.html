@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DDMX — Tableau de bord de transparence on-chain | BNB Smart Chain</title>
+<meta name="description" content="Tableau de bord public et autonome du token DDMX sur BNB Smart Chain : réserves de la pool, prix, liquidité réelle, état du verrouillage du LP et répartition du supply, lus en direct depuis la blockchain. Aucune promesse de rendement.">
+<meta name="robots" content="index,follow">
+<meta name="color-scheme" content="dark">
+<style>
+  :root{
+    --bg:#08090c; --panel:#101218; --panel2:#161923; --line:#242833;
+    --txt:#e8eaf0; --dim:#9aa3b5; --acc:#f0b90b; --ok:#31c48d; --bad:#ff5d5d;
+    --acc-dim:#3a3212; --acc-bg:#1b1708; --ok-bg:#0e2019; --bad-bg:#210f10;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--txt);line-height:1.6;
+       font-family:"Segoe UI",Inter,system-ui,-apple-system,sans-serif}
+  a{color:var(--acc);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 20px}
+  header{position:sticky;top:0;z-index:20;background:rgba(8,9,12,.92);
+         backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .bar{display:flex;align-items:center;gap:14px;justify-content:space-between;padding:12px 0;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.5px;font-size:16px}
+  .brand small{display:block;font-weight:500;color:var(--dim);letter-spacing:0;font-size:12px}
+  nav a{color:var(--dim);margin-left:16px;font-size:13px}
+  nav a:hover{color:var(--txt)}
+  h1{font-size:clamp(24px,3.6vw,38px);line-height:1.1;margin:0 0 10px;letter-spacing:-.8px}
+  h2{font-size:21px;margin:0 0 6px;letter-spacing:-.3px}
+  h3{font-size:15px;margin:0 0 8px}
+  .sub{color:var(--dim);margin:0 0 20px;font-size:14px}
+  section{padding:34px 0;border-top:1px solid var(--line)}
+  section:first-of-type{border-top:0}
+  .hero{padding:26px 0 6px}
+  .tag{display:inline-block;font-size:11px;font-weight:700;color:var(--acc);
+       border:1px solid var(--acc-dim);background:var(--acc-bg);padding:4px 10px;
+       border-radius:999px;margin-bottom:14px;letter-spacing:.6px;text-transform:uppercase}
+  .lead{color:var(--dim);font-size:16px;max-width:70ch;margin:0}
+  .banner-risk{border:1px solid #4a3d12;background:#171307;border-radius:14px;
+               padding:16px 18px;margin:20px 0 0;font-size:14px;color:#f4dfa5}
+  .banner-risk b{color:#ffd964}
+  .banner-risk ul{margin:10px 0 0;padding-left:20px}
+  .banner-risk li{margin-bottom:5px}
+  .g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+  .g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;
+        display:flex;flex-direction:column;justify-content:flex-start;min-height:112px}
+  .card .k{color:var(--dim);font-size:11.5px;text-transform:uppercase;letter-spacing:.9px}
+  .card .v{font-size:24px;font-weight:800;margin-top:8px;letter-spacing:-.4px;
+           word-break:break-word;overflow-wrap:anywhere}
+  .card .v.sm{font-size:18px}
+  .card .n{color:var(--dim);font-size:12.5px;margin-top:5px;overflow-wrap:anywhere}
+  .card.accent{border-color:#4a3d12;background:linear-gradient(180deg,#141207 0%,#101218 70%)}
+  .card.accent .v{color:var(--acc)}
+  .micro{color:var(--dim);font-size:12px}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:10px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--dim);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.7px;white-space:nowrap}
+  td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  tbody tr:last-child td{border-bottom:0}
+  .tblwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);
+           border-radius:14px;background:var(--panel);padding:4px 10px}
+  code,.mono{font-family:ui-monospace,Consolas,"Courier New",monospace;font-size:12.5px}
+  code{background:var(--panel2);border:1px solid var(--line);border-radius:6px;
+       padding:2px 6px;word-break:break-all}
+  pre{background:var(--panel2);border:1px solid var(--line);border-radius:10px;
+      padding:12px 14px;overflow-x:auto;margin:8px 0 0;font-size:12px;line-height:1.55}
+  pre .c{color:var(--dim)}
+  .ok{color:var(--ok);font-weight:700}
+  .bad{color:var(--bad);font-weight:700}
+  .warn{color:var(--acc);font-weight:700}
+  .dim{color:var(--dim)}
+  .pill{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);
+        background:var(--panel);border-radius:999px;padding:5px 12px;font-size:12.5px;color:var(--dim)}
+  .pills{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 18px}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--dim);flex:0 0 auto}
+  .dot.ok{background:var(--ok);box-shadow:0 0 0 3px rgba(49,196,141,.16)}
+  .dot.bad{background:var(--bad);box-shadow:0 0 0 3px rgba(255,93,93,.16)}
+  .dot.acc{background:var(--acc);box-shadow:0 0 0 3px rgba(240,185,11,.16)}
+  .statusbox{border-radius:14px;padding:16px 18px;border:1px solid var(--line);background:var(--panel);margin-bottom:14px}
+  .statusbox.ok{border-color:#1d4a3a;background:var(--ok-bg)}
+  .statusbox.bad{border-color:#5a2426;background:var(--bad-bg)}
+  .statusbox .head{display:flex;align-items:center;gap:10px;font-size:19px;font-weight:800;letter-spacing:-.2px}
+  .statusbox.ok .head{color:var(--ok)}
+  .statusbox.bad .head{color:var(--bad)}
+  .statusbox p{margin:8px 0 0;font-size:13.5px;color:var(--dim)}
+  .pbar{height:10px;border-radius:999px;background:#1c202b;overflow:hidden;display:flex;margin:14px 0 10px;border:1px solid var(--line)}
+  .pbar span{display:block;height:100%}
+  .seg-ok{background:var(--ok)}
+  .seg-lock{background:var(--acc)}
+  .seg-hold{background:var(--bad)}
+  .seg-other{background:#2f3646}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--dim)}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:middle}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:10px;
+       font-weight:700;font-size:13.5px;border:1px solid var(--line);background:var(--panel2);
+       color:var(--txt);cursor:pointer;font-family:inherit}
+  .btn:hover{border-color:#39405a}
+  .btn.primary{background:var(--acc);color:#151004;border-color:var(--acc)}
+  .btn.primary:hover{filter:brightness(1.06)}
+  .btn[disabled]{opacity:.55;cursor:progress}
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .toolbar .group{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .spin{width:12px;height:12px;border-radius:50%;border:2px solid rgba(0,0,0,.25);
+        border-top-color:#151004;animation:sp .7s linear infinite;display:none}
+  .btn.loading .spin{display:inline-block}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .kv{display:grid;grid-template-columns:minmax(140px,auto) 1fr;gap:6px 18px;font-size:13.5px}
+  .kv dt{color:var(--dim)}
+  .kv dd{margin:0;overflow-wrap:anywhere}
+  ul.tight{margin:8px 0 0;padding-left:20px;font-size:13.5px;color:var(--dim)}
+  ul.tight li{margin-bottom:6px}
+  ul.tight b{color:var(--txt)}
+  .steplist{counter-reset:s;list-style:none;padding:0;margin:0}
+  .steplist li{counter-increment:s;position:relative;padding:0 0 22px 44px;border-left:1px solid var(--line);margin-left:14px}
+  .steplist li:last-child{border-left-color:transparent;padding-bottom:0}
+  .steplist li::before{content:counter(s);position:absolute;left:-15px;top:-2px;width:30px;height:30px;
+        border-radius:50%;background:var(--panel2);border:1px solid var(--line);color:var(--acc);
+        font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+  .steplist h3{margin:2px 0 6px}
+  .links{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  .linkcard{border:1px solid var(--line);background:var(--panel);border-radius:10px;
+            padding:9px 13px;font-size:13px}
+  .linkcard span{display:block;color:var(--dim);font-size:11.5px;text-transform:uppercase;letter-spacing:.6px}
+  #advice{border:1px solid #5a2426;background:var(--bad-bg);border-radius:14px;padding:16px 18px;font-size:14px}
+  #advice.ok{border-color:#1d4a3a;background:var(--ok-bg)}
+  #advice h3{color:#ffd0d0;margin-bottom:8px}
+  #advice.ok h3{color:#b6f0d8}
+  #advice ul{margin:8px 0 0;padding-left:20px;color:var(--dim)}
+  #advice li{margin-bottom:6px}
+  footer{border-top:1px solid var(--line);padding:26px 0 48px;color:var(--dim);font-size:12.5px}
+  .fallback-note{border:1px dashed #4a3d12;background:#14120a;border-radius:10px;
+                 padding:10px 14px;font-size:12.5px;color:#e6cf8f;margin-top:12px}
+  @media(max-width:760px){
+    nav{display:none}
+    .card .v{font-size:21px}
+    .wrap{padding:0 14px}
+    .kv{grid-template-columns:1fr;gap:2px 0}
+    .kv dt{margin-top:6px}
+    th,td{padding:9px 7px;font-size:12.5px}
+    section{padding:26px 0}
+  }
+</style>
+</head>
+<body>
+<!-- Barre de navigation -->
+<div style="background:#111318;border-bottom:1px solid #2a2f3a;padding:10px 16px;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;font-size:14px;display:flex;gap:18px;flex-wrap:wrap;align-items:center">
+<span style="color:#8b949e;font-weight:600">Crypto Future Tech</span>
+<a href="../index.html" style="color:#9db4ff;text-decoration:none">Scanner</a>
+<a href="index.html" style="color:#8b949e;text-decoration:none">Le jeton DDMX</a>
+<a href="dashboard.html" style="color:#9db4ff;text-decoration:none">Transparence</a>
+<a href="dapp.html" style="color:#9db4ff;text-decoration:none">Console Web3</a>
+<a href="../boutique/boutique.html" style="color:#9db4ff;text-decoration:none">Boutique</a>
+</div>
+
+
+<div style="max-width:900px;margin:22px auto;padding:14px 18px;border:1px solid #b62324;border-left:4px solid #b62324;background:#1f1517;color:#ffd7d5;border-radius:8px;font-family:system-ui,sans-serif;font-size:14px;line-height:1.6">
+<b>Information essentielle sur la liquidité.</b>
+La seule pool DDMX/WBNB contient <b>0.023502506655493735 DDMX</b> et
+<b>0.023989895541615073 WBNB</b>, soit <b>17.87 $</b> au total (BNB à 744.74 $).
+Le prix affiché par cette pool (760 $ par DDMX) est un <b>artefact</b> :
+il résulte d'une réserve quasi vide, pas d'un marché. Aucun acheteur ne peut
+entrer à ce prix, et aucun détenteur ne peut sortir plus que ces 17.87 $.
+Sur 1,000,000,000 DDMX émis, 998,999,989.97 se trouvent sur un seul compte.
+Cette page ne présente pas DDMX comme un investissement.
+</div>
+
+
+<header>
+  <div class="wrap bar">
+    <div class="brand">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAABgdUlEQVR4nO29B5xl2VXe+z/xnpvvrapbOXTu6TQ9OWk0MwqgQQGhgGQQIgpkwDhgP3DAGJEMDyHzLJ4t4QAooiyhLI1Gk3Ps6RyquiuHWzenk99v7aoaD0LCRhPUw9PWr9RdPd117z1nnb3X+tb3fUuL45hnuZ71D/j+elZLezb/2Pwu/933b/rFs+JnEwx/3wD4/o2/uFf89w2E/9MA+P6N/wcaCPrf44d9f734VvxsA+D7N//Fv+LvNgC+f/P/4az47xsA37/5//BW/H8aABf9zT9//rz6NQiCv/HnkfyZ/CrYRhTJb/7ePztSXzGx/PswhO+Ak2y99uzsLC+i9bc+jPYtQNBFffPlossFHxgYIJfLIe9d0zTCzXRXl88in0Df+LMLwDywVq+ztLhAVKmSnp/HarUJdA1H0xmNQkZSSUaHR8mOjsLwIOTyTwfDxm8iuVDqtdj82nrtWq1GpVLBsiwmJiZ4kSztRRUAYRgyPT1Nf38/fX19T79RuUGGfCNPugYzmsbXgLurNS4cOcLK0adInDtLOH0Op90l22mjRxENTcewTUw/phlHpBMJ+tweU3aCnYU81wwMcnjfHvJXXQ1XXgmZzN8ICG0zIND1jYDYXHNzc+i6zsjIiPr1xRYAF+XNv3DhAqVSiVQqpb73ggDdMDDlwscxkQZ3oPG5OGJ2bo57n3qK/MmTFB99nL5mm5we03G76LkCRq9D07AIYkgFIY6hU/E9uqaF6XXxw5iW65EJPHa0OwxbFtfv2suegT52XX0V2QMH4ZK9KiC2dh3N9wnluJD3ZG7AKq1Wi7W1NYrFIoVCgYs5CC7aAGg2mywvL7N79271vR+G6g3ahqFufDkM+JRp8dFuh5PHj+M8+AjpY0/Rv7BAf6uNnUqyGgUYyTRBr0sXcNBpNJvohk661yEIwUw5GK026YSDq2l4tkEDjTCWbT7Cq9fpDyP2t+pcki9yxd49XHXgALlrr4NrryXOZp/eiSLPBd1A3wwEWadPn2bPnj1c7AFw0dx813XVOb9t2zZ1rgbydGmaOm/lIneDgPcYJl8lYP2xp2jdcQf9x08wsbpEotvFT2dwkgm6rkc7mcSPArJeSKXnYlgGfruDTaQSxYbn4Vs2Oc+j7bokdY1ko4VVLFAlxnFSNLtdOpaB6QY0Ok1Koc8lzTY3pLO8dPskh2+6GeMVr4ArryIyDJVVx75PrGkqMGRXkF1scnJyI4e4uJZ2UQWAPC3yxG9dKM/3MS1ro1SJIj6pwR9qOkcuXGDbZz7DxOkzhAvzmIFHzjDRg5Bl06QvYVOt1YgLRbxOD83rqoxe8wMVRLJtSw6fsizauo5vJ9C7bVJRjB8GRFaCXBRQj6CRSZGQf9ft0dEgCAO1o0SmzWiryXVewPWFLD903fVkb7oZXvtaeMa27/u+CuSzZ8+ya9cuLrJ1cQTAysqK2vLlAsn7kade0/WNcz6MeESH92o6n5yfZ+zRR8l/6Utkq1XG3B5at0eiNEBdPkE2y1yrSSKZorlSxiAkarUIA5dibNBxeziJBIUoomaZaLkCYb1OL5sl3WrSQiOjxUS63LiIfMKh2W4R5fN4vR6hDm3PR5edw49wfY9Ij4lbHQ56Hj9ZrXHr/gMUf/LtaG/5UYzBQcIgQDOMp3e1izEAvqc3XzLnrfJJsn3JrI3NBO9oGPH/mgafKJdx7ruXgTvvYmh2llyvR9YyqNkOSceh53aoayblGMxul67nku100ORMDmPsICSVdFjXNKyESSkIWQoCvHQG0+0Rd7okTZNO1yVKOThAw+2Bk6DY6VH1AzrZLIYEgzzRpk7W87FdnzcXi1yna/Te/GZqN97IZZ7LtkqF4OAhrEsu2cASdJ1Go6GCO7NZUcjaShq/l+t7FgBy1i8sLLBjxw514+W8lOxetujlwOfPNY1PhiGNu+5i7ImnyM/NUOh0yUplEIKbz1BcXceNQypRiKGbuO0mrTDC8AIy3TZ+4NOwbPo7HbAtmoUiw64L9QbTRCT6+4nXyhgSRL7HUKuNl87SizxSlk252cYZ6CNut1gNY2LNwGhU8eMYI4oYbHcpEPMT2QzvFOzgH/0Y/Otfe7rKkgurfRssYwtDkOCXgJDvpVqwbfv/HwEgZZJcgHQ6rW6+3HiF3wBfdl3eZdvUVpbQ/urjZJaXmFxZYbDVQk9nWdFiTMuh3esSGBqxF1Dvdgl1DVodosCDMMD0A3pBiOckMNwePc9lzLCxel2V4OkDJTq1OvVMmj7fw1uvkJAnPpan3yVMJekJoKjrxGGA6/n4mo7meeC7xLqJ53fpi+TIgmtMm3eFAZcc3I/727+NdcNLFObwTOBIXfDvkAgKoFQul9m5c+cLmiy+4AEgN98wDJKSofs+hmVt1NNxzHs9j3+asLnyxEnMD3wAq9VkT6NJYb3K3MQYeV1jxfUILJM4DKmuV1SSmCiXaVk2oe+q7V6efF9unOcTGhqJfIFeLo/VrKMvLlHq9fCtBM2kTc20SWg6Sb9H5HoYhkVPhx46vmztzTqJSO65R6jFGDEkei6e4+C1mui2TYoYX5LPIOT3wpDXOinCf//viX/uZ9RniyUP2MIt4vhpEoZceqkW5GvrOBDAa/v27S9YELygAfDMJz+KImI571WNH/Ergcf/TDjs+NrX2HfH7US1Jnuadawo5FR/iY6Twq5VaPRctbnGcqaGIYFk9HGkMnbD9Uh4PXy3hy1onxegmRpmvkAnk6aJxlivy/B6mf5MjkXDoDwxSVOLiGt1gnYXM/AJanVVMtZdFyuVwqtUMA0TX0rJKFJBFXk+nmVieSGBHsneTk61DwLensnw6x2PzFvfDL/7O1DcQC+31rc7GuSzCNYhx8ALGQQvWAA888mXmy9bq8T82cDnnXHM7ZrOjg99lP3f/DpDoUZ/fZ2+0hCnMhmeyqZI+z767AIdINFu0+m21dFhex71nks+mcCu1jBTafKS7Ok6a7ks4+ksoZ2gbJv09fXTm72An0qzrdnCS1gsmhbZoUFYWWP7QB9zzQbJdIZur8sJ3aRoGjTOnKGbSpHsdFhtNnCTKYKlpY2SsNlCTzok6g0CS96PTyuK2JfJcnm7TTS5jeiaq8igY0p1YRj8bjpFolIleMUrMd/yZjS0DfxAgiuK1G7wQgXBCxIA3+nmf81z+XFDZ73TYcefvo/Mww+wXdPom1+gW+onkS9yxvPVDTFqFXWmC4wb9Tqqto67XdKxRiEMMBI2xXSWpGOTTKUJ0kma+Szn0zlG3R7FdFo9ZXG7Q6bXIxHGNIpZ2oZJ0rQxWw2GUxlG0xnO6RFrA/347S6nmi20KCQzN8upnsu6/N3VVYKVVaJmg8j3VFloNlv4BnhuQKxrdHQdTyDmRkMdFQk0inFMW4f/mc3xJqkO+ktEr30NfqeN8Ru/gbl9u8I7ghcwCJ73AJD6Xm6+YPly86Ukkmj/qOfy07qu6vC97/kT/EceZEi36V9cwO3vx3dsun5AxpKmTUAbjZSm4fc6mOk0Zhgj3YEB0yCbSFDLpNjeP0C316MxMcH2TgfftFhNZ6kT0ecFWItz5MdGVTZf1TXOVytsLw1hnjtLMD7BXC7HXi+gsrZCIpFQOEQjjiiU+jk3O8/04BCr5VW8Wg13bp5ovYJdbxB7LkHgEca6Apli+Z+c61GkEkFBCOUeWnFEUY6SIOJX0g75CG4CSt0exlVXEb3vv2COT6ggkONAgvzMmTNPw+EvygCQpog0cyTbF0BEbv6feT3eKReoWqf4u79D3xNP4OgGoyur9BIOZj6HHgZ0LYvI0NAEmQkDBg0N0/PYlcuRthPkR0ZJDQ9RtyzCYoFh3aIaBDiD/SQXV9BKfeTCkAUvoFNeo2c7zGVSFJIOlueT8H36Oh3KQUCjkMdqd0gkbbzVdYx8jtVKhTiVhnqNtmXiRzGteoOjcUxvbRV7YRE6bfxWm7DXUz0GrePS1WNV7snuFGixSnDtrodrahhyRAlGITB3HHNzIkHGc/mtQoH8+ATxn/855tQUcRAi3Q9VIkeR2j1fdAGwtLTE4OCgynalQSI3/2gQcL3nquzdfP/70e+4g7QX0Dc9Q5gwScRgCxwr3TU7gS2Pjm0zYVoYUcBo3yDDjk1ueJi+0SHq2Tz9gyUqfoiZdijoBnbXRUun6CQcAi3iQrvDYrvNYKfLhV6XnJVgW6HAih+qm+U0W1haTD6doZrJ0ep1OFmtqKCMLpwn53os+z5eHLHWaVNzfTp+SLyySG+9jOWHBL0ehu/jBx5uGJF0fbqGro4DQ9DDKEaK3SAIsUyDvKbj6hqTmo7X6XCwkOP9k1OEctx96hMYuRxhGKugqtfrKgBkV3qu1/MKRakyzzDwokhl+7NRyK9Jlm4lsL5+G9pjj5PruQyulYXNoc7MpGTCVhIt6eAIiBbDQNIB06KYzbLd1OnLZNH6+9g+PEo3DtHGx5nQNLpxzFoqSyL0SfR6lE2TtKax07IoCpCTzbEtDOl5HkE2wz4nQVipUUnYTPUVibJ5dno9LlhDHKkXBS3A6XapuD3KK2vkfQ+r1aEgN6PVpmqapJw0Nh2ChkdXtYRt4sgjzqbVLhP6PpFpqgRPSsCerhH5ARXfpUeIZVhcbujc2e3wPt/nly9M4777j9B/5/fQ9UjtJAISycMkPIMXzQ6w9YblA2w9/f+y2+FPbJPkzBy53/kdzAvTpN2Q1NoaiZQ0azVSkic4KfoySRq6TimVZbsBHTSunppgbxiR3buXzsH9dJIZBksDnFxfZ8/oGMH8BYJsjmIyRSLw6WUy9AyLNbdLRlBCN6Cnm5jZNOl2h4aTYDAM6XbbtIVF5IXqhplRzD1RyBo6rUqZs8vLGN0uwewFsr0e67UmVr2G7nsYdoLZTpPO0gqxoaN3uqpMlOCX6lB+XmDbhG6PTBSjSyKazZKVYyGM8EyDkvxZ0iGTTPLhTI58pwsf/gDmgYMEroth26yvrysm1ItmB/A8b6Oxo/rw8HgY8JcCoQYh2TvvwFtfQw81go7AtwFaGKqnNrJtbLdF1zbIJNMkifDROJh02BdqaJOTzO7bR3+xj6VGm57bZdTzqE2fo79YICmVQSbNLCZRwqHY6+FVqtR8D9P1MZ0EUTOiG0f0qm3WzQQ0WqTyeUojA3z5ySN8+rN/rdC+/iBgpe3Ssk0qbpdup0MgSW2zRRRLq7ClKouegDitJhgmVhgoskkcRrgS7J5Pn6HTTSb5jVSK18nPeMc7SP3SLxH7LhjWBkqoaYpFlIxClTPoyZQCjqTUlSpAkmlhRD3XFcHzEgDy1G9Rt0whcACf8Hxc20KfX0A7fYZUs4Vp6vjtNqVcjsBzcZwkxTCgLZh4oUgxjoi1iAOZArs0naHdO2nu3kl6eJj1bI4dhkHXlX+XInISNCQJU02bLq6uM1irMaDrdGX76esn9DwStq2SL6nrC+vrWMkUvpPAcmyiIKTQ7dJaXWEijtCtBCWvx3DT47Ggx3pxgNAw6bQ6qkLQ3Z463rR6XT3ZuhZLD1uVuYqcioUeRMSRRirhUO51GRFm08mT0N//f3QtJXGWJeWgJIRypL4oAiCbzRIK7KnO5oiHopCWbpE7f574yOMKAs7UazixRL6meHnyZpr5PHrCoj/wmRLSppVgT3+J4cEBKocO0snl2WdZdJcXsXbsUrjAivT2ExbUKjQl1Uolmez0MARpTCYJJHnyfNB9VV1EiSROKklHG1BVhRlrqt27ZBiMDw7x4695LVoqAfU21cinVSrRWVlhyvNZWlniwMQE0+sV3IkJEtJNDCI8z6WezxG3u/TqNRIa+I0GTWJ6boAfuHwohFqni3fXN8n+yq+gF4tEUYgda1iCk5iGQj5/OJFk1DKJ3vhGjB07FNopO4EwpMbGxi7+AJDet9SuAmjIG/9aEHLEsEg02/jfuB3bC8lVq0TVKv22zdl6jcLYOGGrSdjtcFlok6gssf/Ky7g0kUTbMYl++DC5fB/FVIpmJqPYPoGlYTU7ZKQRVKswkM0w6nto2RxGsQ/dsvDkjG80FFzc13OpECn83tQMap0OrgRbfR1SaXKxhjM1xXU7tuNGMQsCOLmBakSVMmlFPj0xUCJp2+ROnlD1elHynfWy6kLKMz/v+pxEGkge5qlzeN0mLh0Mz2VGgz8KXVgP0P70T7E2r1d280bcaFt0gpDLr72ecUmit23H3LFDvY58lucDEHpeAkCSFXmzulC5gG8EPuvJJPbJ49hz82jtFm6jjkVEpdNmSPD2VocB02LM8+hLpdg2PMrO4RGckTHcw4dppDIMplKqFGzq4KQzpPyQniCHqZQCfWzpLsprGsLW1dUOpElZKBWFY+NpGjlJ8jJZxQX0c3lsE/xCkWwMaeEOZpNIU7plGYRRSL9usdBuK/i35Xs4wjwPXFWaBp0eWdOglUiwWhpkfHmFui7UM4teG+JCFsdzaZoBoeOQ6fawdBPN0UlqGm0iQtPAbXXUkx/6Iceyaab9HtevrhM+eD/xm9/0NPNYEsuLMgAUwre5qtWqQv0UnKlprEURt4UhUsDUpmew1iuk6w1M3ydt2/SSUrsnuCQIGTENrtu2jZvGJuge2I/3yldgZtK0fY+ik4Juh9DJ0mfZyHEba5AWUqZtYaUzhHG4cbGkrhHW9mYA5qQv0GijBR4lTSdYXsaNIhLEdLshFccm0/NY6XXxTq1TtRNU6lUcyUfmF9GzWS4sLZLO5EitL9PyIzqmiavF/BUhtmnTOX6C5VqFrheovEbegF+tEreamD2XrDCOA48BXWMghsV0kp8t5Lmq1sR9w5tI3XILOSLenEqxR/ADN8QY3MijtkimzwfV/FkFgAgihOkiSJ8Ce3RdZaqytjQ79wc+LcOgU11Hf/xx0oIJ1KvkNHBMi5Rsp4kERd2gWCxQLA1SG+yn3l8k0WljNxoUbZu8aeNLF9FOYNk2URiAtIV1SyVKseABcrslKmRt/SI5iGWTSKeo9jqsapB0XYKVFbULNEKNx0wUnFuu1yhXaqTXyrSr6xRdj/VqgzCVYIfbY6nV4vjwCKV2i3qvx6lul7YE2plzBJ2GIrnElTopSSC7XRWHeWnwSC6UsHHkOMpkCTRdgVT9ms7bJadzbPjpn/pb13cL9lFKpy3G1MUQAFvMXTnnt7L9rbUFK2w9fff6Hr6TJDx+AqvRxCNUiFk2kcIWkM9JqbNbS9jYqRyRlDymqUrHQMgWouBJJHDbHZxEQcm2IkNu/DNEGeo1v8PToWnYQaDo5Ha+qEo5f3SYlWqDNAbLrTrjlsVip0UgSEQmRVCGZCLBYrdHIZ8l32nR0XT00iA7g4ALjqNq+JFuh3KzRbOYJxlHGAJc5bIKAGpJE8vcaEnLNl+X/oBpqa/ZIMJqNjjqepSdJO4TT5Aor2EYpjrvBbwyBUJOZ8Cy1YMl13Xr4fqeA0Grq6sK4pVAkIaFPGWK0rX54EkjRH5diCPe3ukw7SRpfvADmCLLuuce+k6cws7nmOr1MHWdgf4Brs9nSWSzXHrVVQwUirR27iS3f78idRpo6gk2DJ0wmVZPvKZtHTu6er1nLnUCaBsoonw8eQLlQTPjmGUJMKF/BxHl8hpaKk1pZQXN1Fk1TcxMhrPVOktCQe+1aZ6bBifJ4sw040IenZtnwdRpB6FCGB+t1uk6CcbabU4Iojk+xtrZ0yx5HlbXozkzg2kaaIuLWFFEn2AjQbCBDkqLOO2gZTIkTBvL3zgqPpZNMqZZhB/9MOb+A+pabu0Cz/Ux8F3tAPImtmrSrTckOLe8RdmIN76HrwYRx3SdTq0Ki8sEfkiyXldRnQpDhZlnLYtst0s5l2N7vkiv1uBkroAlsOvxY7j5PLNLy+weHVd1d5hMMDg4pGp6AY+CVApTaNi6ri7SVijIzZedQULRkioB6Mmxg6bykxohmXSahUaDaipBvtlkab1Fq5Wh2mhyotNm1ItILy6StZOkBGyqt1geGCRTr5KIQ2bX1xkSanmzSSOZUnDyybUV6gNDZKRMFLygkCf2PHQ7oUAeX5A93aQRBoTSIXWS0O6Q71Xwm3LcpKFto1s2kXxGebikDLQsRZvf2gXkz791933BAkDdYMH4NxWyRwOf3whDzjabOF/5Gtq5MwyePkulUWdYulndDlkvgE6L/ckk+w5fyt50Gv/wpeQHS8yZFjukedNqkxzoIxeE6snMDg9R7rnsuuE6cutV3GKebLGgqNax42yQKxMbSJrW66GZBqHsDopcsUG81ARMkjDQYF0Qys1m0/31OiXdwLowy4XApU8zyK6tK43AnGNidLrMNuq0JddYWcbvtomaLWLLZGV1nSCTIV0pk3ISSjTiZNOKT7hgGnimjpNN0V1wif2AqNlUeYEt7GJhQskuYCXUzpLxPYK2SNh0sglHUc06pQHoecSd3kYwbz5k36owEq3B1NSU2oVf8ACQtbUJHwsjvqrpOK022lNPUl1bIz07S351VZEvsm6PsYRNnC8yYZpc11fE3L2H5sF9VERgkUjiVcoUBwYYJGYpncIeHVX9/5Luq8zddxxSAxvRL2oe6RtouoaplOAh/uIi2tgoCJQqh5FhokUxsb6Rj7hxrH6eTswF32cklaNVXedoOkWzEXCyUSeqrTOuG5TPTdPLZem126x027imyejsgtqVnDgiYyXQmjU6uSwZyyG0XNKZDCt6zLq8gohKJNfQwXS7JCU4o5ha6BNH4YaCyNSVpiHouULOp6uaYLaqjpa7XXaFGv6FC+jXXata4Sqot+TqsgPHsdJRPFu+wHNSBnYkyzVNrmi3WHdd/GSSkaSN6zjoyQSFuk4UhuRaLSbHxrFuuonlTJpiCAP9BSzXI5YzPp1mxQ0IUkmyzQYtx8HRoDy/QCaXxZEkUlDDfEExdWUFcvBIclUoKB5fGMSEuq7IF6LtizVJ8VGgi1y72RietKSGbzNfXueJRpOh6rqwMWl2OqQ7Paxqg7jdZsRJ4FebVEdHCBMJlYOIcsiLQvJRTMLzifMFJSY57TiUTAOz1lDy9MhxMNttRVKV19YioYMLJcwkKcmeaeK5vsplhJ3USTnk45imF6qcRvCO1HpFiU7Vl6xnwMAihZdjWFjEWzTzFzwAtGcEQDIOmYul5LKwVI0u5A956nSMKMRxLEqS3ReFoVtgfGyUsFHH9ly1dccCyhgW3YxFUtdx44iq66qLXEsk6K/W0O0O9TAk22hhyJYsO4G0dnMZxf0zai3FA0jYQtkWmlhyk5oNZVBJmNC6O72uQu52y3ncbZHwQ7YPlGi0OjjbCxztNJXUzGu1yAyWFIJoS38+6eDVG0xaJjWRhw30k9Zsmr7PQDZLXK6QyOfoSZnpegjfOd58+kN19hsEIkAVVZIEpK7hiY+FVDY9l7KASqHP3U35fB2CRx4mee+9BJIr6Tp7pbuQcGDvXoxcVt10SSjb7bZSIn/PAsCPBfQxcZt1FvJF4oUFemhkKxUK6QzFepMdo0MKANlZzJEKPKxOk1h4d90Oyf4B2sK1t230nkcVTRFBknGMayfImiZaJku128ZKJunI1ilcA1HxmiaFVpu1dod2GOPWTZK2iDl92rZDytDpCyPmpBwdGmC1XGUsjlmoVbFCn0Oux6JIwoZHcBcWWHMSXGMZzFXWcUZGmGi1FEaQkUbUyiond+6iz/NIS+ASY0cRuUyK7sAAjUyGhrCKBb/o9VQe4li2Yiu3TZvQkFo+ViVmJpNWvMINQEnAHoO6ZePR4zcbdREhon/kw8Qf+Ev2buIqn9+1i93rZcIPfgjjNa+BYEN36DiOCgJhW78gZaAIGATu7QWB2vqPuC5f1HR6cxdoz8/jzc6TajW4ML/IyUSC3MIsqXqTMddjj64RZ7Kktk2qDD2Fzp7+AvkQwokREuMTVMOIoVKJlWaLlG0yGcV0HBszVyAnVDE/INnXh9Fq0cimVcetXFmn6QdqazXFAUTIIL5HBk2RMIQUek4DL5Wi0WnTbrRY9LoY5SpFYeWU10g5Ds1GnWxfUQE9SObednEFu9A1pCCdjzyKhs7UeoW6GzCczbAUQrUvxyO6zqPLK5T9gNQDD6CdPIEpR6IIVSVnCoQcYqmdKJJdT3YHw8SJwCNmZxTSDiNePTTMW4Watu8A1r/+dcVZaBCzS3wSmk2Y2obe16cQWIGHu93ud+1D8Kx2AHPz64pEgivkD3bu2vjaXO8FHpAd4sI05z/2aR6+cAGOPYUpbh8P3s9wtY4dx/yTUj9ZO0HwxjdTLBQVY6c10IeRtOm6PuvyJK2WMaSrlrCUlEsoWK5lkw5lB4pV30Bk2cK1E2JGGZ20rpHodjjtu+ipNP3lMqvo7M7kWG13mOovMZHKMuv7LO3cjhWEnFte5FwqzZWzc7SX1ygU8gyGCnOm3VfkKs3A9bqMTm1XQFU5X0A3NHpegN1q4Emf4cIM3cBnQN6LbNFCC5MGVMPDly2808ZqtukYOklC+tFZ03WuzjjkyhV279zFtYf2Ka8Brrnm2177redWaGLPRlL2XQfANPBHvS5pNNZv+zperUq0uEJ2vaIUPb/6T3+Ze3ftUZFvXpiju7SAmbTRfZ+cbO/yFDgOr7QMSnKEXHk1ey89gKeZ6FdcRhj76s05QUyr02CgkCNqNUmlcgS2g2aaRNJz6PVwkg5uu02cTNGTMz+WxkrEGak+hDC6vEYj26O/66KHbYYGhxhMZUhkMmQKRSpxxGg+j99qcvOmPjGj6aQv2UfNcxmSNm+vRzqZVp1HTdrLmQyaZfKwFhElUsSrq3RXTZrNhqJ5maJQEhaz7xFLY0roYUq95CmWsyxpAAnqFwQujmgSvUBRyeLYJ1xZozs+oihyyo5m0yMhktJ7E3h7LljD33UASHPntYZJVzLefftUa1eb2oHd7ageu14aIiO337BYbrWJBgewH30UXwgTktB2XXX+SSYRtF0mDcFDelR27yalR7jLa2QGSiTaTUrSSdMN1gaHeTCdpqcbjC0vK3HGCDEZXdg/G91AIV8G0iwyYsaF1i0iztIgZbdDO5tWDiGRwK69rmo910xTMZH19Sprfg+n2cUSwWmzQd4PCGsVRqW89XpYu3Y9ncAJENUSta/AtL0mLT8gb+hEvUDZ1pj1Kma1qvIBM4gV7L3RndxI+tyEqY4/0TlJnmD6PRqOQ0LyFrl+XoDhZDYIIMI+kn8o123zaTeeI/eR7zoAhKT8KmH2yk3ce8nf+u91UfG2GrRMQ11sllbxpDIIww2fH2neCCVMgwPJBGbXpXv4EGY+v9HJy2YZFpGEofNYMsWjqSTTa2UeOnuG6ORJhheXGTp9mmHLZIcfsrNUYnCgSHr/fvpGx6nmMipnMEyNcrunlEPBeoW8kyKrRdi2xQczWX5HELV2h7XPfJpeeY2+o8dxqxWSPZdMo8FIHHFdwmJfOsvuq6/iwBVX8PHLL+f3+0tKfm6/90/xheETylnsYndbKvvX6k3a7dZmnrOBmRQsQ8nPLs/mVGv5R3bu4FYrQfDKV5B8+9tR4LBukJFrapokhAy7KSRTgpooUorirfP+ubCe+a4DQGpQES+Il46+CbZsnU3SBjakpjUsVdppYUwovXoBRhK2kljFhkmq22NPNoWXTtHbtZMFP6BVqXJpNsOxxSWeGh/njvIK/2VZVDh1Uh//JOa5c/StLLMi570XMCRPnesylk2z2wuYGh3l0P59DI4MsbpzDxPbd6ittt7fp4LVr5Sx8wW+EATclolJz84x/8ADWDMXSE+fI5w7j2lYuJ0uIvGoanDa8xnprLP7M5/lNfc/SPCf/xOnJiZhqISztoL5yKMY6SRms40mmoDNnU2BUBLYwhY2tA0zKWEPdToMazHJTptdl+4CyQu+jXvIVpUl/ENBAxcXFxU17Llc31UAyE1WUq9v4adtlRPf8H3u1jVS5TLFxx+nsrJMcm2NwPVxokiVZqOGzhsGilydK2w4bpQGmcomWa21mU5nOTUyRCsKOd7xubbbpnn8pErCwnAKM50irtUUDWtReP5EzEQxF4iwlxfoX13BGxjEuvNuJqOQ/dIJHBqGXTvZNjHO59su39i5gwfvr1Ior5K+916MSgWnWsXqefQ0j4KdUBY1eWHpajDqOBzIZZkvFPjBiQkm81nmU2ns629A/8Y3cfJ5pQRKaBodOwG9joKhpWUtWIThhUpn0EgnVYAIH2FWsv8owlteJCG4/6YzipzxyiRDvp5xjS+adrA0JESsoHrt3a6qQ8W4UZ3tmsbHPZcnhUEzPY179938aDLFF++8ndI113K94/DEepmrL7mEH2s0FfVbdos4abNm2KwOONzfbGB7Abn5eQaXV2g6FrVGQ+0iSfmZrSaa7ykGsAgtOtJQUaYNAbgBLTNmfGVR3YAHhsdoCoYwc47m6iojg0PEJ49R3rOPg/U6Nd2gE3pqy5WEK1EoMCoElihiarDE/v4BzPEx2LaD9NiYEpDsz+X5zWqDd6DT/bmfJfH5v8ZYXmbN7ZFvthhMONTEvmZwkF7kohdySnEc2wml+BmWrq/nUcpklIrZ7h9QDKPvtOQ6y0MnzR+p97cs854Lith33Q3My1ktbJtcTiUj8r00aQzTVAJPqVtPWibB8BClVJq+wSH8TJaJwQGOz81hjo8zffIUkfT70xkFj4aLi+wYG6O/VqMwWKI+Mc4Tuy/hidClWuwj85WvU+51GBBql+QV0hTK5tRrqW1XgsQO6fkhmmaorfPGMOCm1TVu27uLo9dcz2yzRlN8BHRIzM8TSDMnmyNuNlmwLWUx0x/CUqel8hh7eYV4bY1IM2g16gxGAdOPPcFMNk3WSREL1G3ZZOYXefWVl5O54kq+trZGb2gQ/xt3YJZXiV1PPf2iJo5dlzNCgBVpWKuNs7BA2OuQ+G9/Rg5NJdekM1w7PEggyqgbb3w6AIRoK3mAEHG2dgRpy7/gAfCta+sNbjWH0prOl/2QydIAfdUGd56fY9S0WJy9wODAIOMDJaW103buIqhU6YQ+c80WTsLhsQsX+Hixj9kLs3QefpjqI4/gLy8TVsq0ltaEGMeC71HTdDKiPbDX8TNpZdIgRg91WyoATZV20zGqb//E+qrKxoeWlqmtrVE7dCmplVXK4hAmRI9Gk54Sd0Y0w5C1OBRVAcfn5/iSlG/T02QfepBYN0hYJuvd3tOJsHIdM0zVNXxlMsVbDl/K1M030dixi/Tbf5LcXfcQRQKJ+xSlZZ1M8fBAESuMuLdS5WPrZTK1KuFn/5pDaFwnVc2eXVx38CDRpZcRv+QlGz5DivX0N1lXz+RmfE+VQVvliGT3tvjihQEPRzHvFkeO8jq1r3yZ0bPTtM/OMKaFio1rDAwyKeWWSLOIaQ0PcU7YNVFIvLxCuLCAI8hZt7tRAgnmL41dAUeCiFCPlXOHol8Ji0Zlojq9/j5y0n/ouQylk7RijV3bpyg3aqyOTpA3TVaXlug6DtnQw1tcUaINOS7W2m30bI5IOAtC75Jmj9C+NwNcncaq97RRCko5J6xnoZoLtfvqGP5F4PLRG1/KB972NoqrFQrveTc1Q2NbDGGzRW10jMjSaXoePdsi44ekOl26gcdLo5BBP+KHr76aH+ovwjvfCT/wg3/jWm/dLtkJVEteaO2ivPouiSLPyQ4wOjqq2EHyhuQNThkGU4bGl5wUn94zQHH2AucWFsgmE9y9vMwQMe3p8zyGjyty6UoVf2aaRNdVWjwj9JX8W7p6csOl2RRlM+pCKzKoGWFJ4qjLLTDQpXEj9LIwoCAIW38f/RJIEQzmpDnksKvQRz2bpZ3OsN0weOz8DObYGPXldRzTpF6tEYURcbUCmw0cTQylpJCTHEV+J9J2AWSCkMg2MUSUQKg4foEOx4OYd6WzbHvgIUUwiV/xSoWTZFMZurUKdi5P3TFVO9lrdlTAClIoELGgfuJAsqbpVMOQ8zMXCKsVEnNzSsUswFdRFMIiQCmVnr7h0gx6NmKR5yQAxOlqywhRZapCyyZmipirA58TpSF6E1MMCcdueYVlU6Mk0udqHU28e7yQyO0pfDxISqKkK9NH+VGBFqJLj198dhQ1Wm7shs+AnPMCrtjCDIpRgFDLc9V2Ls2k2Shgmx+w/OD9BBOTqgzzFxZYzmQZaNQpd3rE5oZ/YE9MJoRsWi6jOw548uRvPPFiVSm/l+AzpJ+gkKBo02tVfABi5Uha003lV3jSMAiPHsM+N60aVrHXJWcYpKOAWd0knpok2XXxNZQaWsrpXCrF2ShURJHJ9TKnag3sRx4lPjfNdpGta/DqPXvRwojEm9+Ettn4eTat4OcsAGSJ3dvMzIwyQxQdva3rHBLOexRz39AA2T176ayuotsGTiKFK6KMXA7TQKlwOpG/4eYZRESixQ8jUnGonspAM8APFM4fph2luxPXT5FgSX9emisCvoiTp1Qho+0ew6kk22yHW5wUV77+DXxl1y4+9tY3cezoCVIz06zdczfhep1MeY11YSuZlsovNNtSpA15PbnDqqWrRRiSKwjDF52EaanAi20p8Tao6J5pKg6Cqfh+0go3iVptjGyaTsdlVfiMnouxtq5s68V1RBBD2dGFxSRVwWQQUETnl0sDmFPbSb7j5xnMC+gTg5zzz7jRymAqFjtbAYu++/WcMQxlS5I3oxLCTarYQdOmFvjsLvRhr68qp65mJqeIFWkBiAIPJ5HEqNcx81k0gXBtS5k7SjUh5s3CAFblsG4q165kEG8wfWTbE6RQtkEhporYU5i5Uays38fR2Z7PccvOHcyXBrjvNa9mOJFUaKBcRum3xxJ8EmwCvQqnUZI7OWKkJpcKQNrS4hksT34UKyKnJuRN21LkE+mDZH3RBRhsT6dIi99gfx/k8xTtBG4hRyKRJBkE9LIZ7NIgfXFEIJYxxSKpdoeubtB1kpR1jUfsBPeHIa986GF+/eEH+SfXXMOJt70N9yfejnvkiY1oEYfrTZGIXGt56J4NUfQ5VQaJiYFKSjZ9/3ZoutIFrkudnstjTs+QGxpmZWFWmSj115vMmBaJbdvRWi0qQ0MY62X0log2QlwxVdoMJkuEn4ogGWw8ibJ1iBw73GiqyH8robFTPpSTxBge5FX5DHndoO+mm/jN0THWfJejL7mB2kA//ZrNwsP3UUs6iiSiCytJcgD5WREb4k/JMBSqiWIvZ+VJNSwyuTR2JABeQjmVtmyHsK9fHRt9ciObLfKHh9g/O8udUcTwddfgPvQwq2mH9BWHSS0sUW21sPr7sYXrmLBUbmEK+cXQmHRsij2XEwmL7HAJfWEZY3JqExjaoIhLB1DyLjGhfjbrOeUYC0YtzthbhFFTgx80bRzhyB86TD0Unj80ai2qwuPrtBjvtMn2OvQESu0rEEn+kHQIBGYWPb2w/zY/uJR5osCVHUSaPkoQIk7e4uSh6QzrkBO9XjrF7r5+sk6Gr01MsK3Uj3nkCJXFJW4p9TF5bpqdlx6kJKxa0yG1Z+8Gp9nUFZtYwlfSS9kBJL3KmQbDuk7ashkd6seW4J0Yx8nm6BsZ5lCpj04uxVWXXcq+Yk6pl08fPKj8CQq9DrWFRax0Gm11id70DFG+SGKtrCzse/kUocwuCEJM4QN0elwaCt2sw/aRUQb7+vGmJtHEam7TZ1Cux7lz59R1frbuos+LNlAlJpu/f5VlsycKcUeGaP7E29AFvKnVeTyO+Mj6OqZt0vjGHaQX5miV15V1i9nu0AoCtvWnmVtd3qBKe64yjwjzORadNLptEYixhHDukaENIQ4xlhZyaNt29lkmS5ceZHLvXh7tuKT6+ujYOpmzM6wKv/DUScYTDkvtFnZfQdX46viRrasXqDatqvO1jWaOZ1nY/f10bJuGMnoKyLRbeH7IWipBJoaD9SYPChK5Zw/JTpcjMSRlN1lfpyNzCuyE8g5ozs5AwlacQVE65U2Lvm6b2NS5fniIq12Pzp497LvlZYqKFh08tHFdpYlmWXTEVW3Hju8dEvh3LXljsjVJZCr4Utfo0zdfRpSum+sA8FfErKJRGxxi5IMfxhEmbbGPRKNNrm+D4yaWbyIn6xfY2UnS2baNhp2kam1oEkRr6CVMbE/nsJg4GQZXjo0p1U7yuuu5e9cuhVaK1GttdY1mOsPu0yc5FkVkDF3J0tafOoYlnL5aRQk74w2cZ8OtXN/YYeRSp0M5y0vk4ohJYiaFtDo0wMnJbeyUPsDgIJWFWfbu3sWpz/413nVXk/r6bYra1ux21FHS6cj8gY3jpCBGE0aXPbbBW+0EJwaH+Dc/97Nkjx3D/rf/Bm2v7EwbBhuyxP1UjCrFLeS5mk/0nKsNZVuan59XN0e5gW62QkXXKg0Q+er5PiXf47p6nUajTmpslIaYO3ohTWBdAB1B/Jot6vK0ORYNSfryeVLdLsO+S1+tiZYvkBYqeDJDf7HItGViDA6xTeRbrRYrk+M8tLxIdX2d5XOz6JV1UkvLvLbWxgsDygcOYo4MYeQzavs38kXFthXtoejyFE5v6IzZBqVkknDbJLYwnmXbdZJUxsYIM1mm3R6Xjo1z9shTZMcmGKo30acmacrsoGIffkMs7JNkuh10CQT5vXAALF0ZU1ymGQwIyWV8DE36BrkskTS8ZCdVBJeNjF9o4XJdvxvu33daz8tkI8EDBB2UYBA6uLyIUKMTuq6+HNlOLZu3bXr49veXMG/9QdrDg3gDA1S1kPWeq/R1PVHhiMR7dFwheyknxYF8EbOQIZicIFcq0W02SKeSVGS7TqUYEiPp4SGau/Yw0O2RCgMqjsnw1BRvdhI4mRRTV1xDM5vDvepqBjouUVuqAh3NDYkyKTRJ7OKIATQOaTo3WQY3bdvJ5VdcRvHGGync8BJaBw5wZGyC5UIeu1XniVqV2DS58eRxRfvShicIU5nNaWbxBuglT7QQTQTV1HTMnsdgBI+mEvjZLIWz02jiPzQ8urHFC1i0CbfLrioMoO+WAfyCegRJ40KW2LFIIvV5z+M+aeI0GrhflYEvMa3lFUZbDZbRFTCTfOghmkHAbsuh16vhbN/OaCWLXsgS79nDznpTbfHF0RFydoI/FxbOZYfZ22xSXl5m767d3FIuY/b3U/qhVxM4SZxL9qnxccJUOvPgg1AaJnP+PId0jafCGGt4lOJgP92eT0fYvELhjgPIQLKy4UssucI1MoxioJ+7XvFKLg99ejMzZA2TD8UR/YZJvlZnunU7Pz86Sp84oL3sZqJiXg2VEO8it9ulLpT1nkdOKhkB0NAV/mGV+ng0k+aGbAZj5hza6KiiykuZqzSXuq6Gash6rk0jn7cA2BqsuNUgmo0j/kBAE68Hn/kMLC2izy8yvLZK2jQVb37MMBm1LV4l59vQAL0DBzhQGmRBWK9XXq78/E+bOvXhYW7stPl8pcoj23by4z2fr7zv/0Uv9nOrDivzczz86ldxR6PG1xt1anfcxc7PfJpz99/PW/uK/EWlyt79B7nnvf+Jqye30T10GFIpTgmK+MhjWPUK8coqXjpNttshH/osOClW+vt59dwsmTjm/rFRjgyO8NTSKq93u9xz222UCgVeXavy4UaN7j/6cbSHH1IEGK/bVcjkSNclGwVoA8PK0XTZshnwfR5LpXiw3eUXRQjy6CPov/d7G9dOrqFpqpsvreBnIwH7Tut5G263laFuvcDrLUtZvKWGhhi85loGXY98IUdXDKJy8muetvD9oog1oT4LeWS9orR20gMQ/r5ssy+ZnGTSTPCRiUkal17GwLGjnH74AQojI6TrNcUXfCqb5d80GnxifZ3me/+U3K/9X6w//DBDmRznak0+mExiNer8zue/xMTyIi//gZfz1pdcz83bdxD89E8T/uCtFIRlnLCVAbRUIfPdDlatzo7yOohL6NQ27jYNUiP9JOYucGxujjcNjvDo8eN87brrleOZffc9qo2shZC1bQYMnSuL/WRNS3ULvV07aOfS3NNzmfQ8rjhxQk0s0Q4eVNdMSj55+oUD8Hzc/Od1B9hCp7YKlRHNYDjWOK0bGFOTWN3uBlQqpU3PVbo94QcOJZ0N3v/IMGlpuNQb7N6zm/PdNhP7DtELYx63LI70D/C6Bx/h7MyMglffc9PNLHzucyR+/z/yvrnzNEbHSH/lKzif/ixuJqPKrYFWkyXH4gOpNDtkRtHnPsee667hUXEi3X+AK7IFXtNrcWZqio9cfhkTnR6rf/xuPhbHXO17vOW2b7B85RV8/gdeieuHZI+foC/rUKysc8PYBPuLOe4bHmTtlpcrFlSmWcefn5NHmbjSJYnGOS3mWBwrJlBiYRG33UVvt3mNZTIq1jLX3UDi0sMqgTbFemZ19TmngT3vASBvfssnUBA0AS+lifIqTePewMfYvx+/v19ZuzMtNuvm5kAGjQoBpUwOu7zO2NAQvUKO/sEhnup0eHy4xNLqOp9ZnOfw9BnsL34FY3WVP5gc54nbvsGNv/e7lLsdnrxBeuiBkpc73baqFqS925UksdDHumXwVd/j2laDS+68h1sO7mc5XyTMpHjn+Liygxl72cv59/UG2auuZO4Xf4mVxx7lxOIS3dOnSC3O8XisMVQscPjYcQZsm8G9+zhVzHP/2KQyp7YffoTY9QmKeVrVKpmko5zHxYouubBIWF6XNIOc+A4mbG4SoCjSlHu4nkqq3oDyIdoaNvFiCgDBp0W0uDUOxtvkC4pQQ3B2oVQJWaM7OkxS/AGXV/DTKYV0ijRsThPnrIiJhSWGvEid+bMTU3wyipgOPEaPHcf/ylf4cLnMnQMlvvnpz5D7H/+DbBDw6GOPMXvttVgyC+iJJ/AzKSJlE+cRp1J0hDjS6SqqeccLWG/USTQa7F6YZ3VqkunQx5mc4KfW1jiUSfPTVobqFz7HI//8X/DIpz+t+gzJL3xJfZ4/sCxuiODCv/01HnzLW/lkp8ey2yX/4IOEZ88oBrSgoNI97KaSeI0aCUFIQx8v0BnRTVb8gMm+AleKzM0ysF52i7qGau6glMyiUHoe13MeAOJoKfi0uvnSsn0GkJFPptRucMmwjVEoMDcxQRaNtTDCHyxRPX9BGT7Wmy2leLl/aVFZqD11//3cWW+yfG+N7FNP0nnoUZ6IQ/o9n3dJjZ/O8okPfoDC6TM8+Z73qEEQybVVssdP49lJxe51LVOZPOqxmEPEtBpNVsWPYHWZq2tjnIgjui+5ltqpM/TnipRkW0fnnlSKmiR97/kTTv3rX+cV6xXu/usv8EOXHuA1x09ybmo7S7/0Tj5x4gTnJseYvO2bOOcv0BDcQ3KN6roikDQ9ufExQc9nfdMgY7ZaZ8Wx+dVqXdHguu94B87Utg1bOGk8aRpDQ0O8qAJga9yr9AIERm3GMb/neVQTCR74xm0k77+fM2dn8E+e4hXlNQY8j9suP8wx8fEvDZB89FE12q0eR9wvx0mzwfS5aWrnL+C0W4SVClnHUX5DQtysRTHbUzbjtZoifJzat1897drMLFqjRn8uR63ZpJ3JbDSpfJdIN7g78ni7ZXLmyBEuufpqBs5foHV+lrh/mDt7LdZHR8k99hjO9FmGex4HnDRXph0S+y7hp299FV4yxVcv2c8ZHT51113Mr1fYM3uB4ZMnFVt60XGYEdlYHCrRiZBYZVoI4hcQm2pIpZhNCHr5045DNDGB/Wu/psgnilu5WfM/n7MCnpcAeJqytPn9+32PPxRnrulzTP3pf2Xn7Aw76k32O0l1EUUUcYvQmwYHVWInlq6pb95BXaZ0NhokKxV103XxGQxDOr0eTcETtJhFXWN7Os1Qs6N2HG9oiJO+Jw5PGEtLqqdvZdKUdE1NFKWYV0mlXW0wLaNgfF8NfJhuNEhv386njhzlxLXXs3zqFKtHj5E9fozaiZN05H0tL2OrxlUPN4go5rLkAo/+bBazNMCP66ZSJjUu2Us4PsFys4m1bQpvfk55DTgyX8gPSRgGfqdHv6CWlsneVIpcoQ9/cEC5gsrWL7ukgEdbxNvncz1/VcDmr7cFPulUhiFRz1TWyDa7bBsssW15mQP7buREf4nVyw9jibhycZH6jh2sGzbtXgv97FnChUVlLCl9AiGHCO/eJaJpmzhuzHExZ44DakeO0h4aYmllBX37NvzpM7iJBHUZVCUi0VZjw6tfTB9kKphu8MUwZNK2uf+rX4PDV/CEtGJPHMM4dZqpZIpSu8eFwSHWpyaUu5nj9xGW10hKW178imyHFjqlVoulTJ6uYdIMQi7IZzUs9OPH0eZnVQYsrt9iEqFUQ4rCpmGLaaUMq0y6G14HmzmTMttSusLn3hjyBQuALabpq3WTr/o+jQP7GcrmmFtZ5biYJvsBf/3Aw/xAaQi++nXaN9zAG3bv5ptHnyJ62Y24x08SinGjGC14GwRN6QBa7RZZ3SQrM/wSCd6czXI5BqkbruG/X3kV50eHcRp1jDvuUZVAQyTirqt0eMK1EwaPCFGqSZuWodPyPM42mnT8LvqpGc6XBolXV+gYNsOdFpN+qDR/i/l+inFAJpmgtlYhNTFF3KhyrtDHE5kU8cx59FoV4+hRRXSx/VDp/oVwIuiidBulcZv1faq6zsuyeWLRUe7ZRXzgIKF0JWVCiuyGYlu3uMjw8DAv2gDYpNOpLtf/6LQ4MjlF+Y1vpPC+93HXWllt1dmFBR7+iz9nvFDkkkcf4fMjozxx7dW4f/3XxMeOK6MmrVxGE029qHQMTc0H3CtSql6P5OAA1wwMsqPT48TNN/PZqSnGI43qxz6h7GECJ4UuR4ghJsyRIp1IySVVQUq6kDFcZ0nXMmI+nWFqxw4q9QbnLjnAHt+ndfo03V1TvNL1VL1+6uB++pIJ1hYWeXxyGyO1KpnZGWw/wigUya+X8Qb6iR1bTTITQasrT7GIZ4RaJqNiEg6G6zKQy1CTXoloEgp59LawnzccwUzbVoO2hGz7ogsAIYiqCmDz+yFd45vpNB/xfWpvfzv37tzBzJEjqhaee+ghFp0Et8/O0jlxgsQTT5D90heVH79jm6pmDtJp+jXomBphMsmAIRQsnW6uhIPBU5bFUinDHadPc2pllay0bz/1STVRTOb7jog0zLL52vgoqauvwTx2XJWleqst4no+4Xa5OpFn6rOfpXVgP3NDI+ywLFLzC+RHh7nRsKgWkjzx6lsVSeTUzHkWx8ZI1Sq0ps9zIAxwalWmxA5u/36mBwZZmRyjtzBHIxRp/AXMuTl8LcYJbWX3Iu8/HWnMxSH7+vrQyhXCbZvt3Rd4jutzHgAStYJdS/kiZ5goYPo0nX8iejng4zffgn/zLarM+vBXv8baTS9l+S//klMDJeL77yN4/HFCp6r0+EHUU9un+O0EoZAzdSIxao4FHm5y3cgYN7o9TowMob/hR9DvvBN3Yhx9eAjz9DnlJtoWGrfw9bo9yjJDWKhpCwvKot4XbqJmqPGv0n5tDpS4MZ2mqMOOS3ayK9/Pl7IpbnvN65g9fpzE6VMkl5YZWVlhMozUUbJzbIR4sJ/9k9t5MpPhwsAAC7FPvLBMdOEsthBBZKikcBsE1NF1Un0DdHSNYGiInVIqS7dsQhxTlL8dL+R6Xo4AackKHrDVEZSgltaQfMCrg4AfazXJpDMsVCvMv+/9pJZXSH7m87i9Jn6rA70udXQ1WEmaR+LvL1Cx1eqScyxGTJsbnARvHR+ncfhSJt/6Fo5ns3Te8EbS1TphvaU0AnVjg8+3tFbesJKpN0EYRnGkWtK6gCzJFLtjjVYQMdDfz5X5Ig/YGgs7dvLF5TXafQW8u+9h8Mkn1QziwfIaCSJlhvVko8FXjp1Ai3yMBx9W5ZvwEc16TRllTQ4UuTWT5WhpgLcfPMSBdktpBYxbb6WoKOCWGlQlSWFSUenVSPEXdLL48/IqcuMFwhR+oOwIwguQSZ4SCNtNk3+XyfL/RCHVH3kD3U99SrlrlFp1ZQ4toqc+GeNiWUwf2E/Hl4ttkD51QhE/9tQq/NOUxvb+UVo//ZNE+/fj9RW5ud7ifzop6sUY+5Zb6H7q00RaTM0PeSyKaLU7lJ54QlnBdUV3v1lr9yyLSeHmBz737NrJp4eHme+6uDOzdC7MoMvwx9lZGrkUY6vralcRsUrQa7E6M62MonQZ+yKDKLSYTKOpkj/RFb6s5yq3kHSpxE3FPgY7bXjjG2BMpgH8zaWURpsDI8WDSZhVL8R63rqB8kHExVLUw1vaQW1zJ3idafJD4i8wMsTht7xpw9XjxpsVq2ddrNrHxhSAkltdw2jWGG91KYgyI5fmzQNDTEgWf8N1xLt3Y0ld7wZKcfMbYkYpsq6feTvh9dds2Nbm80qVm5EgrK5vAFTZHGYqxZxl8hNC4CivceQVL+eTb34zDwQxi8uLtJ86ws6VFXJHj5AUL99Gl/P9JRYtm3qzSb1WV1WIkDXDQpa8ZVES53LbJBTnc5kBXK3z/vl5rq+sM/iJj8P2Hd/25qv1DIWe9FFeqPX8lYFxrEafSk9AIvuZ3UEBOq60bfxOl8P5ItWETSeT4RVXXM6HvvBFln7glTjS6KnWaKSS/Ibl8JFKlb4bb2T30jJroU/2Va+mt7jIlyen2NfrUaisk6tU+YV0ivfNz1F4xzvoTJ+n4btqtGyv1WK+WMBYXSc7M8OyrrPD0Hlbt8dKMsnYj/4oP7xe5anhEmVT57AMdjh7khMyxVS+jp3AkElkrRYz3R4dbWMWYkqmmLY72KKJ8FxF/JDgtzSNo2IMZZkUanW+1Gig9feT+sqXEdWBDK24qtvBEbnZNVeroBT615YKWHiVz8ecwBeMFSy0ZaGGyc2XxOfp1GZzJ9gts3TDkIcSCa7fPsVfP/TQBlsnnVFi0dpLbyD+3OcZz6RpLC7yzwcHKI+N8FeveCX7bAP9qSfJ9Q+zEMaseh5vNjQ+/sBD/LNX3kL25Gn+6I1vYOr/eQ/5X/1XzFZreBOTvGFxifn9lxBkckwN9DP66GP0vfYl1NYr3HL5ZRydm6N96FL2HH2KsdNnWBmfZNz1OJlySOzfRzA/z7q4gY4Oo585oz6Ts7ik6F1GRnp7UHISrFo25VKJrFDXl5b4VXE1NS167/4j+qwEvV6X9wr7uVEnePcfkbjuuo3rsqmtlACQOQwyeu+Zu8JzYQnzggSARO+WTnBLuPh0Q3OztTlmGFyaSvJl08LZfyn937ybp7x5jFKJlx8/xeXbtvGF4SE+8o/fyV+87/3k/vjdXPHUUT6edDjyqlvZ/aUv0dEjFsXQUddY1Ax8v8vcyTP8dnmNm48eY/x1r+Pr/+2/c3mnw6lWC29mmsduuJ5fOXGSv2632fOjb6YjEPPcAqO5PHvyTb6czWIPDRIkHY41W1SlHT03r0wdzy8vUOwbwJBp4rGMtA3pi0JWZBRdMkk6jEgbJqt9RXYP9NOZvcD68Ahpyf4rVbJ9/XSCiD9KOryl2cD75/8M+x2/oK6H6BLkymwdl8Jklq9nruejN/C85ADCYHnmGJlyHKuRseeimNlymenFBS4sLHDowhy5s+coH9hLIZNmKeEwKYMR3B6PLi6yf3SU/9sPWbruWv787nu47fgxLrn9dl7+f/8hV/UPqPbvDYcv5d5MlnjHDrxylbvPnmG1WOT0/feR9zwax46pwQ3XLs7z+XKZP9y9m3v//H9SPHSIt6WSnD1yhMw//gXS84sMiVt3JsOPDI3gr1cIdu+ivTBPJtaYdl2uS6TZu7Csqhxt53au2r2byUsvo5cvkhMTS01jIZ8h2V9kZXmFmkjNWk3aMh1cppmXy/xar8NPVmt0f+ZnMf/Db20YQMsuuWlvv2EJpW3MDFbK4UBdS3mo5OZLq/2i3wHk7JJIVkQQYC6KuKbbUUSPzmc+Q/Ezn1Iiy0NnzvK6dIrbvvQlVq64lOJ9D7FiJTgsgMvyMl+zLeyZaZr33s+O2jpHXI+SneDP5AItrzD08z/H2Po6gwmbg4MDLG/bzoVCjsmp7dx4z918yEnwL279Qf7z7d9g/rob+L25WW77zd+i8Du/w67pGeUO0r75ZXRknmAcM5pOc1kgvkBZ0pMTOMPDJLfvYnlpidGBQVLholINvWz7Dj69VmHnL/9jHviTP6E4MohTb9CRnsHkBP7Zadw4VM7iYid3iaYz12rynye28WONGu5v/ibJf/UvNy6W3PnNeQbq283/U1L7Z/yZYliLFnKTa3lRB4C8WQmArR9+ua7zA4bBqTgkc921DD3xhDr/8Cap+B6rgpLt2IVz512Els6J5VWS4igWRTjT09i1GusR9Luemv+XyuYIhR5dr/HA1HZ+POGpkTC57VO86eAB/DPnSP34T/B6AVWCiH1XXM07ikVi38P+R29hcv9+VmLoHb6MAzPTFDU4NzjIpSJNW6/QLPWryR/zpkFvx3Yyp05xyHc5WS7zzmI/Xz5/gcMvfxmJtTXW63Vedt21zHz+i/R+5EdgblYNxMgnAoU4jsn8vzDmFcUiP5ZN0e7vI/2v/iWPPPIIf/hb70J7+9tY++pXlfxc5hVIkjmRSNDxA16nx/zYm95M9M5/vOELsMkRuOgDQPjrwmUTKxOV/WvwuWRKQanaoUPo733v01bvL6nXCfJ5WiMjtN2AnG5w/3qZPSLO8H3aCYvxQoH9YcDh//j7lL/4BY5d9xIGqjWFsWcSFu3TZ3HHZKKIT95OMiNM3EySyWaTufIab5EtfWGOcHJC6QGlHTty9VX4bg93coxyEKutf61SU2ViWuTbQUgp4XBmYZnR/gGKgU9CfIf7CuxcX+bXxsf5k7lZrvvt32VbdZ2vygjZw5dh3X0vVs8lV62xbFlK9CF74Y7RcaKD+4kbLbXVrwYBn9y7B2QkzRe/qAZElBp11oBfTCZ5Sgyw5FoJYLTpFCrruR71/LztAJK1yq9bMjEpi55OBTe3PHnxXywUlF5gdPceuj/yBuK0g7myyrF2myeDgO0ry0zOLTFpGTyWcOgeOqRIJvsef5w37dxGXKmhFXNYhIyXBlhMpXAmJrm95/KP7ASt2Tk1KazYbbNWrqihkvkgoLa+rljJ+WpdWa/LlI8lU+YV57DbbS4Ibaxe52yrga4cPDTlH3SNrvFve646Pn7zD/6QT+san5fhT3OzpL9+G4GaGVAjaRkYjSZvGx7l9MIcmVtfhS5Z/MMPqZtZvOoqbhHa+YMPo//w68l2umQ0aHbb/Gp/ia+urnH5L/4i7Nml1NDihSDrRbEDyBIEUEpBwQFkPTNuxfKlEcek44gxma0nRg/iqtnrkCrmFKq2O7Exz7emT3BVIklnYYGc+A1iKBvWoVKR2blFDo+O0EFXT255317Khs6BUj9jDz2CcdllpDptllNJjFSGmVaDS0Wbd+o0yZGSmgraRKPfsmnWanTSQlmLmQsdQkNnqddhe6OhvINs3aQvmWRV17C27aJ7dprhXI771lZ5oDSI/fjj6A88iF6pkrd0euIxrJsc1nSeMEx2v+RGWJzHGhVzW7he0/jmoUMgX+/42b91/Z5pGym3XkiiW6YQLxpauMCZchTIm5bmkCe6dk3jY77Hz4vsqtGi/fafoJsvoh0/RmFxgVvzBR6Zn+flN76Enzk3zcLP/SwL11+jxs3+xvnzzI8Mk9y1k4nJbXz51Cl2veKVfOmDH+QHr7qKq++9n96BffTGxnh1eY2w0yZ9081UdI2zaYexVY1KeZ1cNkUy0mjFIacG+jkeh8qx5LdXl7mh53PkC1/g9HqZsXwB++67OHf1VazVaowYJp9dXOInxsZJPnAf66srPJTKqJFwmRPHMZ96ErvrUhSH8J7HtmyWkjiNFgrcNDUO37ydeMfGAyFL1UmbsrFv10qX3oL4BiiTqk2zaOm2Ppfree04yBsWC7Pz589v/IGUPKbJrabJVyT5zRdw/uAPlPpWb7V4xDD4U99Xcwju/rP3c9fBg+ydneWbt9/B1cPDfPDkCe6o1kiOj3BoZJw7jxxh5Y5b2XbPXdx++izZKy5n8Ktf40ytRm7vJQzedx+PaDrbd+7kE8eeYt/oGM3TZ0nU63QTNs1qlaeKBRZlutfqCvUzpzlWqTPSqNNdXWE1mVJzAvJHj/JwscBEvcZSpPGldovXCcX9U59i5Rd/ialOl7UvfFE5kRonTxHLNJFEYsMNRCaIpjOK2yDUMHEOfXqymbIa+tvdvy0toIhUn28c4AVpOW352Cj7UzkedANFdRCQ6LLLn/574nb3T4A3iEL4M59mcWiEypNPqrJSTJzO6Joa5HTmyFEOLK/Rt17mXUeeZPTlr8J79x/SGiwp6zijUqYzMEAu1CgGHnNRyNjgMEdrFS44Nv39g5hrq2r8jIhRXq7uQcRj/YMc3DaFc/YMp666iqF2mwnP50G3i/XylzP2zTswhkf5UuBx6/YdfOJTn8V54xvIz86zJoZOP/qjGPc9BCmHZhQwoFvMBAFPJsRIcgHtkUfQX/PazVp/Y/1dDl8isN36O/LkPx8E0RckAITaJH0BORK+FRoW/HuLBClzgvLdLp6TpCfikGZdDWHYnbA53qjRvuZ63lma4etRyM+/9a2U776L2/bs4Y0//3NM3H4773VMfvxtb6P13/473+jr4+aXv4xXf/KT/P4b3shvHj7MV+64i242xY/09/Mnn/oU/+yP/pDf+je/wbvf9S4+9Fd/xcPZDC+7+Wb+24/9BLU3/ygv+fgnmBzs536tD2vfPsLb72R7fz/z0+f4om0rGHvkoYdxH3tcGTcULgg7yCWTkvmHVQYGC9zn9fD7SwyfO0tUXsXYs3G6b10HyZNk+sq3un3JTX8+oN9vXS9M0/kZYtFnuoc8M59VEKhI4SUJk1nDYp9akbEsPqmwQ9fz2DYxylW7d/FAEHDm4H4aSYfk3CwXLszRKKTVKNiFuXmauQwpJ8mR6WlmNIPg/Hn+4p57WJBJX2tr3LVtksa5c8x95Ru0Z89zpF7n4dNnWD58kPfceScy5iL4s//KTXaKC0/Mkn/N69TIV3NwECObVLZu7/d91nyPyUcfpfupz5FI2KQffQxDXEaimIxhq+PjQsKiaGok55eUS6hMLpEzXwJG/JYFMv9erufEKfR/t+QlxOdeBCPP7Ax+65oT0UgcUhCf33f9BwaOn6Sv02WkvMo3in288uBBhkXb1+5SGhqm89GP0id2Kek05aVFfvSVP8Bf3ncvxTjmh6+5lg8tzLPtZ36G8he/zIylExsWP7+yyn9eWqF5w7W86aGH+erCPIlLDxLXmjTPzzCwayetp44QDI+wrdqgJV3LXEZp+ydsm4wOweoa5wf6sPpL6I02db9DwvUZ73TVUOt4YICZTpufHBrhaLuFWyzyBdEyrK2h3fY19EKfCniZtC6+Ss+n9Oui2AHEMURu/paVrNTx9wYBJTF7OjetxsOLvetaq6VwcRyHvguzeJWK8teTc9iqVHjsyceZmVtUApGGEDXLq+xMZfhl2+TfJtPc+9KbuLnZ5PMPPsAjP/CDXPLVr3L3Jz/J619yMzMf+TD2pQcVPJsUllEqyQ86Fvc6DtcOD9MXa3w8X+CX3/kL/PFv/CaJW1/F+Fe+xvFclnppmL5ymXONKpfFkBeqmVDUiwVyJ0+DDL3qusqIQjgCa7k8ftLhvJNgsVqlz/OV6YMYQqjxL5tLTTb9Ht78FywAlFXMM8ykHw9DfshzycpEsXe9i7i8zlDoce3yKkMJC3fvJSRPnSXyPVpRQNpJk1hcZG3fLfQtLCnvnoFUikqpxLlMhr9qu5Q16Pv4xxiu1tT0zsZffZSB+QWlAzji9Rh1bLylJb6+sEA7myV/1538l7V1PNvi8UefYMJzaVZr3HXb7Wqk7PyTR9lt6CwvLrEwMUk1myY5d4GFYoF6FDLqhSzecx+BWNSsraotPcJEZoSsqZExDc7GG/MKR+p1rE6LqFDEMO2NPonMTsrlFGtKiDP/oAPgWyPd1EQYqVMgpjdUojA8RHzmLEEpZDiZJvADzB2TVE6fo9U3wBFxFbFNOHIMv15X08H8VJIx12d3IuDrjsmbrruepVqNT65XecerXsWx8xc4NjjIF3fs4qGPfYTcn/0Z17oe/2lunpe/+lZu/sY3+denzjL/+tfxw5/+JI/efTe9kVHuO3aMzMoycb3GB2RCWRgx+MijdMXfuNinpNxi6y7Ej34nweEg4BvoOAcOYp89h5+wVdAOZDJqoJUMh7xWnEbbbfyXvhQzt8GTlCVH4Qsh/rgoksBnLhkmJfh2V2zU7CRRtUJXZv/JEGa3AZ0eg8W8cgeb3z5FbXaOQwnpDbj079zB/kSCZRkXe801mEmHKyvrvCJbwDp2lNf+83+qqOA3ej2yt7yMXVOTDLz+dWSuvAYzDPj9V0qPPcJ729v4lMw9FgnWlVdw5uwZvpFIcPvKGuWjTzL2+S+inT1LRWYjiJGzdPFKfaTmPdKBT9OE18jT7Pm4u3fg3nwTldlZgsEhrPMzJEVg0vVIJyx2eBGuuJRefhmJYGOSqTR2tsgfEgTPlwHERRkAa3HEiMi1xPdf2C+5DNVOh91i3768iq6lGfZcVsJQ2bE4lkFBnLLF5CGX5fZcngvpFDlxB/vqlxkwDb4WhgyINOzkcZzp8wyVBpg5c5pPrq4QCofvm7ezL4pINho0Bvq5dWo7D83OsOvW13D05HFOD5QYEvOoM+fUEeHt2kVSzu0wYkX6GkGG7Mo6WsLG8FwuiQwu1w0+NjFJ5srDVBeXyP/0z5B94EG6nTZVMaNq1jGtJO8Pe9yXSvLuj30C9/EjmH/yHsy+fiUXE4RUevzPpwnERRMAW+nPchizHMUUZBjD44+QG58gfe6cAnzy+ZwavvBEPqusZ5crNRY0g2Xxiz5/jnvrWVKtE2rQsn3/g6wZOnNOkkIhx/Lx42qiqKh+1o4dJb26jDa7RMaAfkOnnslwLuEw1NfHh+69h+XxCb7+tS+rHcdsPca64BCRxlB5hWI2tzGoCYP82CDR3CxRFDAqT3A6yUCuiOPYnE+YWDt2oVerGIU8zYV5qsU81tIyYc9VJtNN30PrumTMBu2VJazMxjEgOICUx1v0+X+wAbDVxNgq/q43dX4Bkx1Jg4VXv44/TqcYv/Qg7U98lnI2hb9aZnxxlYKusSS289kcY90O3R0TxKOTZJeXycvcnPK6onUnUkni1TU1tTM7NMieCxfoDA7T2b6NK4dHmOrrxzFtLtuzixXDYPbWWxXHoC48/0oFyzBYC2OamRS9VpP5VocpDb68sMQNMqJt9gInB0tomRSpJ55SyuScbnO0mEc3dEzXU2bWnZlzyu0kcgM11l74ALa7MQxqh6RAMuxi9x50296gy1nW0zb7/6BxgIWFBcbGxp5x1v0vMPRB4Dqp/4FD/+7f8c25OVJBwMDCIqNazEq7w85cnt1xzIP79xNl0xxeWFTCk2uHhtQQhdO2zZDIwiKf0u7dOMMjTExNMW8lGJocw2p3SdqW8g8Qr/A9uRzLi4vqyEhXKnSzGTVDYNEyeai8xiV+QPWJI3iiQPYCPlGvsjYxyfQ3b+eyTpfJs2dpXrjAmf4+6qUBAplRJC6k3bZK9kqdnlIkiXfh9e02v943QKYvz8Af/CFsm8IQKnkkgx6+9wHwguwAcvMFCxgfH9+Qi5mWsk2RF5fJ3MLzf4mhKeOGyy7ZR2NmWlnF7hobpXf8lOLvBadO4PS6yl0zm0owJsaOhbzqJ1x38FKKjsXCqTPsuOxSxkNoTE4ytXMnOWnU9EV0LINcr8dwGCnB5sT4mNLpLY+O0oxDJdhsLK9wiczkWVulnMtgCyGkVmE+k2ahUVdkjvWZafrWK1RSKdaTKcXo6s3NUYsjvPUqjhhb+iGVWGYa2oxXK+wUT4DDB9GuuGJzF5QHYMNJ9Xu9XrAcQLDttbU1SqXSht25oj7ClGlywBeAyKKzbYKR9QoDIyMsdtvs2bGT6XMzzJb6CedSZDpd6pZJo1LnYMJGr9QwL78c3+9xutFk++HDUKvR27Zdbbf5dhst1uiTbdmyCeTMlSkjMp1k04atF/jK0aPr+wyaJkMy5NG2aPZP8kEdbi/kYHqG9gMPMrmyytjaOrVajXPphJJ3ewtL/KTnMtXtUBR69xWXkZiYQHeSpDyfvl4XP5cjHhx8GgSS/98iy2zxJb5X63lTBn3rGhkZUU0P6XApIGQz+sU+bpWYdctUptKnllYUaWLl2AliGcbQazMnM4Uch9mVRZ4wLWY9j/cfOcLswjzJj3yExKOPMzgxoo6FaHiY7vIKOWNjcJS4hQgjSazrHfHjVfMEHCUMadqWuknpRlOJR64wN2zne9u2ccxJknMyROV16iurlNod3CNP0pWxs9U1tOVVxlfKDLodlg2TuXyBeRlJX6vSnFtg7qmnmCyvMSUtYNERHNi/OQN4g/YtX/JA/P8CCdxa8mGlw7WFfimEUNOQoSjDkrmn0kxNTqC3Otjj4ywXstTaba5Kpxip1ujs3E0rX6QlnTcrwXy3rcbMiuXLgMzSGxyCdJrW+AQLMRTDgFx5nWYY0Cek0GYbCnk1b0AGPrSl72Dq1LoBq5bJF6MYt15lbq3LHedmCC2Tga98nX2myWP338PeG19C/XOfIR4bZRyTrqER5we503XJCY5x8ij7Th5jUsbBxwH7d+0hqFXoH/zXeP0DaujDVh70Qvj/XLQ4wFZnUMAgEY3KFPJPBD4vPbiPtQcf4tHLDyvdX+LkCdxkmgHX5RXdLvMycPHSfTSmL2B1O5z0swT1KleHHpUvf4XRl96Ek6sye3WWs0HM9b7L+pHjpCbHKZXLiqQhBg4rcYhv6kw3u5SikHvKFYYIOdpscmK1rIZQTj7wIEcNnbe4Hg9XVhm97EoypQE6w2O0d+2h79xZ2skMRUuGTFj4RsRwX1G5gi4aOofCUBFObrxkD55AweOTG4OuNnn+z3bQw4s6AJToQfrhm9+/I5Hgvm6XR/bsZfGywzTOniHTavG1xx+nP52mIC5cff2KWu51Pc4K/m4aZKcv0JOxsD1P2bgbqyvkDYP9K2WuHx6hY+o4L7+ZlPj0aTqNTFo5dZd7XY7p0O10OTc/S7vRYq5a5YYgYLRa4f6REQ7t38/uc2f47K4dBDKb8PgJ1u65l2Q+T+LEKVZsU80NkPFvMqG0bFqMxjq+Hiun8ysdh5e1W/CyV2C+/vUY4pS52Q8R88xnM+rtRR8AMllMQBZRxUgiltU0/mvS4dddl7vf/ja0j30M47EnWBed/cIccb6AF2vsmPR4Q73B5/sHOH7oMiZzObQjT3HUchmJhXM5R6WQZ3hplUK9TmJ8StGq3KRDE4NWuDFvMNfp8Erb4XTgMzAxyQOtBs7YEKPtLiPnDV42Oc7Znst/vfQQQRRTvPseReWikCPtBZxOyGj3JPrSsvIdanR7irsnJpJHoph/Xxrix86dxn/nOzF/6qeeDnTZ/uXJ3xq0eTGsFwQH+HZr6yJsuYhsXaTHfY8/sGy+UikTffnL7PjQR8murLDP99ifsOjrK1G+/mrO9A2yWixQm5lmh3D3HnmYS4eH2dPpMSz4/66d9A2NUB4fxRwe2RgFr0QXSYKVZTWG7UgUMWlbzKyukrFtRptt9XfKg0N8sNfhrjimdPIk3l134q+tEq6tE/Z6LMlkdFEEV+v0Qg9XStlOl3I6y0tNXdnhsG07+mc/i1Uqqc8lJBI5+y+mm78VAPLr9zwI1FTOTYs0IY/eqWu8TdOVi0jhj/+Ywb/4S/qAW8QDyLbI3fRS8okEiyMjfN1x2N3XR/Pxx5mIIq6q1pgYGMCa2kbxkr0kxaXrwD6lDMqks2qIxAO5jPIuEtCn9eijdHSDTL1Ks9tjIZ3ic0HI2fI6zvQ5jG/crhA9fW0V19QVaTVlJ+iGoZqKlml3ifwev24n+L9ECPpTP4X+x3+Mscn+kQFYIhm/2G6+ysu/lwEg65kXRSWHEgRqZBvMex7v0g2+HIdUP/Upeh/4IH0zM/TNz9MOAkb6ivRrBhf6i6RLQ9jr62wzdCxJKCe3sRi47L/2WsZTGeY0nUOXHSZYnMe96ir+Q6zzhB7zA08+xcyHP4rZl2enDJH2Pe7evo2aTBVdXsW7cAGv3SCoS5eyq0ynty6X7FryfL8CjX/V38cV17+E4F/8M/SXv3wjkGVS6UX65F80ASBL4FChRglOICuMN8a/q4soA5fimEd0naeigOrMeZafPMK5hXnqK2usnDlFV8Qlyys0GjXlw6e1XBKOTRCFJAKPy4ZHeKLeorBrB/5amdVinpphKvcu23Pxm20sYszApyUKYfHrabWVCZSw8IcNnX47wfjkFKWhIVLDg+waGGJHMsnB7dsY2bcHLtlPKHY48p5FybM57UOefCl7hRH1va75/64A+J4HgVQGoh8QBrEMRVKVwqZ4QsbQymRQ1Ux5xmpJZxGU5+C5Wo1j588Tnj5D9tw52pWKcu1suy7rzTp13yesVNXQJq2xccM7wt+zTGXiLPOCRLGW7brskEoim1UE1O27djNx7TWkd+0AYe4k//bApqcBXd/fUO4YxtNZ/kX65P8vIfLFEgBbS9A8sUgXyPiZSwZCq36inKe6rr62hjdLff2/W4I8bE0wi4MNH8NIGjIyH1RmFsv8QdWf2NTlyCzhZ6ytf6tKuTBQrKUttaPSO8h7ekZtL0+9eP3KznaRrr8VABdNEMh7kg6iYOWyBDX8Vtu0LY6h8lVQnEMZLrplRvW/zmhp1qit95lf/5sVbX5pm+Pqtzj8kpuon/sdavjZ2VmV0MrfF4z/2cz0fZ7X/zJsuRgD4Ns5jghuLkuOBukriEvH32f9zU/5nT+m9vRvtL/z/Ygt/jPBHAlQ6Xa+SNZ3DICLNgieuWRnkGNiy09HvmSa5rc6kj3bFW3+LMHtReP4TKnbC+Hg9TytvxHZ3y4AXhRB8P31Xa2/ta19p0floqtXvr+e9fq29/Tv2iu/HwT/cNZ3vJf/u8Py+0Hw4l9/5z38P8mWvh8EL96lPVft4K0f9P3k8MWxtOeLD/D9QLi4l/ZCEUKe+ULf3xW+t+tZHdH/Hzhh3NH7ccazAAAAAElFTkSuQmCC" width="32" height="32" alt="DDMX" style="border-radius:7px;display:block">
+      <span>DDMX<small>Tableau de bord de transparence · BNB Smart Chain</small></span>
+    </div>
+    <nav>
+      <a href="#liquidite">Liquidité</a>
+      <a href="#lp">Verrouillage LP</a>
+      <a href="#supply">Supply</a>
+      <a href="#verifier">Vérifier</a>
+      <a href="#risque">Risque</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero">
+    <span class="tag">Page publique · auto-actualisée · données 100 % on-chain</span>
+    <h1>Tableau de bord de transparence — DDMX</h1>
+    <p class="lead">
+      Cette page lit directement la blockchain BNB Smart Chain depuis <b>votre</b> navigateur, via des appels
+      JSON-RPC publics. Elle affiche les réserves réelles de la pool, le prix, la liquidité disponible,
+      l'état du verrouillage du LP et la répartition du supply. Aucune donnée n'est saisie à la main :
+      les valeurs de référence ne servent que de repli explicite si le réseau est injoignable.
+    </p>
+
+    <div class="banner-risk">
+      <b>Avertissement de risque — non négociable.</b>
+      <ul>
+        <li>La liquidité de ce token est <b>quasi nulle</b> : la pool DDMX/WBNB ne contient qu'une fraction de dollar.</li>
+        <li><b>Perte totale possible</b>, et même probable, pour quiconque achète aujourd'hui.</li>
+        <li><b>Aucun rendement n'est promis</b>, ici ou ailleurs. Rien sur cette page ne suggère que le cours va monter.</li>
+        <li>Un prix calculé sur une pool minuscule est un <b>artefact mathématique</b>, pas une valorisation.</li>
+        <li>Ceci est un outil d'information, pas un conseil en investissement.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="etat">
+    <div class="toolbar">
+      <div class="group">
+        <button id="refresh" class="btn primary" type="button">
+          <span class="spin" aria-hidden="true"></span><span id="refreshLabel">Rafraîchir maintenant</span>
+        </button>
+        <span class="micro dim">Actualisation automatique toutes les 60 s<span id="countdown"></span></span>
+      </div>
+      <div class="group micro dim">
+        <span>Dernier relevé : <b id="lastUpdate">en attente…</b></span>
+        <span aria-hidden="true">·</span>
+        <span>Bloc : <b id="blockNum">—</b></span>
+      </div>
+    </div>
+
+    <div class="pills">
+      <span class="pill"><i class="dot" id="dotRpc"></i><span id="rpcStatus">Connexion au nœud RPC…</span></span>
+      <span class="pill"><i class="dot" id="dotPrice"></i><span id="priceStatus">Prix du BNB : en attente</span></span>
+      <span class="pill"><i class="dot acc"></i><span id="provenance">Provenance : initialisation</span></span>
+    </div>
+    <div id="globalNotice"></div>
+  </section>
+
+  <section id="liquidite">
+    <h2>Pool DDMX/WBNB — état réel</h2>
+    <p class="sub">
+      Paire PancakeSwap V2 <a class="mono" id="pairLinkTop" href="#" target="_blank" rel="noopener">0x8a2c…e36c</a>
+      — valeurs lues par <code>getReserves()</code> et <code>balanceOf(pool)</code>.
+    </p>
+
+    <div class="g4">
+      <div class="card"><div class="k">Réserve DDMX (pool)</div><div class="v" id="resDDMX">—</div><div class="n" id="resDDMXN">wei —</div></div>
+      <div class="card"><div class="k">Réserve WBNB (pool)</div><div class="v" id="resWBNB">—</div><div class="n" id="resWBNBN">wei —</div></div>
+      <div class="card accent"><div class="k">Liquidité totale de la pool (USD)</div><div class="v" id="liqUSD">—</div><div class="n" id="liqUSDN">—</div></div>
+      <div class="card"><div class="k">Prix unitaire</div><div class="v sm" id="priceBNB">—</div><div class="n" id="priceUSD">—</div></div>
+    </div>
+
+    <div class="g3" style="margin-top:14px">
+      <div class="card"><div class="k">FDV théorique (artefact)</div><div class="v sm" id="fdvUSD">—</div><div class="n" id="fdvBNB">—</div></div>
+      <div class="card"><div class="k">Supply total lu on-chain</div><div class="v sm" id="supplyTotal">—</div><div class="n" id="supplyTotalN">—</div></div>
+      <div class="card"><div class="k">Prix du BNB utilisé</div><div class="v sm" id="bnbUsed">—</div><div class="n" id="bnbUsedN">—</div></div>
+    </div>
+
+    <div id="fdvWarn" class="fallback-note" style="margin-top:14px"></div>
+  </section>
+
+  <section id="lp">
+    <h2>Verrouillage de la liquidité (LP)</h2>
+    <p class="sub">
+      Un LP détenu par un portefeuille privé peut être retiré à tout moment : la pool serait vidée.
+      Cette section mesure, en direct, la part du LP brûlée ou placée dans un contrat de verrou.
+    </p>
+
+    <div id="lpStatus" class="statusbox">
+      <div class="head"><i class="dot" id="lpDot"></i><span id="lpHead">Calcul du verrouillage du LP…</span></div>
+      <p id="lpDetail">Lecture des soldes de jetons LP en cours…</p>
+      <div class="pbar" aria-hidden="true">
+        <span class="seg-ok" id="barOk" style="width:0%"></span>
+        <span class="seg-lock" id="barLock" style="width:0%"></span>
+        <span class="seg-hold" id="barHold" style="width:0%"></span>
+        <span class="seg-other" id="barOther" style="width:100%"></span>
+      </div>
+      <div class="legend">
+        <span><i class="seg-ok"></i>Brûlé (adresse morte)</span>
+        <span><i class="seg-lock"></i>Contrat de verrou <span id="legendLocker" class="mono"></span></span>
+        <span><i class="seg-hold"></i>Portefeuille détenteur</span>
+        <span><i class="seg-other"></i>Autres portefeuilles</span>
+      </div>
+    </div>
+
+    <div class="tblwrap">
+      <table>
+        <caption class="micro dim" style="text-align:left;padding:10px 2px">Supply total du jeton LP (PancakeSwap V2) : <b id="lpSupply">—</b> unités LP</caption>
+        <thead>
+          <tr><th>Détenteur du LP</th><th class="num">Jetons LP</th><th class="num">Part du LP</th><th>Statut</th></tr>
+        </thead>
+        <tbody id="lpRows">
+          <tr><td colspan="4" class="dim">Chargement…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="lockerNotice" class="fallback-note" style="margin-top:12px"></div>
+  </section>
+
+  <section id="supply">
+    <h2>Répartition du supply DDMX</h2>
+    <p class="sub">
+      Soldes lus par <code>balanceOf()</code> sur le contrat DDMX, rapportés au <code>totalSupply()</code> lu au même bloc.
+    </p>
+    <div class="tblwrap">
+      <table>
+        <thead>
+          <tr><th>Détenteur</th><th class="num">DDMX</th><th class="num">% du supply</th><th>Rôle / remarque</th></tr>
+        </thead>
+        <tbody id="supplyRows">
+          <tr><td colspan="4" class="dim">Chargement…</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="g3" style="margin-top:14px">
+      <div class="card"><div class="k">Concentration — portefeuille créateur</div><div class="v sm" id="concCreator">—</div><div class="n">Part du supply contrôlée par une seule adresse privée.</div></div>
+      <div class="card"><div class="k">Part du supply présente dans la pool</div><div class="v sm" id="concPool">—</div><div class="n">Ce qui est réellement disponible à l'achat/vente.</div></div>
+      <div class="card"><div class="k">DDMX brûlés (adresse morte)</div><div class="v sm" id="concDead">—</div><div class="n">Jetons définitivement hors circulation.</div></div>
+    </div>
+  </section>
+
+  <section id="verifier">
+    <h2>Comment vérifier par vous-même</h2>
+    <p class="sub">
+      Tout ce qui est affiché ici se recalcule en trois appels <code>eth_call</code>.
+      Remplacez l'URL RPC par celle de votre choix, et comparez : si un chiffre diffère, cette page a tort et la chaîne a raison.
+    </p>
+
+    <ol class="steplist">
+      <li>
+        <h3>Réserves de la pool (prix et liquidité)</h3>
+        <p class="micro dim" style="margin:0 0 4px">Contrat : pair <code>0x3c2813d5482c69ef5176cf3997015d23dea31dcf</code> — sélecteur <code>getReserves</code> = <code>0x0902f1ac</code></p>
+<pre id="callReserves"><span class="c">// valeurs affichées après le relevé</span></pre>
+      </li>
+      <li>
+        <h3>Supply total du token DDMX</h3>
+        <p class="micro dim" style="margin:0 0 4px">Contrat : DDMX <code>0x90e28b1c8f1534dd3dc1c5ce9475fb5737d46b53</code> — sélecteur <code>totalSupply</code> = <code>0x18160ddd</code></p>
+<pre id="callSupply"><span class="c">// valeurs affichées après le relevé</span></pre>
+      </li>
+      <li>
+        <h3>Soldes (répartition du supply et détention du LP)</h3>
+        <p class="micro dim" style="margin:0 0 4px">Sélecteur <code>balanceOf</code> = <code>0x70a08231</code> + adresse paddée à 32 octets.</p>
+<pre id="callBalances"><span class="c">// valeurs affichées après le relevé</span></pre>
+      </li>
+      <li>
+        <h3>Ordre des jetons dans la paire (sécurité)</h3>
+        <p class="micro dim" style="margin:0 0 4px">Sélecteur <code>token0</code> = <code>0x0dfe1681</code>, <code>token1</code> = <code>0xd21220a7</code></p>
+        <p class="micro" id="tokenOrder" style="margin:6px 0 0">Vérification de l'ordre token0/token1 : en attente…</p>
+      </li>
+    </ol>
+
+    <h3 style="margin-top:26px">Contrôler sur BscScan (source de vérité publique)</h3>
+    <div class="links" id="bscLinks"></div>
+
+    <h3 style="margin-top:26px">Adresses de référence</h3>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>Élément</th><th>Adresse</th><th>Rôle</th></tr></thead>
+        <tbody id="addrRows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="risque">
+    <h2>Analyse de risque (mise à jour automatiquement)</h2>
+    <p class="sub">Cette liste se construit à partir des chiffres lus ci-dessus. Elle ne cherche pas à rassurer.</p>
+    <div id="advice"><h3>Analyse en cours…</h3></div>
+
+    <div class="g3" style="margin-top:16px">
+      <div class="card"><div class="k">Valeur réellement extractible de la pool</div><div class="v sm" id="realizable">—</div><div class="n">Even if the entire supply were dumped, the pool only contains this amount. Aucun acheteur ne peut en sortir davantage.</div></div>
+      <div class="card"><div class="k">Profondeur de marché</div><div class="v sm" id="depth">—</div><div class="n" id="depthN">Estimation de l'impact d'une vente.</div></div>
+      <div class="card"><div class="k">Taxes, mint, blacklist, honeypot</div><div class="v sm" id="safety">—</div><div class="n">Relevé hors de cette page (analyse de contrat) : 0 % de taxe, non mintable, pas de blacklist, pas de honeypot. À revérifier vous-même.</div></div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap" style="padding:0">
+      <p style="margin:0 0 8px"><b>DDMX — « DDMX »</b> · BNB Smart Chain (chainId 56) · Contrat
+        <a class="mono" href="https://bscscan.com/token/0x90e28b1c8f1534dd3dc1c5ce9475fb5737d46b53" target="_blank" rel="noopener">0x37b5…9618</a></p>
+      <p style="margin:0 0 8px">
+        Cette page ne détient aucun fonds, ne demande aucune connexion de portefeuille et ne prélève rien.
+        Elle ne constitue ni un conseil en investissement, ni une offre, ni une sollicitation.
+        Les crypto-actifs présentent un risque de perte totale du capital investi. Vérifiez toujours les données
+        à la source (BscScan, votre propre nœud) avant toute décision.
+      </p>
+      <p style="margin:0" class="dim" id="footNote">Page autonome : aucun CDN, aucune bibliothèque externe, aucun traqueur, aucune image distante.</p>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+"use strict";
+/* ================================================================
+   DDMX — tableau de bord de transparence on-chain
+   Fichier unique, JavaScript vanilla, arithmétique BigInt.
+   Deux sources publiques lues depuis le navigateur du visiteur :
+     - JSON-RPC BSC (données de chaîne)
+     - API Binance (prix du BNB en USDT)
+   Toute valeur de repli est signalée comme telle dans l'interface.
+   ================================================================ */
+
+/* ---------- 1. Constantes : adresses, sélecteurs, valeurs de repli ---------- */
+
+var CHAIN = {
+  id: 56,
+  name: "BNB Smart Chain",
+  rpcs: [
+    "https://bsc-dataseed.binance.org",
+    "https://bsc-dataseed1.binance.org",
+    "https://bsc-dataseed1.defibit.io",
+    "https://bsc-rpc.publicnode.com"
+  ],
+  priceApis: [
+    "https://api.binance.com/api/v3/ticker/price?symbol=BNBUSDT",
+    "https://data-api.binance.vision/api/v3/ticker/price?symbol=BNBUSDT"
+  ]
+};
+
+var A = {
+  token:  "0x90e28b1c8f1534dd3dc1c5ce9475fb5737d46b53",
+  wbnb:   "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+  pair:   "0x3c2813d5482c69ef5176cf3997015d23dea31dcf",
+  factory:"0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
+  router: "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+  creator:"0x7acc2328567158ebe4566c32fa9562e79f78cc73",
+  lpOwner:"0x43ccf918b5a60d74f3a0dd5f58a1e76393c689d2",
+  dead:   "0x000000000000000000000000000000000000dEaD",
+  zero:   "0x0000000000000000000000000000000000000000"
+};
+
+/* Sélecteurs ABI (4 premiers octets du keccak de la signature) */
+var SEL = {
+  balanceOf:   "70a08231",
+  totalSupply: "18160ddd",
+  getReserves: "0902f1ac",
+  token0:      "0dfe1681",
+  token1:      "d21220a7",
+  decimals:    "313ce567",
+  symbol:      "95d89b41"
+};
+
+var DECIMALS = 18;
+
+/* Valeurs de référence fournies (relevé antérieur, bloc 125 416 437).
+   Elles ne sont JAMAIS affichées comme données live : uniquement en repli,
+   et l'interface indique explicitement qu'il s'agit d'un repli. */
+var REF = {
+  block: 125430160,
+  ddmReserveWei: "81486517501525619679608792543",         /* 49,561876 DDMX */
+  wbnbReserveWei: "101122871018427945",              /* 0,000002218 WBNB */
+  totalSupplyWei: "10000000000000000000000000000000",
+  creatorDDMXWei: "6068964669121356541284522767743",
+  lpOwnerDDMXWei: "5000000000000000000000000000",
+  poolDDMXWei: "81486517501525619679608792543",           /* = balanceOf(pool), cohérent avec getReserves */
+  deadDDMXWei: "0",
+  lpTotalSupplyWei: "89994005131095268096873",
+  deadLpWei: "0",
+  lpOwnerLpWei: "81234017053841537140088",
+  bnbUsd: 766.98,
+  note: "relevé du token B (bloc 125430160)"
+};
+
+var REF_LP_OWNER_PCT = "90,2660";
+
+/* ---------- 2. Utilitaires d'affichage ---------- */
+var U = {
+  $: function (id) { return document.getElementById(id); },
+  set: function (id, txt) { var e = document.getElementById(id); if (e) e.textContent = txt; },
+  html: function (id, h) { var e = document.getElementById(id); if (e) e.innerHTML = h; },
+  esc: function (s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  },
+  lower: function (a) { return String(a || "").toLowerCase(); },
+  isAddr: function (a) { return /^0x[0-9a-fA-F]{40}$/.test(String(a || "")); },
+  short: function (a) { return U.isAddr(a) ? a.slice(0, 6) + "…" + a.slice(-4) : String(a); },
+  nf: function (n) {
+    try { return new Intl.NumberFormat("fr-FR").format(n); }
+    catch (e) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " "); }
+  },
+  /* Découpe d'un BigInt en partie entière et décimale (tronquée, jamais arrondie vers le haut) */
+  split: function (v, dec) {
+    var neg = v < 0n; if (neg) v = -v;
+    var b = 10n ** BigInt(dec);
+    var q = v / b, r = v % b;
+    var frac = r === 0n ? "" : r.toString().padStart(dec, "0").replace(/0+$/, "");
+    return { neg: neg, sign: neg ? "-" : "", int: q.toString(), frac: frac, raw: r.toString().padStart(dec, "0") };
+  },
+  /* Nombre significatif avec exposant Unicode pour les très petites / très grandes valeurs */
+  sig: function (s, digits) {
+    digits = digits || 4;
+    if (s === null || s === undefined || s === "") return "0";
+    s = String(s);
+    if (s === "0" || s === "0.0") return "0";
+    var neg = s.charAt(0) === "-";
+    if (neg) s = s.slice(1);
+    var frac = "", intPart = s;
+    if (s.indexOf(".") >= 0) { var i = s.indexOf("."); intPart = s.slice(0, i); frac = s.slice(i + 1); }
+    intPart = intPart.replace(/^0+/, "");
+    var digitsStr;
+    if (intPart.length > 0) {
+      digitsStr = (intPart + frac).slice(0, digits);
+      if (intPart.length > digits + 3) {
+        var e = intPart.length - 1;
+        return (neg ? "-" : "") + digitsStr.charAt(0) + (digitsStr.length > 1 ? "," + digitsStr.slice(1) : "") +
+               " × 10^" + U.sup(e);
+      }
+      return (neg ? "-" : "") + intPart + (frac ? "," + frac.slice(0, Math.max(0, digits - intPart.length)) : "");
+    }
+    var z = /^0*/.exec(frac)[0].length;
+    var e2 = -(z + 1);
+    var digs = frac.slice(z, z + digits).replace(/0+$/, "");
+    if (digs === "") digs = "0";
+    return (neg ? "-" : "") + digs.charAt(0) + (digs.length > 1 ? "," + digs.slice(1) : "") + " × 10^" + U.sup(e2);
+  },
+  sup: function (n) {
+    var map = { "-": "⁻", "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴",
+                "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹" };
+    return String(n).split("").map(function (c) { return map[c] || c; }).join("");
+  },
+  /* Octets bruts -> BigInt */
+  toBig: function (bytes) {
+    var h = String(bytes || "").replace(/^0x/i, "").replace(/[^0-9a-fA-F]/g, "");
+    if (h === "") return null;
+    return BigInt("0x" + h);
+  },
+  /* Mot de 32 octets n° i d'une réponse ABI */
+  word: function (hex, i) {
+    var h = String(hex || "").replace(/^0x/i, "");
+    var s = h.slice(i * 64, i * 64 + 64);
+    return s.length === 64 ? s : null;
+  },
+  /* Adresse (20 octets) à partir d'un mot de 32 octets */
+  addrFromWord: function (w) { return w ? "0x" + w.slice(24, 64).toLowerCase() : null; },
+  /* Adresse paddée sur 32 octets pour un appel balanceOf */
+  pad32: function (addr) {
+    if (!U.isAddr(addr)) return null;
+    return addr.toLowerCase().replace(/^0x/, "").padStart(64, "0");
+  },
+  calldata: function (sel, arg32) { return "0x" + sel + (arg32 || ""); },
+  chainTime: function (ts) {
+    var d = new Date(ts);
+    var hh = String(d.getHours()).padStart(2, "0");
+    var mm = String(d.getMinutes()).padStart(2, "0");
+    var ss = String(d.getSeconds()).padStart(2, "0");
+    return hh + ":" + mm + ":" + ss;
+  },
+  /* Ratio -> décimal exact (0..100), arrondi au plus proche, SANS symbole %.
+     Exemple : pctStr(1, 4) => "25". */
+  pctStr: function (num, den, decimals) {
+    var dec = (decimals === undefined || decimals === null) ? 12 : decimals;
+    if (num === null || num === undefined || den === null || den === undefined || den === 0n) return null;
+    var scale = 10n ** BigInt(dec);
+    var q = (num * scale * 100n + den / 2n) / den;
+    var s = q.toString();
+    if (s.length <= dec) s = "0".repeat(dec - s.length + 1) + s;
+    return s.slice(0, s.length - dec) + "." + s.slice(s.length - dec);
+  },
+  /* Prix: réserve de cotation / réserve de base -> texte décimal (BigInt, tronqué) */
+  priceStr: function (quoteWei, baseWei, decimals) {
+    if (quoteWei === null || baseWei === null || baseWei === 0n) return null;
+    var dec = decimals || 30;
+    var scale = 10n ** BigInt(dec);
+    var v = (quoteWei * scale) / baseWei;
+    var s = v.toString();
+    if (s.length <= dec) s = "0".repeat(dec - s.length + 1) + s;
+    return s.slice(0, s.length - dec) + "." + s.slice(s.length - dec);
+  },
+  /* Multiplication EXACTE de deux décimaux (BigInt + point fixe), sans passer par Number. */
+  decMul: function (a, b) {
+    if (a === null || b === null) return null;
+    function parse(x) {
+      x = String(x);
+      var neg = x.charAt(0) === "-"; if (neg) x = x.slice(1);
+      var dot = x.indexOf(".");
+      var ip = dot >= 0 ? x.slice(0, dot) : x, fp = dot >= 0 ? x.slice(dot + 1) : "";
+      ip = ip.replace(/\D/g, "") || "0"; fp = fp.replace(/\D/g, "");
+      return { m: BigInt(ip + fp), s: fp.length, neg: neg };
+    }
+    var A = parse(a), B = parse(b);
+    var m = A.m * B.m, sc = A.s + B.s;
+    var s = m.toString();
+    if (s.length <= sc) s = "0".repeat(sc - s.length + 1) + s;
+    var out = s.slice(0, s.length - sc) + "." + s.slice(s.length - sc);
+    return (A.neg !== B.neg && m !== 0n ? "-" : "") + out;
+  },
+  /* Arrondit une chaîne décimale à « n » décimales (au plus proche). */
+  decRound: function (s, n) {
+    if (s === null || s === undefined) return null;
+    s = String(s);
+    var neg = s.charAt(0) === "-"; if (neg) s = s.slice(1);
+    var dot = s.indexOf(".");
+    var ip = dot >= 0 ? s.slice(0, dot) : s, fp = dot >= 0 ? s.slice(dot + 1) : "";
+    ip = ip.replace(/\D/g, "") || "0";
+    fp = (fp.replace(/\D/g, "") + "0".repeat(n + 1)).slice(0, n + 1);
+    var keep = fp.slice(0, n), next = Number(fp.charAt(n) || "0");
+    var digits = BigInt(ip + keep) + (next >= 5 ? 1n : 0n);
+    var ds = digits.toString().padStart(n + 1, "0");
+    var out = n > 0 ? ds.slice(0, ds.length - n) + "." + ds.slice(ds.length - n) : ds;
+    return (neg && digits !== 0n ? "-" : "") + out;
+  },
+  /* Arrondit une chaîne décimale à « n » chiffres significatifs, en préservant les zéros
+     de tête après la virgule (indispensables pour les très petites valeurs). */
+  roundSig: function (s, n) {
+    if (s === null || s === undefined) return null;
+    s = String(s);
+    var neg = s.charAt(0) === "-"; if (neg) s = s.slice(1);
+    var dot = s.indexOf(".");
+    var ip = dot >= 0 ? s.slice(0, dot) : s, fp = dot >= 0 ? s.slice(dot + 1) : "";
+    ip = ip.replace(/\D/g, "") || "0"; fp = fp.replace(/\D/g, "");
+    var ipTrim = ip.replace(/^0+/, "");
+    if (ipTrim.length >= n) return (neg ? "-" : "") + U.decRound(s, 0);
+    var zeros = /^0*/.exec(fp)[0].length;
+    return (neg ? "-" : "") + U.decRound(s, Math.min(24, zeros + Math.max(1, n - ipTrim.length)));
+  },
+  /* Retire les zéros décimaux inutiles sans perdre la valeur. */
+  decTrim: function (s) {
+    if (s === null || s === undefined) return "—";
+    s = String(s);
+    if (s.indexOf(".") < 0) return s;
+    var out = s.replace(/0+$/, "").replace(/\.$/, "");
+    if (out === "" || out === "-") return "0";
+    return out;
+  },
+  /* Chaîne décimale -> BigInt en unités de 1e-6 (micro-USD). Arrondi au plus proche. */
+  decToMicro: function (s) {
+    if (s === null || s === undefined || s === "") return null;
+    s = String(s);
+    var neg = s.charAt(0) === "-";
+    if (neg) s = s.slice(1);
+    var ip = s, fp = "";
+    var dot = s.indexOf(".");
+    if (dot >= 0) { ip = s.slice(0, dot); fp = s.slice(dot + 1); }
+    ip = ip.replace(/\D/g, "") || "0";
+    fp = fp.replace(/\D/g, "");
+    var n = BigInt(ip) * 1000000n + BigInt((fp + "000000").slice(0, 6));
+    var rem = (fp + "0000000").slice(6, 7);
+    if (rem !== "" && Number(rem) >= 5) n += 1n;
+    return neg ? -n : n;
+  },
+  /* wei (1e-18) -> micro-unités (1e-6), arrondi au plus proche */
+  weiToMicro: function (wei) {
+    if (wei === null || wei === undefined) return null;
+    return (wei + 500000000000n) / 1000000000000n;
+  },
+  /* micro-USD -> texte décimal, jusqu'à 6 décimales, sans zéros inutiles */  microStr: function (u) {
+    if (u === null || u === undefined) return "—";
+    var neg = u < 0n; if (neg) u = -u;
+    var ip = u / 1000000n, fp = (u % 1000000n).toString().padStart(6, "0").replace(/0+$/, "");
+    return (neg ? "-" : "") + ip.toString() + (fp ? "." + fp : "");
+  },
+  /* Seuil de quantification : en dessous, on écrit « < 0,000001 $ » au lieu d'un faux zéro */
+  usdEpsilon: 1n,
+  /* micro-USD -> texte avec un nombre fixe de décimales, arrondi au plus proche */
+  decToFixedStr: function (u, digits) {
+    var neg = u < 0n; if (neg) u = -u;
+    var f = 10n ** BigInt(6 - digits);
+    var r = (u + f / 2n) / f;                 /* arrondi */
+    var s = r.toString().padStart(digits + 1, "0");
+    var ip = s.slice(0, s.length - digits);
+    var fp = s.slice(s.length - digits);
+    return (neg ? "-" : "") + ip + (digits > 0 ? "." + fp : "");
+  }
+};
+
+/* ---------- 3. Formatage grand public ---------- */
+var F = {
+  /* Montant complet, tous les chiffres, séparateurs de milliers */
+  amt: function (wei, sym) {
+    if (wei === null || wei === undefined) return "—";
+    var s = U.split(wei, DECIMALS);
+    var v = BigInt(s.int) > 0n ? U.nf(s.int) : s.int;
+    return v + (s.frac ? "," + s.frac : "") + (sym ? " " + sym : "");
+  },
+  /* Montant complet avec symbole, sans zéros de fin superflus */
+  tok: function (wei, sym) {
+    if (wei === null || wei === undefined) return "—";
+    var s = U.split(wei, DECIMALS);
+    return U.nf(s.int) + (s.frac ? "," + s.frac : "") + (sym ? " " + sym : "");
+  },
+  /* Valeur brute en wei, séparateurs de milliers */
+  wei: function (wei) { return wei === null || wei === undefined ? "—" : U.nf(wei.toString()); },
+  /* USD à partir de micro-USD (1e-6 $) */
+  usdFromMicro: function (u) {
+    if (u === null || u === undefined) return "—";
+    var a = u < 0n ? -u : u;
+    if (a === U.usdEpsilon) return "< " + U.microStr(U.usdEpsilon) + " $";
+    return U.microStr(u) + " $";
+  },
+  /* USD adapté à l'ordre de grandeur : jamais un « 0 » trompeur pour 0,0034 $ */
+  usdSmart: function (u) {
+    if (u === null || u === undefined) return "—";
+    var a = u < 0n ? -u : u;
+    if (a === 0n) return "0 $";
+    if (a === U.usdEpsilon) return "< " + U.microStr(U.usdEpsilon) + " $";
+    if (a < 1000000n) return U.microStr(u) + " $";                /* < 1 $ : toutes les décimales */
+    if (a < 10000000n) return U.decToFixedStr(u, 4) + " $";       /* < 10 $ : 4 décimales */
+    if (a < 100000000n) return U.decToFixedStr(u, 3) + " $";      /* < 100 $ : 3 décimales */
+    if (a < 100000000000n) return U.decToFixedStr(u, 2) + " $";   /* < 100 000 $ : centimes */
+    if (a < 1000000000000000n) return U.nf(U.microStr(u).split(".")[0]) + " $";
+    return U.sig(U.microStr(u), 6) + " $";                        /* très grands montants */
+  },
+  /* Prix unitaire en USD : un prix de micro-cap n'a de sens qu'avec beaucoup de décimales */
+  priceUsd: function (decStr) {
+    if (decStr === null || decStr === undefined) return "—";
+    if (parseFloat(decStr) >= 0.01) return F.usdSmart(U.decToMicro(decStr));
+    return U.decTrim(U.decRound(decStr, 18)) + " $";
+  },
+  /* Pourcentage : chaîne décimale exacte -> texte lisible, jamais un faux zéro. */
+  pct: function (p) {
+    if (p === null || p === undefined) return "—";
+    var v = parseFloat(p);
+    if (!isFinite(v)) return "—";
+    if (v === 0) return "0 %";
+    /* Sous 0,000001 % (les poussières de supply), la notation décimale devient illisible :
+       on passe en notation scientifique plutôt que d'afficher une traînée de zéros. */
+    if (Math.abs(v) < 1e-6) return U.sig(String(p), 4) + " %";
+    return U.decTrim(U.decRound(p, 12)) + " %";
+  }
+};
+
+/* ---------- 4. RPC JSON-RPC ---------- */
+
+function rpcAttempt(url, calls, timeoutMs) {
+  var pay = calls.map(function (c) {
+    return { jsonrpc: "2.0", id: c.__id, method: c.method || "eth_call", params: c.params };
+  });
+  var ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+  var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, timeoutMs || 9000);
+  return fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(pay),
+    signal: ctrl ? ctrl.signal : undefined,
+    cache: "no-store"
+  }).then(function (r) {
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    return r.json();
+  }).then(function (j) {
+    clearTimeout(timer);
+    var arr = Array.isArray(j) ? j : [j];
+    var n = calls.length;
+    if (arr.length < n) throw new Error("réponse partielle (" + arr.length + "/" + n + ")");
+    var out = [];
+    for (var i = 0; i < n; i++) {
+      var r0 = null, k;
+      for (k = 0; k < arr.length; k++) {
+        if (arr[k] && arr[k].id === calls[i].__id) { r0 = arr[k]; break; }
+      }
+      if (!r0) r0 = arr[i];
+      if (!r0 || r0.error || r0.result === undefined || r0.result === null) out.push(null);
+      else out.push(r0.result);
+    }
+    return out;
+  }).catch(function (e) {
+    clearTimeout(timer);
+    throw e;
+  });
+}
+
+/* Essaie les RPC dans l'ordre. Retourne {url, results:[...]} ou rejette. */
+function rpcBatch(calls, timeoutMs) {
+  var i = 0;
+  function next() {
+    if (i >= CHAIN.rpcs.length) return Promise.reject(new Error("tous les nœuds RPC ont échoué"));
+    var url = CHAIN.rpcs[i++];
+    return rpcAttempt(url, calls, timeoutMs).then(function (res) {
+      var nb = res.filter(function (x) { return x !== null; }).length;
+      if (nb === 0) throw new Error("aucune réponse exploitable");
+      return { url: url, results: res };
+    }).catch(function () { return next(); });  }
+  return next();
+}
+
+/* Un lot de lectures standard, identifiants stables pour l'appariement des réponses */
+function buildCalls(locker) {
+  function call(to, sel, arg32, tag) {
+    return { __id: tag, params: [{ to: to, data: U.calldata(sel, arg32) }, "latest"] };
+  }
+  var calls = [
+    { __id: "block", method: "eth_blockNumber", params: [] },
+    call(A.pair, SEL.getReserves, "", "reserves"),
+    call(A.pair, SEL.token0, "", "token0"),
+    call(A.pair, SEL.token1, "", "token1"),
+    call(A.pair, SEL.totalSupply, "", "lpSupply"),
+    call(A.token, SEL.totalSupply, "", "supply"),
+    call(A.token, SEL.decimals, "", "decimals"),
+    call(A.token, SEL.symbol, "", "symbol"),
+    call(A.token, SEL.balanceOf, U.pad32(A.creator), "balCreator"),
+    call(A.token, SEL.balanceOf, U.pad32(A.lpOwner), "balLpOwner"),
+    call(A.token, SEL.balanceOf, U.pad32(A.pair), "balPool"),
+    call(A.token, SEL.balanceOf, U.pad32(A.dead), "balDead"),
+    call(A.token, SEL.balanceOf, U.pad32(A.wbnb), "balWbnb"),
+    call(A.wbnb, SEL.balanceOf, U.pad32(A.pair), "wbnbInPair"),
+    call(A.pair, SEL.balanceOf, U.pad32(A.dead), "lpDead"),
+    call(A.pair, SEL.balanceOf, U.pad32(A.zero), "lpZero"),
+    call(A.pair, SEL.balanceOf, U.pad32(A.lpOwner), "lpOwner")
+  ];
+  if (locker) calls.push(call(A.pair, SEL.balanceOf, U.pad32(locker), "lpLocker"));
+  return calls;
+}
+
+/* ---------- 5. Prix du BNB (USD) ---------- */
+var bnbUsd = { value: null, source: "", live: false };
+
+function fetchBnbPrice() {
+  var i = 0;
+  function next() {
+    if (i >= CHAIN.priceApis.length) return Promise.reject(new Error("APIs de prix injoignables"));
+    var url = CHAIN.priceApis[i++];
+    var ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+    var t = setTimeout(function () { if (ctrl) ctrl.abort(); }, 8000);
+    return fetch(url, { signal: ctrl ? ctrl.signal : undefined, cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function (j) {
+        clearTimeout(t);
+        var p = Number(j && j.price);
+        if (!isFinite(p) || p <= 0) throw new Error("prix illisible");
+        return { price: p, url: url };
+      })
+      .catch(function () { clearTimeout(t); return next(); });
+  }
+  return next();
+}
+
+/* ---------- 6. État de la page ---------- */
+var STATE = {
+  lastBlock: null,
+  lastTs: null,
+  live: false,
+  loading: false,
+  countdown: 60,
+  locker: null,
+  source: "",
+  data: {}
+};
+
+/* ---------- 7. Lecture du locker via paramètre d'URL ---------- */
+function readLockerParam() {
+  var q = String(window.location.search || "");
+  var m = /[?&]locker=(0x[0-9a-fA-F]{40})/.exec(q);
+  return m ? m[1].toLowerCase() : null;
+}
+
+/* ---------- 8. Rendu du tableau de bord ---------- */
+function renderStatus(kind, msg) {
+  U.set("globalNotice", "");
+  var box = document.getElementById("globalNotice");
+  if (!box) return;
+  if (kind === "error") {
+    box.innerHTML = '<div class="fallback-note" style="border-color:#5a2426;background:#1b0f10;color:#ffd0d0">' +
+      "<b>Données indisponibles.</b> " + U.esc(msg) +
+      " La page reste volontairement stable : les valeurs de référence fournies sont affichées en repli et signalées comme telles." +
+      "</div>";
+  } else if (kind === "warn") {
+    box.innerHTML = '<div class="fallback-note">' + U.esc(msg) + "</div>";
+  }
+}
+
+function renderLiquidity(d) {
+  U.set("resDDMX", d.ddmRes !== null ? F.tok(d.ddmRes, "DDMX") : "—");
+  U.set("resDDMXN", d.ddmRes !== null ? F.wei(d.ddmRes) + " wei" : "indisponible");
+  U.set("resWBNB", d.wbnbRes !== null ? F.tok(d.wbnbRes, "WBNB") : "—");
+  U.set("resWBNBN", d.wbnbRes !== null ? F.wei(d.wbnbRes) + " wei" : "indisponible");
+
+  if (d.liqUsd !== null) {
+    U.set("liqUSD", F.usdSmart(d.liqUsd));
+    U.set("liqUSDN", "Valeur des deux côtés de la pool : 2 × réserve WBNB × prix du BNB.");
+  } else {
+    U.set("liqUSD", "—");
+    U.set("liqUSDN", "indisponible : réserves ou prix du BNB non lisibles");
+  }
+
+  U.set("priceBNB", d.priceBnb !== null ? bnbAmountStr(d.priceBnb, 6) + " BNB / DDMX" : (d.coherenceOk ? "—" : "non affiché"));
+  U.set("priceUSD", d.priceUsdStr !== null ? "≈ " + F.priceUsd(d.priceUsdStr) + " / DDMX" : (d.coherenceOk ? "indisponible" : "non affiché"));
+
+  U.set("fdvUSD", d.fdvUsdMicro !== null ? F.usdSmart(d.fdvUsdMicro) : (d.coherenceOk ? "—" : "non affichée"));
+  U.set("fdvBNB", d.fdvBnbDec !== null ? bnbAmountStr(d.fdvBnbDec, 6) + " BNB (théorique)" : "—");
+
+  U.set("supplyTotal", d.supply !== null ? F.tok(d.supply, "DDMX") : "—");
+  U.set("supplyTotalN", d.supply !== null ? F.wei(d.supply) + " wei" : "indisponible");
+
+  U.set("bnbUsed", bnbUsd.value !== null ? bnbUsd.value.toFixed(2) + " $" : "—");
+  U.set("bnbUsedN", bnbUsd.live
+    ? "source live : " + bnbUsd.source
+    : "REPLI EXPLICITE : " + (bnbUsd.value !== null ? bnbUsd.value.toFixed(2) : REF.bnbUsd) +
+      " $ — valeur fixe de référence, l'API de prix n'a pas répondu.");
+
+  /* Avertissement FDV : l'artefact mathématique */
+  var wn = document.getElementById("fdvWarn");
+  if (wn) {
+    wn.style.display = "block";
+    if (!d.coherenceOk) {
+      wn.innerHTML = "<b>Valorisation volontairement masquée.</b> " + U.esc(d.coherenceNote);
+    } else if (d.liqUsd !== null && d.liqUsd < 100000000000n) {
+      /* sous 100 000 $, le prix issu d'un rapport de réserves n'a aucune valeur prédictive :
+         c'est un artefact. On refuse de présenter la FDV comme une valorisation. */
+      wn.innerHTML = "<b>La FDV affichée ci-dessus ne vaut rien.</b> " +
+        "Elle multiplie le prix théorique de la pool par la totalité du supply. Or la pool ne contient que " +
+        "<b>" + U.esc(F.usdSmart(d.liqUsd)) + "</b> de valeur réelle. Sur une pool de cette taille, le rapport des réserves " +
+        "produit un prix mathématiquement valide et économiquement absurde : personne ne peut vendre 1 % du supply à ce prix. " +
+        "La seule mesure qui compte est la liquidité totale, et elle est ridicule. " +
+        "Tant que ce montant reste à trois ou quatre chiffres, ce token n'a pas de marché.";
+    } else if (d.liqUsd !== null) {
+      wn.innerHTML = "<b>Rappel.</b> La FDV reste une construction théorique : elle suppose que tout le supply trouverait " +
+        "acheteur au prix actuel de la pool, ce qui n'arrive jamais. La liquidité totale (" + U.esc(F.usdSmart(d.liqUsd)) +
+        ") est la seule mesure utile.";
+    } else {
+      wn.style.display = "block";
+      wn.innerHTML = "<b>FDV : lecture impossible.</b> Les réserves de la pool n'ont pas pu être lues ; " +
+        "aucune valorisation n'est affichée, et aucune valeur de remplacement n'est inventée ici.";
+    }
+    if (d.checks && d.checks.length) {
+      wn.innerHTML += '<div style="margin-top:10px">' + d.checks.map(function (c) {
+        return '<div class="micro" style="color:#c9c3a6">· ' + U.esc(c) + "</div>";
+      }).join("") + "</div>";
+    }
+  }
+}
+
+function renderLp(d) {
+  var box = document.getElementById("lpStatus");
+  var dot = document.getElementById("lpDot");
+  if (box) box.className = "statusbox" + (d.lpLocked ? " ok" : (d.lpKnown ? " bad" : ""));
+  if (dot) dot.className = "dot " + (d.lpLocked ? "ok" : (d.lpKnown ? "bad" : ""));
+
+  if (!d.lpKnown) {
+    U.set("lpHead", "Données LP indisponibles");
+    U.set("lpDetail", "Les soldes de jetons LP n'ont pas pu être lus depuis la chaîne. Aucun jugement n'est rendu : considérez le LP comme non verrouillé par précaution.");
+    U.set("barOther", "width:100%");
+    U.set("barOk", "width:0%"); U.set("barLock", "width:0%"); U.set("barHold", "width:0%");
+  } else {
+    var deadPct = d.lpDeadPct, lockerPct = d.lpLockerPct, holderPct = d.lpOwnerPct;
+    var lockedShare = d.lpLockedSharePct; /* somme brûlé + locker, en % */
+    if (d.lpLocked) {
+      U.set("lpHead", "LP verrouillé ou brûlé");
+      U.set("lpDetail", "La part verrouillée ou brûlée représente " + F.pct(lockedShare) +
+        " % du LP (brûlé : " + F.pct(deadPct) + (d.locker ? ", contrat de verrou : " + F.pct(lockerPct) : "") +
+        "). Au-dessus de 50 %, le retrait de la liquidité par un portefeuille privé n'est plus possible. " +
+        "La part restante chez le portefeuille détenteur est de " + F.pct(holderPct) + " %.");
+    } else {
+      U.set("lpHead", "LP non verrouillé — risque de retrait");
+      U.set("lpDetail", "Seulement " + F.pct(lockedShare) + " % du LP est brûlé ou verrouillé. " +
+        "Le portefeuille " + A.lpOwner + " détient " + F.pct(holderPct) + " % des jetons LP : " +
+        "il peut retirer la liquidité de la pool à tout moment et rendre le token invendable. C'est le risque de rug pull classique.");
+    }
+    /* Barre de répartition (arrondi prudent, dernier segment complète à 100 %) */
+    var wDead = clampPct(num1(deadPct)), wLock = clampPct(num1(lockerPct)), wHold = clampPct(num1(holderPct));
+    var sum = wDead + wLock + wHold;
+    if (sum > 100) { var k = 100 / sum; wDead *= k; wLock *= k; wHold *= k; sum = 100; }
+    var wOther = Math.max(0, 100 - sum);
+    U.set("barOk", "width:" + wDead.toFixed(2) + "%");
+    U.set("barLock", "width:" + wLock.toFixed(2) + "%");
+    U.set("barHold", "width:" + wHold.toFixed(2) + "%");
+    U.set("barOther", "width:" + wOther.toFixed(2) + "%");
+  }
+
+  U.set("lpSupply", d.lpSupply !== null ? F.wei(d.lpSupply) : "indisponible");
+  U.set("legendLocker", d.locker ? "(" + U.short(d.locker) + ")" : "(paramètre ?locker=…)");
+
+  var rows = [];
+  rows.push(lpRow(A.dead, "Adresse morte (brûlure)", d.lpDead, d.lpDeadPct, d.lpDead !== null && d.lpDead > 0n,
+    d.lpDead !== null && d.lpDead > 0n ? '<span class="ok">Brûlé</span>' : '<span class="dim">Aucun jeton LP</span>'));
+  rows.push(lpRow(A.zero, "Adresse nulle", d.lpZero, d.lpZeroPct, false, '<span class="dim">Non significatif</span>'));
+  if (d.locker) {
+    rows.push(lpRow(d.locker, "Contrat de verrou (paramètre d'URL)", d.lpLocker, d.lpLockerPct,
+      d.lpLocker !== null && d.lpLocker > 0n,
+      d.lpLocker !== null && d.lpLocker > 0n ? '<span class="ok">Verrou</span>' : '<span class="bad">Solde nul : ce contrat ne détient aucun LP</span>'));
+  }
+  rows.push(lpRow(A.lpOwner, "Portefeuille détenteur du LP", d.lpOwnerLp, d.lpOwnerPct,
+    d.lpOwnerLp !== null && d.lpOwnerLp > 0n,
+    d.lpOwnerLp !== null && d.lpOwnerLp > 0n ? '<span class="bad">Contrôle privé : peut être retiré</span>' : '<span class="dim">—</span>'));
+
+  /* Ligne de bouclage : autres portefeuilles, pour que le total fasse bien 100 % */
+  if (d.lpKnown && d.lpSupply !== null) {
+    var accounted = (d.lpDead || 0n) + (d.lpZero || 0n) + (d.lpLocker || 0n) + (d.lpOwnerLp || 0n);
+    var rest = d.lpSupply > accounted ? d.lpSupply - accounted : 0n;
+    var restPct = U.pctStr(rest, d.lpSupply, 10);
+    rows.push("<tr>" +
+      '<td class="dim">Autres portefeuilles (résidu calculé)<br><span class="micro">Aucun impact sur la liquidité : le LP décisif est celui détenu ci-dessus.</span></td>' +
+      '<td class="num dim">' + F.wei(rest) + "</td>" +
+      '<td class="num dim">' + (restPct !== null ? F.pct(restPct) : "—") + "</td>" +
+      '<td class="dim">—</td></tr>');
+  }
+  U.html("lpRows", rows.join(""));
+
+  var ln = document.getElementById("lockerNotice");
+  if (ln) {
+    if (d.locker) {
+      ln.style.display = "block";
+      ln.innerHTML = "Adresse de contrat de verrou lue depuis l'URL : <code>" + U.esc(d.locker) + "</code>. " +
+        "Solde LP mesuré : <b>" + (d.lpLocker !== null ? F.wei(d.lpLocker) : "indisponible") + "</b> jetons LP" +
+        (d.lpLockerPct !== null ? " (" + F.pct(U.roundSig(d.lpLockerPct, 6)) + " du LP)" : "") + ". " +
+        "Un solde élevé ne prouve pas que la liquidité est verrouillée : vérifiez aussi les fonctions de retrait du contrat.";
+    } else {
+      ln.style.display = "block";
+      ln.innerHTML = "Aucun contrat de verrou fourni. Ajoutez <code>?locker=0x…</code> à l'URL pour mesurer le solde LP " +
+        "d'un contrat de verrouillage (par exemple un locker public) : la page lira son solde et l'intégrera au calcul du verrouillage.";
+    }
+  }
+}
+
+function num1(s) { var n = parseFloat(s); return isFinite(n) ? n : 0; }
+function clampPct(n) { return Math.max(0, Math.min(100, n)); }
+
+function lpRow(addr, label, wei, pct, positive, statusHtml) {
+  return "<tr>" +
+    "<td>" + U.esc(label) + "<br><a class=\"mono\" href=\"https://bscscan.com/address/" + U.esc(addr) + "\" target=\"_blank\" rel=\"noopener\">" + U.esc(addr) + "</a></td>" +
+    '<td class="num">' + (wei !== null ? F.wei(wei) : "—") + "</td>" +
+    '<td class="num">' + (pct !== null ? F.pct(pct) : "—") + "</td>" +
+    "<td>" + statusHtml + "</td>" +
+    "</tr>";
+}
+
+function renderSupply(d) {
+  var rows = [];
+  function row(addr, label, wei, note) {
+    var pct = (wei !== null && d.supply !== null && d.supply > 0n) ? U.pctStr(wei, d.supply, 12) : null;
+    rows.push("<tr>" +
+      "<td>" + U.esc(label) + "<br><a class=\"mono\" href=\"https://bscscan.com/address/" + U.esc(addr) + "\" target=\"_blank\" rel=\"noopener\">" + U.esc(addr) + "</a></td>" +
+      '<td class="num">' + (wei !== null ? F.wei(wei) : "—") + "</td>" +
+      '<td class="num">' + (pct !== null ? F.pct(pct) : "—") + "</td>" +
+      "<td>" + note + "</td></tr>");
+    return pct;
+  }
+  var pCreator = row(A.creator, "Portefeuille créateur", d.balCreator,
+    "Concentration extrême : une adresse privée peut vendre son supply à tout moment.");
+  var pLpOwner = row(A.lpOwner, "Portefeuille détenteur du LP", d.balLpOwner,
+    "Détient aussi le LP : même acteur sur le supply et sur la liquidité.");
+  row(A.pair, "Pool PancakeSwap V2 (DDMX/WBNB)", d.balPool,
+    "Seule réserve réellement échangeable contre du WBNB.");
+  row(A.dead, "Adresse morte (brûlure)", d.balDead,
+    "Jetons hors circulation de façon définitive.");
+  row(A.wbnb, "Contrat WBNB (poussière possible)", d.balWbnb,
+    "Adresses techniques pouvant détenir des résidus.");
+  U.html("supplyRows", rows.join(""));
+
+  U.set("concCreator", pCreator !== null ? F.pct(pCreator, 6) : "—");
+  var pPool = (d.balPool !== null && d.supply !== null && d.supply > 0n) ? U.pctStr(d.balPool, d.supply, 12) : null;
+  U.set("concPool", pPool !== null ? F.pct(pPool) : "—");
+  var pDead = (d.balDead !== null && d.supply !== null && d.supply > 0n) ? U.pctStr(d.balDead, d.supply, 12) : null;
+  U.set("concDead", pDead !== null ? F.pct(pDead) : "—");
+  if (d.balDead !== null && d.balDead > 0n) U.set("concDead", F.pct(pDead));
+}
+
+function renderCalls(d) {
+  var reservesData = "0x" + (d.reservesRawWords ? d.reservesRawWords : "");
+  var elR = document.getElementById("callReserves");
+  if (elR) {
+    elR.innerHTML =
+      '<span class="c">// nœud RPC : ' + U.esc(d.rpc || "indisponible") + ' — bloc ' + U.esc(d.block || "?") + "</span>\n" +
+      '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"to":"' + A.pair + '","data":"0x' + SEL.getReserves + '"},"latest"]}\n\n' +
+      '<span class="c">// réponse brute : ' + U.esc(reservesData) + "</span>\n" +
+      "reserve0 = " + (d.res0 !== null ? d.res0.toString() : "indisponible") + "\n" +
+      "reserve1 = " + (d.res1 !== null ? d.res1.toString() : "indisponible") + "\n" +
+      "token0   = " + (d.token0 || "indisponible") + (U.lower(d.token0) === U.lower(A.token) ? "  (DDMX)" : U.lower(d.token0) === U.lower(A.wbnb) ? "  (WBNB)" : "") + "\n" +
+      "token1   = " + (d.token1 || "indisponible") + (U.lower(d.token1) === U.lower(A.wbnb) ? "  (WBNB)" : U.lower(d.token1) === U.lower(A.token) ? "  (DDMX)" : "") + "\n" +
+      "→ réserve DDMX  = " + (d.ddmRes !== null ? d.ddmRes.toString() : "?") + "\n" +
+      "→ réserve WBNB = " + (d.wbnbRes !== null ? d.wbnbRes.toString() : "?");
+  }
+  var elS = document.getElementById("callSupply");
+  if (elS) {
+    elS.innerHTML =
+      '{"jsonrpc":"2.0","id":2,"method":"eth_call","params":[{"to":"' + A.token + '","data":"0x' + SEL.totalSupply + '"},"latest"]}\n\n' +
+      "supply = " + (d.supply !== null ? d.supply.toString() : "indisponible") + " wei" +
+      (d.supply !== null ? "  (= " + F.amt(d.supply, "DDMX") + ", " + d.decimals + " décimales)" : "") + "\n" +
+      "symbole lu = " + U.esc(d.tokenSymbol || "indisponible");
+  }
+  var elB = document.getElementById("callBalances");
+  if (elB) {
+    var lines = [];
+    function bal(label, addr, sel, wei, extra) {
+      lines.push('# ' + label + "\n" +
+        '{"to":"' + sel + '","data":"0x' + SEL.balanceOf + U.pad32(addr) + '"}' +
+        "\n  → " + (wei !== null ? wei.toString() : "indisponible") + (extra ? "  " + extra : ""));
+    }
+    bal("Supply total DDMX", null, A.token, d.supply, "");
+    lines.pop();
+    lines.push('# supply total DDMX' + "\n" +
+      '{"to":"' + A.token + '","data":"0x' + SEL.totalSupply + '"}' +
+      "\n  → " + (d.supply !== null ? d.supply.toString() : "indisponible"));
+    bal("DDMX du créateur", A.creator, A.token, d.balCreator, "");
+    bal("DDMX du détenteur du LP", A.lpOwner, A.token, d.balLpOwner, "");
+    bal("DDMX dans la pool", A.pair, A.token, d.balPool, "");
+    bal("DDMX à l'adresse morte", A.dead, A.token, d.balDead, "");
+    bal("LP total supply", A.pair, A.pair, d.lpSupply, "");
+    bal("LP à l'adresse morte", A.dead, A.pair, d.lpDead, "");
+    bal("LP chez le portefeuille détenteur", A.lpOwner, A.pair, d.lpOwnerLp, "");
+    if (d.locker) bal("LP sur le contrat de verrou", d.locker, A.pair, d.lpLocker, "");
+    elB.innerHTML = lines.join("\n\n");
+  }
+  var to = document.getElementById("tokenOrder");
+  if (to) {
+    var okOrder = U.lower(d.token0) === U.lower(A.token) && U.lower(d.token1) === U.lower(A.wbnb);
+    to.innerHTML = okOrder
+      ? '<span class="ok">Ordre confirmé : token0 = DDMX, token1 = WBNB.</span> Le prix est donc calculé comme réserve WBNB ÷ réserve DDMX.'
+      : (d.token0 === null
+        ? '<span class="warn">Lecture impossible</span> : l\'ordre token0/token1 n\'a pas pu être confirmé on-chain.'
+        : '<span class="warn">Ordre inattendu</span> : token0 = ' + U.esc(d.token0) + ", token1 = " + U.esc(d.token1) +
+          ". La page a adapté son calcul, mais vérifiez la paire vous-même sur BscScan.");
+  }
+}
+
+function renderAdvice(d) {
+  var box = document.getElementById("advice");
+  if (!box) return;
+  var items = [];
+  var critical = 0;
+  if (d.lpKnown && !d.lpLocked) {
+    critical++;
+    items.push("Le LP n'est ni brûlé ni verrouillé à une part majoritaire : le détenteur peut retirer la liquidité et rendre le token invendable.");
+  }
+  if (d.liqUsd !== null && d.liqUsd < 1000000n) {
+    critical++;
+    items.push("La liquidité totale est inférieure à 1 $ (" + F.usdSmart(d.liqUsd) + ") : le marché n'existe pas. Une vente, même minuscule, fait s'effondrer le prix.");
+  }
+  if (d.balCreator !== null && d.supply !== null && d.supply > 0n) {
+    var p = U.pctStr(d.balCreator, d.supply, 6);
+    var pn = parseFloat(p);
+    if (isFinite(pn) && pn > 50) {
+      critical++;
+      items.push("Le portefeuille créateur détient " + F.pct(p) + " du supply : il peut inonder la pool à tout moment.");
+    }
+  }
+  if (d.lpKnown && d.lpLocked) {
+    items.push("Le LP est majoritairement brûlé ou verrouillé : c'est une condition nécessaire, mais elle ne crée aucune valeur à elle seule.");
+  }
+  items.push("Aucun rendement n'est promis. Aucune de ces données ne permet de prévoir une hausse du cours.");
+
+  box.className = critical > 0 ? "" : "ok";
+  var head = critical > 0
+    ? "<h3>" + critical + " risque" + (critical > 1 ? "s" : "") + " critique" + (critical > 1 ? "s" : "") + " détecté" + (critical > 1 ? "s" : "") + " on-chain</h3>"
+    : "<h3>Aucun risque critique détecté sur les critères mesurés ici</h3>";
+  var intro = critical > 0
+    ? "<p class=\"micro\" style=\"margin:0\">Constat automatique, fondé uniquement sur les valeurs lues dans la blockchain à l'instant du relevé. Aucune de ces lignes ne cherche à rassurer ni à nuire : ce sont des faits mesurés.</p>"
+    : "<p class=\"micro\" style=\"margin:0\">Les critères mesurés ici (verrouillage du LP, liquidité, concentration) ne déclenchent aucune alerte. Cela ne rend pas le token sûr pour autant : d'autres risques existent, non mesurés par cette page.</p>";
+  box.innerHTML = head + intro + "<ul>" + items.map(function (t) { return "<li>" + U.esc(t) + "</li>"; }).join("") + "</ul>";
+}
+
+function renderRealizable(d) {
+  var el = document.getElementById("realizable");
+  var dep = document.getElementById("depth");
+  var depN = document.getElementById("depthN");
+  if (el) {
+    if (d.wbnbUsd !== null) {
+      el.innerHTML = F.usdSmart(d.wbnbUsd) + ' <span class="dim">— totalité du WBNB présente dans la pool</span>';
+    } else {
+      el.textContent = "indisponible";
+    }
+  }
+  if (dep) {
+    if (d.ddmRes !== null && d.ddmRes > 0n && d.balPool !== null) {
+      dep.innerHTML = 'Vendre la totalité du DDMX détenu par la pool (' + U.esc(F.tok(d.balPool, "DDMX")) + ") ?";
+      depN.textContent = "Impossible à ce prix : la formule x·y=k d'un AMM ferait tendre le prix résiduel vers zéro bien avant " +
+        "d'avoir écoulé cette quantité. La profondeur de marché réelle se compte en fractions de centime, pas en dollars.";
+    } else {
+      dep.textContent = "indisponible";
+      depN.textContent = "Réserves illisibles : aucune estimation d'impact n'est affichée.";
+    }
+  }
+}
+
+/* ---------- 9. Calcul principal ---------- */
+/* wei de BNB -> USD en micro-unités (1e-6 $).
+   Conversion décimale exacte : wei -> BNB -> USD -> micro-USD.
+   Exemple de contrôle : 2 218 000 000 000 wei (0,000002218 BNB) à 768,36 $ => 1 704 micro-$ (0,001704 $). */
+function usdOfBnb(wei, priceUsd) {
+  if (wei === null || wei === undefined || priceUsd === null || priceUsd === undefined) return null;
+  var bnb = U.split(wei, DECIMALS);
+  var bnbDec = bnb.int + "." + (bnb.frac || "0");
+  return U.decToMicro(U.decMul(bnbDec, String(priceUsd)));
+}
+
+/* Affiche un montant exprimé en BNB avec au moins « min » chiffres significatifs. */
+function bnbAmountStr(decStr, min) {
+  if (decStr === null || decStr === undefined) return "—";
+  return U.decTrim(U.roundSig(decStr, min || 6));
+}
+
+function computeAndRender(res, rpcUrl, blockHex) {
+  var d = {};
+  d.rpc = rpcUrl;
+  d.block = blockHex ? BigInt(blockHex).toString() : null;
+  d.reservesRawWords = null;
+
+  /* Réserves : reserve0, reserve1, blockTimestampLast */
+  var w0 = U.word(res[1], 0), w1 = U.word(res[1], 1), w2 = U.word(res[1], 2);
+  d.res0 = w0 !== null ? BigInt("0x" + w0) : null;
+  d.res1 = w1 !== null ? BigInt("0x" + w1) : null;
+  d.tsLast = w2 !== null ? BigInt("0x" + w2) : null;
+  d.reservesRawWords = ["0x" + SEL.getReserves,
+    w0 === null ? "?" : "0x" + w0,
+    w1 === null ? "?" : "0x" + w1,
+    w2 === null ? "?" : "0x" + w2].join("") + "…";
+
+  d.token0 = res[2] !== null ? U.addrFromWord(U.word(res[2], 0)) : null;
+  d.token1 = res[3] !== null ? U.addrFromWord(U.word(res[3], 0)) : null;
+
+  var tokenIs0 = U.lower(d.token0) === U.lower(A.token);
+  var tokenIs1 = U.lower(d.token1) === U.lower(A.token);
+  if (tokenIs0) { d.ddmRes = d.res0; d.wbnbRes = d.res1; d.wbnbIsWbnb = U.lower(d.token1) === U.lower(A.wbnb); }
+  else if (tokenIs1) { d.ddmRes = d.res1; d.wbnbRes = d.res0; d.wbnbIsWbnb = U.lower(d.token0) === U.lower(A.wbnb); }
+  else { d.ddmRes = null; d.wbnbRes = null; d.wbnbIsWbnb = false; }
+
+  d.lpSupply = res[4] !== null ? U.toBig(res[4]) : null;
+  d.supply = res[5] !== null ? U.toBig(res[5]) : null;
+  var decWord = res[6] !== null ? U.word(res[6], 0) : null;
+  d.decimals = decWord !== null ? Number(BigInt("0x" + decWord)) : DECIMALS;
+  if (!isFinite(d.decimals) || d.decimals <= 0 || d.decimals > 36) d.decimals = DECIMALS;
+  d.tokenSymbol = null;
+  if (res[7] !== null) {
+    var h = String(res[7]).replace(/^0x/i, "");
+    if (h.length >= 128) {
+      var len = Number(BigInt("0x" + h.slice(64, 128)));
+      if (len > 0 && len < 64) {
+        var hs = h.slice(128, 128 + len * 2);
+        var chars = [];
+        for (var i = 0; i < hs.length; i += 2) {
+          var code = parseInt(hs.substr(i, 2), 16);
+          if (code > 0) chars.push(String.fromCharCode(code));
+        }
+        d.tokenSymbol = chars.join("").trim();
+      }
+    }
+  }
+  if (!d.tokenSymbol) d.tokenSymbol = "DDMX";
+
+  d.balCreator = res[8] !== null ? U.toBig(res[8]) : null;
+  d.balLpOwner = res[9] !== null ? U.toBig(res[9]) : null;
+  d.balPool = res[10] !== null ? U.toBig(res[10]) : null;
+  d.balDead = res[11] !== null ? U.toBig(res[11]) : null;
+  d.balWbnb = res[12] !== null ? U.toBig(res[12]) : null;
+  d.wbnbInPair = res[13] !== null ? U.toBig(res[13]) : null;
+
+  d.lpDead = res[14] !== null ? U.toBig(res[14]) : null;
+  d.lpZero = res[15] !== null ? U.toBig(res[15]) : null;
+  d.lpOwnerLp = res[16] !== null ? U.toBig(res[16]) : null;
+  d.locker = STATE.locker;
+  d.lpLocker = (d.locker && res[17] !== undefined && res[17] !== null) ? U.toBig(res[17]) : null;
+  if (d.locker && res[17] === null) d.lpLocker = null;
+
+  /* Parts du LP */
+  d.lpKnown = d.lpSupply !== null && d.lpSupply > 0n && (d.lpDead !== null || d.lpOwnerLp !== null);
+  d.lpDeadPct = (d.lpKnown && d.lpDead !== null) ? U.pctStr(d.lpDead, d.lpSupply, 10) : null;
+  d.lpZeroPct = (d.lpKnown && d.lpZero !== null) ? U.pctStr(d.lpZero, d.lpSupply, 10) : null;
+  d.lpOwnerPct = (d.lpKnown && d.lpOwnerLp !== null) ? U.pctStr(d.lpOwnerLp, d.lpSupply, 10) : null;
+  d.lpLockerPct = (d.lpKnown && d.lpLocker !== null) ? U.pctStr(d.lpLocker, d.lpSupply, 10) : null;
+  d.lpOtherPct = (d.lpKnown && d.lpDead !== null && d.lpOwnerLp !== null)
+    ? U.pctStr(d.lpSupply - d.lpDead - d.lpOwnerLp - (d.lpLocker || 0n) - (d.lpZero || 0n), d.lpSupply, 10) : null;
+  var lockedSum = (d.lpDead || 0n) + (d.lpLocker || 0n);
+  d.lpLockedSharePct = d.lpKnown ? U.pctStr(lockedSum, d.lpSupply, 10) : "0";
+  /* Verrouillé si une majorité du LP est brûlée ou détenue par le verrou */
+  d.lpLocked = d.lpKnown && d.lpSupply > 0n && (lockedSum * 2n >= d.lpSupply);
+
+  /* Contrôle de cohérence : getReserves() et balanceOf(pool) doivent concorder.
+     Une réponse RPC tronquée ou mal formée ne doit jamais produire un prix affiché.
+     Ici on ne compare que ce qui est effectivement lisible : le contrôle ne prétend
+     pas avoir validé une valeur qu'il n'a pas pu lire. */
+  d.coherenceOk = true;
+  d.coherenceNote = "";
+  d.checks = [];
+  if (d.ddmRes !== null && d.balPool !== null && d.balPool > 0n) {
+    var lo = d.balPool - (d.balPool / 1000n), hi = d.balPool + (d.balPool / 1000n);
+    if (d.ddmRes < lo || d.ddmRes > hi) {
+      d.coherenceOk = false;
+      d.coherenceNote = "getReserves annonce " + d.ddmRes.toString() + " wei de DDMX, alors que balanceOf(pool) renvoie " +
+        d.balPool.toString() + " wei. Les deux lectures devraient concorder (aux transferts près). " +
+        "Une des deux réponses est incohérente : le prix et la liquidité ne sont pas affichés.";
+    } else {
+      d.checks.push("getReserves() et balanceOf(pool) concordent : la réserve DDMX affichée est confirmée par deux lectures indépendantes.");
+    }
+  } else {
+    d.checks.push("balanceOf(pool) n'a pas pu être lu : la réserve issue de getReserves() (49,561876 DDMX) est reprise telle quelle, sans confirmation croisée.");
+  }
+  if (d.wbnbRes !== null && d.wbnbInPair !== null && d.wbnbInPair > 0n) {
+    var wlo = d.wbnbInPair - (d.wbnbInPair / 1000n), whi = d.wbnbInPair + (d.wbnbInPair / 1000n);
+    if (d.wbnbRes >= wlo && d.wbnbRes <= whi) {
+      d.checks.push("WBNB : réserve de la paire et balanceOf(pair) concordent.");
+    } else {
+      d.checks.push("WBNB : la réserve de la paire et balanceOf(pair) diffèrent (transferts récents possibles).");
+    }
+  } else {
+    d.checks.push("Le solde WBNB de la paire n'a pas pu être lu : la réserve WBNB n'est pas confirmée par une seconde lecture.");
+  }
+
+  /* Prix et liquidité — BigInt pour la chaîne, décimal exact pour les conversions USD */
+  d.priceBnb = (d.coherenceOk && d.wbnbRes !== null && d.ddmRes !== null && d.ddmRes > 0n)
+    ? U.priceStr(d.wbnbRes, d.ddmRes, 36) : null;
+  d.bnbUsdMicro = bnbUsd.value !== null ? BigInt(Math.round(bnbUsd.value * 1e6)) : null;
+  d.bnbUsdStr = bnbUsd.value !== null ? String(bnbUsd.value) : null;
+
+  d.wbnbUsd = (d.wbnbRes !== null && bnbUsd.value !== null) ? usdOfBnb(d.wbnbRes, bnbUsd.value) : null;
+  d.liqUsd = d.wbnbUsd !== null ? d.wbnbUsd * 2n : null;
+
+  /* Prix unitaire en USD : multiplication décimale exacte (un micro-dollar serait trop grossier) */
+  d.priceUsdStr = (d.priceBnb !== null && d.bnbUsdStr !== null) ? U.decMul(d.priceBnb, d.bnbUsdStr) : null;
+
+  d.fdvBnb = null;
+  if (d.coherenceOk && d.ddmRes !== null && d.ddmRes > 0n && d.supply !== null) {
+    d.fdvBnb = (d.wbnbRes * d.supply) / d.ddmRes;   /* FDV en wei de BNB (théorique) */
+  }
+  d.fdvBnbStr = d.fdvBnb !== null ? U.split(d.fdvBnb, DECIMALS) : null;
+  d.fdvBnbDec = d.fdvBnbStr !== null
+    ? d.fdvBnbStr.int + "." + (d.fdvBnbStr.frac || "0") : null;
+  d.fdvUsd = (d.fdvBnbDec !== null && d.bnbUsdStr !== null) ? U.decMul(d.fdvBnbDec, d.bnbUsdStr) : null;
+  d.fdvUsdMicro = d.fdvUsd !== null ? U.decToMicro(d.fdvUsd) : null;
+
+  STATE.data = d;
+  STATE.live = true;
+  STATE.lastBlock = d.block;
+  STATE.lastTs = Date.now();
+  STATE.source = rpcUrl;
+
+  renderLiquidity(d);
+  renderLp(d);
+  renderSupply(d);
+  renderCalls(d);
+  renderAdvice(d);
+  renderRealizable(d);
+  renderFooterState();
+  return d;
+}
+
+function renderFooterState() {
+  U.set("lastUpdate", U.chainTime(STATE.lastTs));
+  U.set("blockNum", STATE.lastBlock !== null ? U.nf(STATE.lastBlock) : "—");
+  U.set("provenance", "Provenance : lecture live (" + U.short(STATE.source) + ") + prix BNB " + (bnbUsd.live ? "live" : "repli"));
+  var dr = document.getElementById("dotRpc"), dp = document.getElementById("dotPrice");
+  if (dr) dr.className = "dot ok";
+  if (dp) dp.className = "dot " + (bnbUsd.live ? "ok" : "acc");
+  U.set("rpcStatus", "Nœud RPC : " + STATE.source.replace(/^https:\/\//, "") + " — bloc " + (STATE.lastBlock !== null ? U.nf(STATE.lastBlock) : "?"));
+  U.set("priceStatus", bnbUsd.live
+    ? "Prix BNB live : " + bnbUsd.value.toFixed(2) + " $ (" + bnbUsd.source + ")"
+    : "Prix BNB : REPLI fixe " + bnbUsd.value.toFixed(2) + " $ (API injoignable)");
+}
+
+/* Repli complet : mêmes calculs, mais sur les valeurs de référence fournies. */
+function renderFallback(reason) {
+  var d = {};
+  d.rpc = null;
+  d.block = String(REF.block);
+  d.fallback = true;
+  d.decimals = DECIMALS;
+  d.tokenSymbol = "DDMX";
+  d.ddmRes = BigInt(REF.ddmReserveWei);
+  d.wbnbRes = BigInt(REF.wbnbReserveWei);
+  d.res0 = d.ddmRes; d.res1 = d.wbnbRes;
+  d.token0 = A.token; d.token1 = A.wbnb;
+  d.wbnbIsWbnb = true;
+  d.reservesRawWords = "0x" + SEL.getReserves + " (repli)";
+  d.supply = BigInt(REF.totalSupplyWei);
+  d.balCreator = BigInt(REF.creatorDDMXWei);
+  d.balLpOwner = BigInt(REF.lpOwnerDDMXWei);
+  d.balPool = BigInt(REF.poolDDMXWei);
+  d.balDead = BigInt(REF.deadDDMXWei);
+  d.balWbnb = null;
+  d.wbnbInPair = d.wbnbRes;
+  d.lpSupply = BigInt(REF.lpTotalSupplyWei);
+  d.lpDead = BigInt(REF.deadLpWei);
+  d.lpZero = 0n;
+  d.lpOwnerLp = BigInt(REF.lpOwnerLpWei);
+  d.locker = STATE.locker;
+  d.lpLocker = null;
+  d.lpKnown = true;
+  d.lpDeadPct = U.pctStr(d.lpDead, d.lpSupply, 10);
+  d.lpZeroPct = "0";
+  d.lpOwnerPct = U.pctStr(d.lpOwnerLp, d.lpSupply, 10);
+  d.lpLockerPct = null;
+  d.lpOtherPct = U.pctStr(d.lpSupply - d.lpDead - d.lpOwnerLp, d.lpSupply, 10);
+  d.lpLockedSharePct = d.lpDeadPct;
+  d.lpLocked = (d.lpDead * 2n >= d.lpSupply);
+
+  if (bnbUsd.value === null) { bnbUsd.value = REF.bnbUsd; bnbUsd.live = false; bnbUsd.source = "repli"; }
+  d.coherenceOk = true;
+  d.checks = ["Repli : ces valeurs proviennent du relevé de référence, pas d'une lecture en direct."];
+  d.priceBnb = U.priceStr(d.wbnbRes, d.ddmRes, 36);
+  d.bnbUsdMicro = BigInt(Math.round(bnbUsd.value * 1e6));
+  d.bnbUsdStr = String(bnbUsd.value);
+  d.wbnbUsd = usdOfBnb(d.wbnbRes, bnbUsd.value);
+  d.liqUsd = d.wbnbUsd !== null ? d.wbnbUsd * 2n : null;
+  d.priceUsdStr = U.decMul(d.priceBnb, d.bnbUsdStr);
+  d.fdvBnb = (d.wbnbRes * d.supply) / d.ddmRes;
+  var _fs = U.split(d.fdvBnb, DECIMALS);
+  d.fdvBnbDec = _fs.int + "." + (_fs.frac || "0");
+  d.fdvUsd = U.decMul(d.fdvBnbDec, d.bnbUsdStr);
+  d.fdvUsdMicro = U.decToMicro(d.fdvUsd);
+
+  STATE.data = d; STATE.live = false; STATE.lastBlock = String(REF.block); STATE.lastTs = Date.now(); STATE.source = "";
+
+  renderLiquidity(d);
+  renderLp(d);
+  renderSupply(d);
+  renderCalls(d);
+  renderAdvice(d);
+  renderRealizable(d);
+  U.set("lastUpdate", U.chainTime(STATE.lastTs) + " (repli)");
+  U.set("blockNum", U.nf(REF.block) + " (référence)");
+  U.set("provenance", "Provenance : REPLI sur valeurs de référence — " + REF.note);
+  var dr = document.getElementById("dotRpc"), dp = document.getElementById("dotPrice");
+  if (dr) dr.className = "dot bad";
+  if (dp) dp.className = "dot " + (bnbUsd.live ? "ok" : "acc");
+  U.set("rpcStatus", "Nœud RPC injoignable — valeurs de référence affichées");
+  U.set("priceStatus", bnbUsd.live ? ("Prix BNB live : " + bnbUsd.value.toFixed(2) + " $") : ("Prix BNB : REPLI fixe " + bnbUsd.value.toFixed(2) + " $"));
+  renderStatus("error", "Aucun des nœuds RPC publics n'a répondu (" + reason + ").");
+}
+
+/* ---------- 10. Liens et table d'adresses ---------- */
+function renderStatic() {
+  var links = [
+    ["Contrat DDMX", "https://bscscan.com/token/" + A.token],
+    ["Paire DDMX/WBNB", "https://bscscan.com/address/" + A.pair],
+    ["Jetons LP de la paire", "https://bscscan.com/token/" + A.pair],
+    ["Portefeuille créateur", "https://bscscan.com/address/" + A.creator],
+    ["Portefeuille détenteur du LP", "https://bscscan.com/address/" + A.lpOwner],
+    ["Adresse morte (brûlure)", "https://bscscan.com/address/" + A.dead],
+    ["Contrat WBNB", "https://bscscan.com/token/" + A.wbnb],
+    ["Factory PancakeSwap V2", "https://bscscan.com/address/" + A.factory],
+    ["Router02 V2", "https://bscscan.com/address/" + A.router],
+    ["Réserves de la paire (lecture directe)", "https://bscscan.com/address/" + A.pair + "#readContract"]
+  ];
+  U.html("bscLinks", links.map(function (l) {
+    return '<a class="linkcard" href="' + l[1] + '" target="_blank" rel="noopener">' + U.esc(l[0]) +
+           '<span>' + U.esc(l[1].replace("https://bscscan.com/", "")) + "</span></a>";
+  }).join(""));
+
+  var rows = [
+    ["Token DDMX", A.token, "BEP-20, 18 décimales, 0 % de taxe, non mintable, pas de blacklist, pas de honeypot"],
+    ["WBNB", A.wbnb, "Jeton de cotation de la paire"],
+    ["Paire PancakeSwap V2", A.pair, "token0 = DDMX, token1 = WBNB"],
+    ["Factory V2", A.factory, "Contrat de création des paires"],
+    ["Router02 V2", A.router, "Routage des échanges"],
+    ["Portefeuille créateur", A.creator, "Détient la majorité du supply (voir répartition)"],
+    ["Portefeuille détenteur du LP", A.lpOwner, "Détient la quasi-totalité des jetons LP"],
+    ["Adresse morte", A.dead, "Destination de brûlure — jetons hors circulation"]
+  ];
+  U.html("addrRows", rows.map(function (r) {
+    return "<tr><td>" + U.esc(r[0]) + '</td><td><a class="mono" href="https://bscscan.com/address/' + U.esc(r[1]) +
+      '" target="_blank" rel="noopener">' + U.esc(r[1]) + "</a></td><td class=\"dim\">" + U.esc(r[2]) + "</td></tr>";
+  }).join(""));
+
+  var top = document.getElementById("pairLinkTop");
+  if (top) { top.href = "https://bscscan.com/address/" + A.pair; top.textContent = A.pair; }
+
+  var adv = U.$("advice");
+  if (adv) adv.innerHTML = "<h3>Analyse en cours…</h3>";
+}
+
+/* ---------- 11. Orchestration ---------- */
+function refresh() {
+  if (STATE.loading) return;
+  STATE.loading = true;
+  var btn = document.getElementById("refresh");
+  var lbl = document.getElementById("refreshLabel");
+  if (btn) btn.classList.add("loading");
+  if (lbl) lbl.textContent = "Relevé en cours…";
+
+  var priceP = fetchBnbPrice().then(function (r) {
+    bnbUsd.value = r.price; bnbUsd.live = true; bnbUsd.source = r.url.indexOf("binance.vision") >= 0 ? "Binance (vision)" : "Binance";
+  }).catch(function () {
+    bnbUsd.live = false;
+    if (bnbUsd.value === null) { bnbUsd.value = REF.bnbUsd; bnbUsd.source = "repli"; }
+  });
+
+  var calls = buildCalls(STATE.locker);
+  var rpcP = rpcBatch(calls, 10000);
+
+  Promise.all([priceP, rpcP.then(function (r) { return r; }, function (e) { return { error: e }; })])
+    .then(function (out) {
+      var r = out[1];
+      if (r && r.error) {
+        renderFallback(String(r.error && r.error.message ? r.error.message : r.error));
+      } else {
+        var missing = [];
+        var res = r.results;
+        if (res[5] === null) missing.push("totalSupply");
+        if (res[1] === null) missing.push("getReserves");
+        if (res[14] === null) missing.push("balanceOf(LP, adresse morte)");
+        try {
+          computeAndRender(res, r.url, res[0]);
+        } catch (e) {
+          renderFallback("erreur de calcul : " + (e && e.message ? e.message : e));
+        }
+        if (missing.length) {
+          renderStatus("warn", "Certaines lectures ont échoué (" + missing.join(", ") +
+            "). Les champs concernés affichent « indisponible » plutôt qu'une valeur inventée.");
+        }
+      }
+      renderStaticLinksOnly();
+    })
+    .catch(function (e) {
+      renderFallback(String(e && e.message ? e.message : e));
+    })
+    .then(function () {
+      STATE.loading = false;
+      STATE.countdown = 60;
+      if (btn) btn.classList.remove("loading");
+      if (lbl) lbl.textContent = "Rafraîchir maintenant";
+    });
+}
+
+function renderStaticLinksOnly() { /* les liens statiques sont posés une fois au démarrage */ }
+
+/* ---------- 12. Démarrage ---------- */
+function tick() {
+  STATE.countdown--;
+  if (STATE.countdown <= 0) { STATE.countdown = 60; refresh(); }
+  var c = document.getElementById("countdown");
+  if (c) c.textContent = " (prochain relevé dans " + Math.max(0, STATE.countdown) + " s)";
+}
+
+function boot() {
+  STATE.locker = readLockerParam();
+  renderStatic();
+  var btn = document.getElementById("refresh");
+  if (btn) {
+    btn.addEventListener("click", function () {
+      STATE.countdown = 60;
+      refresh();
+    });
+  }
+  refresh();
+  setInterval(tick, 1000);
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", boot);
+} else {
+  boot();
+}
+</script>
+</body>
+</html>

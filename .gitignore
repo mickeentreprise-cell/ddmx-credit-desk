@@ -1,0 +1,5 @@
+
+# identifiants PayPal — jamais publies
+_PAYPAL/
+*.env
+identifiants.json
