@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Le scanner est gratuit et public. On veut qu'il soit indexe.
+# Les fichiers techniques ne servent a rien aux moteurs.
+
+Disallow: /ddmx_tout_en_un.py
+Disallow: /render.yaml
+Disallow: /COMMENT-DEPLOYER.md
+
+Sitemap: https://mickeentreprise-cell.github.io/ddmx-credit-desk/sitemap.xml
