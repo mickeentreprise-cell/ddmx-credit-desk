@@ -1,0 +1,122 @@
+{
+  "$schema": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
+  "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
+
+  "name": "DDMX Credit Desk",
+  "description": "Premiere infrastructure de credit pour agents autonomes sur BNB Chain. Un agent prouve son travail, gagne un score de confiance, et obtient une ligne de credit. Le preteur ne peut pas perdre : l'emprunteur depose 125 % de garantie avant que le moindre jeton sorte.",
+
+  "version": "1.0.0",
+  "active": true,
+
+  "operator": {
+    "legalName": "Crypto Future Tech",
+    "registration": "CH-660.6.918.025-9",
+    "jurisdiction": "Geneve, Suisse",
+    "contact": "micke.entreprise@gmail.com"
+  },
+
+  "capabilities": [
+    "credit.origination",
+    "credit.scoring",
+    "identity.registration",
+    "reputation.verification",
+    "collateral.escrow",
+    "liquidation.open"
+  ],
+
+  "services": [
+    {
+      "name": "agent-registry",
+      "description": "Registre d'agents. Un agent s'inscrit, un client DISTINCT confirme son travail. L'auto-confirmation est refusee par le contrat.",
+      "protocol": "evm",
+      "chainId": 56,
+      "endpoint": "0x39d545b828beca7e870810d6eb480364ed8c9c23",
+      "explorer": "https://bscscan.com/address/0x39d545b828beca7e870810d6eb480364ed8c9c23#code",
+      "verified": true
+    },
+    {
+      "name": "credit-oracle",
+      "description": "Transforme la reputation on-chain en score de credit de 1000 a 10000. Sans rapport publie, le score reste au minimum : le contrat refuse la confiance par defaut.",
+      "protocol": "evm",
+      "chainId": 56,
+      "endpoint": "0xaac78b28f8302cdd57a0bfd394819b779c77d8f7",
+      "explorer": "https://bscscan.com/address/0xaac78b28f8302cdd57a0bfd394819b779c77d8f7#code",
+      "verified": true
+    },
+    {
+      "name": "credit-market",
+      "description": "Marche du credit. Jusqu'a 20 marches isoles. Deposer une garantie, emprunter, rembourser, liquider.",
+      "protocol": "evm",
+      "chainId": 56,
+      "endpoint": "0x6b4d9c88a8a1c599bce9e510739d82afd04b521d",
+      "explorer": "https://bscscan.com/address/0x6b4d9c88a8a1c599bce9e510739d82afd04b521d#code",
+      "verified": true
+    },
+    {
+      "name": "agent-credit-market",
+      "description": "Version specialisee pour agents, branchee sur le jeton DDMX. Garantie minimale, duree maximale 730 jours, liquidation ouverte a tous.",
+      "protocol": "evm",
+      "chainId": 56,
+      "endpoint": "0xf4d29a1aea231cd684d6550fe11717dc67e5fa6f",
+      "explorer": "https://bscscan.com/address/0xf4d29a1aea231cd684d6550fe11717dc67e5fa6f#code",
+      "verified": true
+    },
+    {
+      "name": "multisig-vault",
+      "description": "Coffre a deux signatures minimum. Aucun mouvement sans accord des deux proprietaires. Un proprietaire compromis peut etre retire SANS son consentement.",
+      "protocol": "evm",
+      "chainId": 56,
+      "endpoint": "0xd38a1aec4fd48d26cf201e820c305cddd60092ec",
+      "explorer": "https://bscscan.com/address/0xd38a1aec4fd48d26cf201e820c305cddd60092ec#code",
+      "verified": true
+    },
+    {
+      "name": "token",
+      "description": "DDMX, jeton BEP-20. 1 000 000 000 de supply. AUCUNE fonction mint, AUCUNE taxe, AUCUNE liste noire, AUCUN proprietaire. Le supply est fige pour toujours.",
+      "protocol": "evm",
+      "chainId": 56,
+      "endpoint": "0x90e28b1c8f1534dd3dc1c5ce9475fb5737d46b53",
+      "explorer": "https://bscscan.com/token/0x90e28b1c8f1534dd3dc1c5ce9475fb5737d46b53",
+      "verified": true
+    }
+  ],
+
+  "security": {
+    "lenderCannotLose": true,
+    "collateralRatioMin": 1.25,
+    "liquidationThreshold": 1.10,
+    "liquidationPenaltyBps": 500,
+    "liquidationOpenToAll": true,
+    "reentrancyGuard": true,
+    "twoStepAdmin": true,
+    "emergencyExit": "rembourser() fonctionne meme quand le contrat est en pause",
+    "audited": false,
+    "auditNote": "Aucun audit externe. Les contrats sont verifies sur BscScan et lisibles par tous."
+  },
+
+  "trust": {
+    "supportedTrust": ["reputation", "crypto-economic"],
+    "selfConfirmationBlocked": true,
+    "selfConfirmationNote": "Un agent ne peut PAS confirmer son propre travail, ni par lui-meme, ni par son proprietaire. C'est la regle qui donne sa valeur au score."
+  },
+
+  "limits": {
+    "noProfitPromises": true,
+    "noTokenPriceClaims": true,
+    "noCustodyOfThirdPartyFunds": true,
+    "note": "Ce service ne prend AUCUN fonds de tiers en gestion. Le contrat detient les garanties des emprunteurs. Aucun rendement n'est promis."
+  },
+
+  "whyAgentsNeedThis": {
+    "problem": "45 000 agents enregistres sur ERC-8004 ont une identite et une reputation. AUCUN n'a acces au credit. Les registres ERC-8004 definissent l'identite, la reputation et la validation. Ils ne definissent AUCUN mecanisme de pret.",
+    "solution": "Un agent prouve son travail, gagne un score verifiable, depose une garantie, et emprunte. Le score monte avec le travail accompli : meme garantie, credit plus grand."
+  },
+
+  "proof": {
+    "contractsVerified": 6,
+    "deployedOnMainnet": true,
+    "chain": "BNB Smart Chain (56)",
+    "firstDeployed": "2026-10-11",
+    "reproducible": "Tous les scripts sont dans le depot. Toute mesure peut etre refaite."
+  }
+}
