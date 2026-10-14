@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Token Risk API — BEP-20 risk checks, pay per call, for agents</title>
+<meta name="description" content="BEP-20 token risk checks over x402. Pay 0.02 USDC per call in USDC on BNB Chain. No account, no API key. Built for autonomous agents.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://mickeentreprise-cell.github.io/ddmx-credit-desk/api/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mickeentreprise-cell.github.io/ddmx-credit-desk/api/">
+<meta property="og:title" content="Token Risk API — for autonomous agents">
+<meta property="og:description" content="Pay 0.02 USDC per call on BNB Chain. No account, no API key, no signup.">
+<meta property="og:site_name" content="Crypto Future Tech">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Token Risk API — for autonomous agents">
+<meta name="twitter:description" content="BEP-20 risk checks over x402. 0.02 USDC per call.">
+<link rel="alternate" type="application/json" href="agent-card.json">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebAPI",
+  "name": "Token Risk API",
+  "description": "BEP-20 token risk checks, pay per call in USDC over x402.",
+  "url": "https://mickeentreprise-cell.github.io/ddmx-credit-desk/api/",
+  "documentation": "https://mickeentreprise-cell.github.io/ddmx-credit-desk/api/",
+  "provider": {
+    "@type": "Organization",
+    "name": "Crypto Future Tech",
+    "address": {"@type": "PostalAddress", "addressLocality": "Geneva", "addressCountry": "CH"}
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "0.02",
+    "priceCurrency": "USDC",
+    "description": "Per API call"
+  }
+}
+</script>
+<style>
+  :root{--bg:#0a0b0e;--surf:#111318;--surf2:#171a21;--line:#22262f;
+        --txt:#eef1f6;--mut:#8b93a3;--or:#f0b429;--ok:#34d399;--bleu:#5b9dff}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);
+       font:16px/1.65 ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;
+       max-width:820px;margin:0 auto;padding:26px 20px 70px}
+  h1{font-size:28px;letter-spacing:-.7px;margin-bottom:7px}
+  h2{font-size:17px;margin:30px 0 11px;color:var(--or);letter-spacing:-.2px}
+  p{color:var(--mut);font-size:15px;margin-bottom:12px}
+  code,pre{font-family:ui-monospace,Consolas,monospace;font-size:13px}
+  code{background:var(--surf2);padding:2px 6px;border-radius:4px;color:var(--txt)}
+  pre{background:var(--surf);border:1px solid var(--line);border-radius:10px;
+      padding:15px;overflow-x:auto;color:#c8d0dd;line-height:1.55;margin-bottom:12px}
+  table{width:100%;border-collapse:collapse;margin:13px 0;font-size:14px}
+  th,td{text-align:left;padding:10px 9px;border-bottom:1px solid var(--line);
+        vertical-align:top}
+  th{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.85px}
+  .p{color:var(--ok);font-family:ui-monospace,monospace;white-space:nowrap}
+  .f{color:var(--mut)}
+  .n{background:#0d0f14;border-left:3px solid var(--or);border-radius:0 9px 9px 0;
+     padding:14px 16px;font-size:14.5px;color:#c8d0dd;margin:18px 0;line-height:1.6}
+  .w{background:#1a1010;border-left:3px solid #f87171;border-radius:0 9px 9px 0;
+     padding:14px 16px;font-size:14.5px;color:#f0c8c8;margin:18px 0;line-height:1.6}
+  .grille{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+          gap:11px;margin:16px 0}
+  .carte{background:var(--surf);border:1px solid var(--line);border-radius:11px;
+         padding:15px}
+  .carte .v{font-size:22px;font-weight:700;letter-spacing:-.5px;
+            font-family:ui-monospace,monospace}
+  .carte .l{color:var(--mut);font-size:12px;text-transform:uppercase;
+            letter-spacing:.7px;font-weight:700;margin-bottom:4px}
+  a{color:var(--bleu);text-decoration:none}
+  footer{color:var(--mut);font-size:12.5px;margin-top:38px;line-height:1.8;
+         border-top:1px solid var(--line);padding-top:18px}
+</style>
+</head>
+<body>
+
+<h1>Token Risk API</h1>
+<p>BEP-20 token risk checks, pay per call in USDC on BNB Chain.
+<b>No account. No API key. No signup.</b> Built for autonomous agents.</p>
+
+<div class="grille">
+  <div class="carte"><div class="l">Price per call</div>
+    <div class="v">0.02 USDC</div></div>
+  <div class="carte"><div class="l">Protocol</div>
+    <div class="v">x402</div></div>
+  <div class="carte"><div class="l">Network</div>
+    <div class="v">BNB Chain</div></div>
+  <div class="carte"><div class="l">Account needed</div>
+    <div class="v">None</div></div>
+</div>
+
+<div class="n">
+<b>Why an agent pays two cents for this.</b><br>
+An agent that interacts with an unknown token has exactly one problem:
+is it dangerous? Negotiating with a human takes days. This answers in one
+HTTP call, for two cents, with no human in the loop.
+</div>
+
+<h2>Endpoints</h2>
+<table>
+<tr><th>Endpoint</th><th>Price</th><th>Returns</th></tr>
+<tr>
+  <td><code>GET /v1/scan/0x&lt;addr&gt;</code></td>
+  <td class="p">0.02 USDC</td>
+  <td>owner(), paused(), blacklist selectors, mint selectors, code size,
+      risk verdict, score, <b>and the analysis limitations</b></td>
+</tr>
+<tr>
+  <td><code>POST /v1/scan-batch</code></td>
+  <td class="p">0.15 USDC</td>
+  <td>up to 20 addresses in one call</td>
+</tr>
+<tr>
+  <td><code>GET /v1/approvals/0x&lt;addr&gt;</code></td>
+  <td class="p">0.05 USDC</td>
+  <td>token balances worth reviewing for unlimited allowances</td>
+</tr>
+</table>
+
+<h2>Free, permanently</h2>
+<table>
+<tr><td><code>GET /</code></td><td class="f">this page</td></tr>
+<tr><td><code>GET /health</code></td><td class="f">service status</td></tr>
+<tr><td><code>GET /v1/pricing</code></td>
+    <td class="f">machine-readable pricing</td></tr>
+<tr><td><code>GET /.well-known/agent-card.json</code></td>
+    <td class="f"><a href="agent-card.json">A2A agent card</a></td></tr>
+</table>
+
+<h2>How payment works</h2>
+<p>Standard x402. Call the endpoint without payment. The server answers
+<code>402 Payment Required</code> with the requirements. Pay in USDC on
+BNB Chain. Retry with the receipt.</p>
+
+<pre>{
+  "scheme": "x402",
+  "network": "eip155:56",
+  "asset": "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+  "assetSymbol": "USDC",
+  "payTo": "0xe905752828DB27A9b5a07BB77091CDc5F5728144",
+  "maxAmountRequired": "20000000000000000"
+}</pre>
+
+<p>USDC on BNB Chain uses <b>18 decimals</b>. 0.02 USDC is
+<code>20000000000000000</code>.</p>
+
+<h2>Example response</h2>
+<pre>{
+  "address": "0x90e28b1c8f1534dd3dc1c5ce9475fb5737d46b53",
+  "token": {
+    "name": "DDMX",
+    "symbol": "DDMX",
+    "decimals": 18
+  },
+  "code_size_bytes": 1779,
+  "checks": [
+    {"id": "owner",     "status": "pass",
+     "detail": "no owner() function responds"},
+    {"id": "pause",     "status": "pass",
+     "detail": "no pause function detected"},
+    {"id": "blacklist", "status": "pass",
+     "detail": "no blacklist selector in bytecode"},
+    {"id": "mint",      "status": "pass",
+     "detail": "no mint selector in bytecode"},
+    {"id": "tax",       "status": "unknown",
+     "detail": "Tax cannot be measured by static analysis."},
+    {"id": "code_size", "status": "pass",
+     "detail": "simple token size: 1779 bytes"}
+  ],
+  "score_out_of_10": 8,
+  "verdict": "LOW_RISK",
+  "limitations": "This scan does not prove safety. ..."
+}</pre>
+
+<h2>What this service does NOT do</h2>
+<div class="w">
+<b>Read this before you buy.</b><br><br>
+&bull; It does <b>not</b> prove a token is safe.<br>
+&bull; It does <b>not</b> measure the transfer tax. Tax requires simulating
+a buy and a sell. A static read cannot see it. The API returns
+<code>"status": "unknown"</code> rather than guessing.<br>
+&bull; It does <b>not</b> predict price, and never will.<br>
+&bull; Every response carries a <code>limitations</code> field.
+It is not decorative. Read it.
+</div>
+
+<h2>Why we publish our own limits</h2>
+<p>Most scanners return a green "safe" score, which implies a guarantee
+static analysis cannot give. This one returns its checks, the evidence for
+each, and the ones it cannot answer. Run it on our own token and it returns
+<b>8/10, not 10/10</b> — because two checks genuinely cannot be resolved by
+reading bytecode.</p>
+
+<footer>
+Crypto Future Tech — sole proprietorship, Geneva, Switzerland
+(CH-660.6.918.025-9).<br>
+No return, yield or price is promised. No third-party funds are held:
+payments go directly to the beneficiary address.<br>
+Service discovery: <code>/.well-known/agent-card.json</code> ·
+<a href="agent-card.json">agent-card.json</a>
+</footer>
+
+</body>
+</html>

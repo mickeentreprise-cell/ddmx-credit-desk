@@ -1,0 +1,62 @@
+{
+  "name": "Token Risk API",
+  "description": "BEP-20 token risk checks, pay per call in USDC. Built for autonomous agents. No account, no API key, no signup.",
+  "version": "1.0.0",
+  "protocolVersion": "1.0",
+  "url": "https://mickeentreprise-cell.github.io/ddmx-credit-desk/api/",
+  "preferredTransport": "HTTP+JSON",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false
+  },
+  "defaultInputModes": ["application/json"],
+  "defaultOutputModes": ["application/json"],
+  "provider": {
+    "organization": "Crypto Future Tech",
+    "url": "https://mickeentreprise-cell.github.io/ddmx-credit-desk/entreprise/"
+  },
+  "skills": [
+    {
+      "id": "scan-token",
+      "name": "Scan a BEP-20 token",
+      "description": "Checks owner(), paused(), blacklist selectors, mint selectors and code size. Returns a risk verdict, a score out of 10, and an explicit list of what the analysis cannot determine.",
+      "tags": ["bnb-chain", "bep20", "security", "token", "x402"],
+      "examples": [
+        "Is 0x90e28b1c8f1534dd3dc1c5ce9475fb5737d46b53 safe to interact with?",
+        "Check this token for a hidden mint function."
+      ]
+    },
+    {
+      "id": "scan-batch",
+      "name": "Scan up to 20 tokens at once",
+      "description": "Same checks as scan-token, applied to a list of up to 20 addresses in a single call.",
+      "tags": ["bnb-chain", "bep20", "security", "batch", "x402"]
+    },
+    {
+      "id": "audit-approvals",
+      "name": "Audit token approvals",
+      "description": "Reports token balances worth reviewing for unlimited allowances. Points to revoke.cash for the complete audit.",
+      "tags": ["bnb-chain", "security", "revoke", "allowance", "x402"]
+    }
+  ],
+  "payment": {
+    "protocol": "x402",
+    "scheme": "exact",
+    "network": "eip155:56",
+    "asset": "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+    "assetSymbol": "USDC",
+    "payTo": "0xe905752828DB27A9b5a07BB77091CDc5F5728144",
+    "pricing": {
+      "scan-token": "0.02",
+      "scan-batch": "0.15",
+      "audit-approvals": "0.05"
+    },
+    "currency": "USDC"
+  },
+  "limits": {
+    "doesNotProveSafety": true,
+    "doesNotMeasureTax": true,
+    "doesNotPredictPrice": true,
+    "statement": "This service does not prove a token is safe. It reads what is readable on-chain. Tax cannot be measured by static analysis. Every response includes its own limitations."
+  }
+}
