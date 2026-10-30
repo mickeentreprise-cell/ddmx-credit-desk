@@ -8,4 +8,4 @@ Disallow: /ddmx_tout_en_un.py
 Disallow: /render.yaml
 Disallow: /COMMENT-DEPLOYER.md
 
-Sitemap: https://mickeentreprise-cell.github.io/ddmx-credit-desk/sitemap.xml
+Sitemap: https://cryptofuturetech.org/sitemap.xml
