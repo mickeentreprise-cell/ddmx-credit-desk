@@ -89,6 +89,10 @@
   .btn-second{border-color:var(--bord);color:var(--texte);background:#0e1117}
   .btn-second:hover{border-color:var(--gris);text-decoration:none}
   .petit{font-size:13px;color:var(--gris);margin:14px 0 0}
+  .qr-paypal{display:flex;gap:16px;align-items:center;border-top:1px solid var(--bord);margin-top:18px;padding-top:18px;flex-wrap:wrap}
+  .qr-paypal img{width:132px;height:132px;border-radius:10px;background:#fff;padding:8px;box-shadow:0 6px 18px rgba(0,0,0,.35);flex:0 0 auto}
+  .qr-paypal p{margin:0;font-size:13.5px;color:var(--gris);flex:1 1 220px;line-height:1.55}
+  .qr-paypal strong{color:var(--texte)}
   section{padding:46px 0;border-bottom:1px solid var(--bord)}
   h2{font-size:clamp(21px,3vw,26px);margin:0 0 12px;font-weight:650}
   h2.or{color:var(--or);font-weight:500;font-family:Georgia,serif}
@@ -183,6 +187,15 @@
           et, dans la note, l'adresse e-mail où recevoir le fichier. Carte bancaire ou
           PayPal. Remboursé sous 14 jours si vous n'avez pas redistribué le fichier.
         </p>
+        <div class="qr-paypal">
+          <img src="qr-paypal-me.png" width="132" height="132" loading="lazy"
+               alt="Code QR PayPal — profil de l'entreprise pour payer le livre 4 €">
+          <p>
+            <strong>Ou scannez ce code</strong> avec l'appareil photo de votre téléphone :
+            il ouvre le profil PayPal de l'entreprise. Indiquez <strong>4 €</strong> et
+            votre e-mail en note.
+          </p>
+        </div>
       </div>
     </div>
   </div>
