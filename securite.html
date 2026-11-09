@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sécurité — comment votre argent et vos agents sont protégés · Crypto Future Tech</title>
+<meta name="description" content="Modèle de sécurité du marché de crédit DDMX : l'administrateur ne peut pas retirer les fonds, les garanties sont bornées, le remboursement reste possible en pause, tout est vérifiable sur BscScan.">
+<link rel="canonical" href="https://cryptofuturetech.org/securite.html">
+<meta name="robots" content="index, follow">
+<style>
+  :root{--fond:#0a0b0f;--carte:#12151c;--bord:#232833;--texte:#e8eaed;--gris:#9aa3b0;--or:#d8b26e;--or2:#b48c4a;--vert:#2ea043;--rouge:#e86565}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fond);color:var(--texte);font-family:"Segoe UI",Arial,sans-serif;line-height:1.65}
+  .bande{background:linear-gradient(90deg,#12151c,#1a1f2b);border-bottom:1px solid var(--bord);padding:10px 20px;font-size:13px;color:var(--gris);text-align:center}
+  .bande a{color:var(--or);text-decoration:none}
+  header.entete{max-width:900px;margin:0 auto;padding:54px 20px 10px;text-align:center}
+  .sur{color:var(--or);font-size:13px;letter-spacing:.16em;text-transform:uppercase}
+  h1{margin:12px 0 10px;font-size:40px;line-height:1.15;font-family:Georgia,serif;font-weight:600}
+  main{max-width:900px;margin:0 auto;padding:20px 20px 60px}
+  .carte{background:var(--carte);border:1px solid var(--bord);border-radius:16px;padding:22px 24px;margin:20px 0}
+  h2{font-size:21px;margin:0 0 10px;color:var(--or);font-family:Georgia,serif;font-weight:600}
+  ul{margin:0;padding-left:20px} li{margin:7px 0}
+  table{width:100%;border-collapse:collapse;font-size:14.5px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--bord);vertical-align:top}
+  th{color:var(--or);font-weight:600}
+  .ok{color:var(--vert);font-weight:700}
+  .non{color:var(--rouge);font-weight:700}
+  code{background:#0d1219;padding:2px 6px;border-radius:6px;font-size:13px;word-break:break-all}
+  .note{color:var(--gris);font-size:13.5px}
+  footer{border-top:1px solid var(--bord);color:var(--gris);font-size:13px;text-align:center;padding:26px 20px}
+  footer a{color:var(--or);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="bande">Crypto Future Tech · Genève · <a href="/">accueil</a> · <a href="/ai/">AI Credit Desk</a> · <a href="/audit.html">audit 90 €</a></div>
+
+<header class="entete">
+  <div class="sur">Transparence</div>
+  <h1>Vos fonds ne sont pas chez nous.<br>Ils sont dans le contrat.</h1>
+  <p class="note" style="max-width:680px;margin:10px auto 0">Le marché de crédit n'a pas de caisse administrable. Les jetons sont détenus par le contrat, et les règles sont écrites dedans. Voici exactement ce qui protège les utilisateurs — et ce que l'administrateur peut ou ne peut pas faire.</p>
+</header>
+
+<main>
+  <div class="carte">
+    <h2>Les cinq protections réelles</h2>
+    <table>
+      <tr><th>Protection</th><th>Comment elle fonctionne</th></tr>
+      <tr><td><b>Aucun retrait admin</b></td><td>Le contrat <b>n'a aucune fonction</b> permettant à l'administrateur de retirer les jetons. Les seuls transferts sortants vont à l'emprunteur, au liquidateur et à l'agent qui retire sa garantie. <span class="ok">✅ vérifié dans le code</span></td></tr>
+      <tr><td><b>Garantie 150 %</b></td><td>Un agent ne peut emprunter que 150 % de sa garantie (jusqu'à 300 % après des remboursements réussis). La garantie est déposée <b>avant</b> tout transfert. <span class="ok">✅</span></td></tr>
+      <tr><td><b>Bornes immuables</b></td><td>Taux maximum, durée maximum (365 jours), nombre de prêts par agent (3), ratio de garantie : ce sont des <code>constant</code> dans le code. L'admin ne peut pas les dépasser. <span class="ok">✅</span></td></tr>
+      <tr><td><b>Remboursement toujours ouvert</b></td><td>Même si le marché est en pause, <code>rembourser()</code> fonctionne : personne ne peut être bloqué dans sa dette. <span class="ok">✅</span></td></tr>
+      <tr><td><b>Tout est public</b></td><td>Code, adresses, soldes, transactions : vérifiables sur BscScan par n'importe qui, sans notre permission. <span class="ok">✅</span></td></tr>
+    </table>
+  </div>
+
+  <div class="carte">
+    <h2>Ce que l'administrateur peut faire — et ne peut pas faire</h2>
+    <table>
+      <tr><th>Peut</th><th>Ne peut pas</th></tr>
+      <tr>
+        <td>
+          <ul>
+            <li>ajuster le taux, dans la borne maximum</li>
+            <li>ajuster le ratio de garantie, entre 100 % et 300 %</li>
+            <li>fixer la garantie minimale et les capitaux min/max</li>
+            <li>ouvrir ou fermer les inscriptions</li>
+            <li>mettre le marché en pause</li>
+            <li>bloquer un agent précis</li>
+            <li>proposer un changement d'admin (en 2 étapes)</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li><span class="non">retirer les jetons du marché</span></li>
+            <li><span class="non">modifier les bornes immuables</span></li>
+            <li><span class="non">empêcher un remboursement</span></li>
+            <li><span class="non">saisir une garantie sans échéance dépassée</span></li>
+            <li><span class="non">changer l'adresse d'un transfert</span></li>
+            <li><span class="non">changer l'admin seul</span></li>
+          </ul>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="carte">
+    <h2>Ce que nous corrigeons avant l'ouverture</h2>
+    <ul>
+      <li><b>Bug de remboursement trouvé en test</b> (calcul de la dette) → corrigé dans la version 2, déjà compilée. Aucun utilisateur n'a été exposé : le défaut a été découvert pendant la phase pilote.</li>
+      <li><b>Recommandation en cours :</b> ajouter un coffre à deux signatures pour l'administration, et un délai de sécurité avant tout changement de paramètre.</li>
+      <li><b>Aucune souscription publique</b> : l'accès se fait sur dossier, avec vérification d'identité et document de risques signé.</li>
+    </ul>
+  </div>
+
+  <div class="carte">
+    <h2>Sécurité du site</h2>
+    <ul>
+      <li>Pages statiques, hébergées sur GitHub Pages, en <b>HTTPS</b>.</li>
+      <li><b>Aucun formulaire</b>, aucune base de données, aucun cookie de suivi.</li>
+      <li><b>Aucune donnée personnelle</b> collectée par ce site : le contact se fait par e-mail.</li>
+      <li>Les paiements sont traités par <b>PayPal</b> ; aucune carte ne transite par ce site.</li>
+      <li>Aucune clé privée, aucun secret, aucune clé d'API dans le code des pages.</li>
+    </ul>
+  </div>
+
+  <div class="carte">
+    <h2>Vérifier vous-même</h2>
+    <p class="note">Contrat du marché (BNB Chain) :<br><code>0xf4d29a1aea231cd684d6550fe11717dc67e5fa6f</code></p>
+    <p class="note">Jeton DDMX :<br><code>0x90e28b1c8f1534dd3dc1c5ce9475fb5737d46b53</code></p>
+    <p class="note" style="margin-top:10px">Ouvrez ces adresses sur BscScan : le code est public, les soldes sont lisibles, et vous pouvez vérifier chaque transaction.</p>
+  </div>
+</main>
+
+<footer>
+  Crypto Future Tech — Genève, Suisse · CH-660.6.918.025-9<br>
+  <a href="/">Accueil</a> · <a href="/ai/">AI Credit Desk</a> · <a href="/audit.html">Audit 90 €</a> · <a href="/livre/">Le livre</a>
+</footer>
+</body>
+</html>
