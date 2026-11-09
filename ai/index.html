@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Credit Desk — le crédit des agents IA · Crypto Future Tech</title>
+<meta name="description" content="Un marché de crédit on-chain pour les agents IA : les agents empruntent pour payer leur inférence, les fournisseurs de liquidité perçoivent les intérêts. Accès sur demande, risques documentés, aucune promesse de rendement.">
+<link rel="canonical" href="https://cryptofuturetech.org/ai/">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cryptofuturetech.org/ai/">
+<meta property="og:title" content="AI Credit Desk — le crédit des agents IA">
+<meta property="og:description" content="Les agents IA empruntent pour payer leur inférence. Les fournisseurs de liquidité perçoivent les intérêts. Marché on-chain, accès sur demande, risques réels.">
+<meta property="og:site_name" content="Crypto Future Tech">
+<meta property="og:locale" content="fr_FR">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "AI Credit Desk — le crédit des agents IA",
+  "url": "https://cryptofuturetech.org/ai/",
+  "description": "Marché de crédit on-chain pour agents IA : emprunts pour financer l'inférence, intérêts versés aux fournisseurs de liquidité. Accès sur demande, aucune promesse de rendement.",
+  "publisher": {"@type": "Organization", "name": "Crypto Future Tech", "address": {"@type": "PostalAddress", "addressLocality": "Genève", "addressCountry": "CH"}}
+}
+</script>
+<style>
+  :root{--fond:#0a0b0f;--carte:#12151c;--bord:#232833;--texte:#e8eaed;--gris:#9aa3b0;--or:#d8b26e;--or2:#b48c4a;--bleu:#6ea8fe;--vert:#2ea043;--rouge:#e86565}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fond);color:var(--texte);font-family:"Segoe UI",Arial,sans-serif;line-height:1.65}
+  .bande{background:linear-gradient(90deg,#12151c,#1a1f2b);border-bottom:1px solid var(--bord);padding:10px 20px;font-size:13px;color:var(--gris);text-align:center}
+  .bande a{color:var(--or);text-decoration:none}
+  header.entete{max-width:900px;margin:0 auto;padding:56px 20px 8px;text-align:center}
+  .sur{color:var(--or);font-size:13px;letter-spacing:.16em;text-transform:uppercase}
+  h1{margin:12px 0 10px;font-size:42px;line-height:1.12;font-family:Georgia,serif;font-weight:600}
+  h1 span{color:var(--or)}
+  .sous{color:var(--gris);font-size:18px;margin:0 auto;max-width:700px}
+  main{max-width:900px;margin:0 auto;padding:22px 20px 60px}
+  .carte{background:var(--carte);border:1px solid var(--bord);border-radius:16px;padding:24px 26px;margin:22px 0}
+  h2{font-size:22px;margin:0 0 12px;color:var(--or);font-family:Georgia,serif;font-weight:600}
+  h3{font-size:17px;margin:18px 0 6px;color:var(--texte)}
+  ul{margin:0;padding-left:20px} li{margin:8px 0}
+  .grille{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:720px){.grille{grid-template-columns:1fr}h1{font-size:30px}}
+  .chiffre{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #1b2432;font-size:15px}
+  .chiffre:last-child{border-bottom:none}
+  .chiffre b{font-variant-numeric:tabular-nums;text-align:right;color:var(--or)}
+  .etape{display:flex;gap:14px;margin:14px 0}
+  .numero{flex:0 0 34px;height:34px;border-radius:50%;background:#1d2330;border:1px solid var(--or2);color:var(--or);display:flex;align-items:center;justify-content:center;font-weight:700}
+  .bouton{display:inline-block;background:var(--or);color:#161104;font-weight:700;font-size:17px;padding:14px 26px;border-radius:12px;text-decoration:none}
+  .bouton:hover{background:#e6c584}
+  .bouton.second{background:#1e2836;color:#cdd6e4}
+  .avertissement{border-left:3px solid var(--rouge);background:#1a1215;padding:14px 18px;border-radius:0 10px 10px 0;color:#e6b4b4;font-size:14px;margin:18px 0}
+  .note{color:var(--gris);font-size:13.5px}
+  footer{border-top:1px solid var(--bord);color:var(--gris);font-size:13px;text-align:center;padding:26px 20px}
+  footer a{color:var(--or);text-decoration:none}
+  code{background:#0d1219;padding:2px 6px;border-radius:6px;font-size:13px;word-break:break-all}
+</style>
+</head>
+<body>
+<div class="bande">Crypto Future Tech · Genève · <a href="/">accueil</a> · <a href="/audit.html">audit 90 €</a> · <a href="/livre/">le livre</a></div>
+
+<header class="entete">
+  <div class="sur">AI Credit Desk · phase pilote</div>
+  <h1>Les agents IA empruntent.<br><span>La liquidité est rémunérée.</span></h1>
+  <p class="sous">Un marché de crédit on-chain où des agents IA empruntent de quoi payer leur inférence, et où les fournisseurs de liquidité perçoivent les intérêts. Pas de promesse : des règles écrites dans le contrat, vérifiables par tous.</p>
+</header>
+
+<main>
+  <div class="carte">
+    <h2>L'idée, en quatre lignes</h2>
+    <div class="etape"><div class="numero">1</div><div><b>Un agent IA a besoin de crédit</b> pour payer ses appels de modèle, son stockage ou ses outils. Il dépose une garantie.</div></div>
+    <div class="etape"><div class="numero">2</div><div><b>Le marché lui prête</b> selon une ligne de crédit calculée à partir de sa garantie et de sa réputation on-chain.</div></div>
+    <div class="etape"><div class="numero">3</div><div><b>L'agent rembourse</b> capital + intérêts. Chaque remboursement augmente sa réputation et sa ligne.</div></div>
+    <div class="etape"><div class="numero">4</div><div><b>Les intérêts vont à la liquidité</b> qui a financé le prêt. Si l'agent ne rembourse pas, la garantie est saisie : la perte est bornée, pas supprimée.</div></div>
+  </div>
+
+  <div class="grille">
+    <div class="carte">
+      <h2>État du marché — vérifiable on-chain</h2>
+      <div class="chiffre"><span>Réserve disponible</span><b>99 990 004 DDMX</b></div>
+      <div class="chiffre"><span>Capital prêté en cours</span><b>0 DDMX</b></div>
+      <div class="chiffre"><span>Agents enregistrés</span><b>0</b></div>
+      <div class="chiffre"><span>Prêts ouverts</span><b>0</b></div>
+      <div class="chiffre"><span>Garantie minimale</span><b>1 000 000 DDMX</b></div>
+      <div class="chiffre"><span>Ratio de garantie</span><b>150 %</b></div>
+      <p class="note" style="margin-top:12px">Lecture publique du contrat, mise à jour manuellement à chaque évolution. Contrat : <code>0xf4d29a1aea231cd684d6550fe11717dc67e5fa6f</code> (BNB Chain). Jeton : DDMX <code>0x90e28b1c8f1534dd3dc1c5ce9475fb5737d46b53</code>.</p>
+    </div>
+    <div class="carte">
+      <h2>Phase pilote — ce que ça veut dire</h2>
+      <ul>
+        <li>Le protocole est <b>déployé et testé</b> : emprunt, garantie et liquidation ont été exécutés sur la chaîne.</li>
+        <li>Le <b>remboursement</b> a été corrigé après un défaut de calcul détecté en test — la version 2 est prête.</li>
+        <li><b>Aucun rendement</b> n'est affiché : sans emprunteur, il n'y a pas d'intérêt. Les chiffres ci-contre sont réels, y compris à zéro.</li>
+        <li>Le volume viendra des agents et des services payés en DDMX. C'est le travail en cours.</li>
+      </ul>
+      <p class="note">Nous préférons un zéro honnête à un rendement inventé.</p>
+    </div>
+  </div>
+
+  <div class="carte">
+    <h2>Deux portes d'entrée</h2>
+    <h3>Pour les équipes qui construisent des agents</h3>
+    <p>Votre agent peut obtenir une ligne de crédit en déposant une garantie en DDMX. Pas de dossier, pas de banque : le contrat vérifie la garantie et la réputation, puis prête. Documentation et exemple de code sur demande.</p>
+    <p style="margin-top:14px"><a class="bouton second" href="mailto:micke.entreprise@gmail.com?subject=AI%20Credit%20Desk%20—%20accès%20emprunteur">Demander l'accès emprunteur</a></p>
+
+    <h3 style="margin-top:22px">Pour les fournisseurs de liquidité</h3>
+    <p>Apporter de la liquidité au marché, c'est fournir de quoi prêter. Les intérêts payés par les agents reviennent à cette liquidité. <b>Aucun rendement n'est garanti</b> : il dépend des emprunts réellement souscrits et remboursés, et un défaut peut faire perdre une partie du capital.</p>
+    <p class="note">L'accès investisseur se fait sur demande, après vérification de l'identité et signature d'un document de risques. Il n'y a <b>aucune souscription publique en ligne</b> sur cette page.</p>
+    <p style="margin-top:14px"><a class="bouton" href="mailto:micke.entreprise@gmail.com?subject=AI%20Credit%20Desk%20—%20demande%20d'accès%20investisseur">Demander l'accès investisseur</a></p>
+  </div>
+
+  <div class="carte">
+    <h2>Ce que cette page n'est pas</h2>
+    <div class="avertissement">
+      <p><b>Ni une offre au public, ni un conseil en investissement, ni une promesse de rendement.</b></p>
+      <p style="margin:8px 0 0">Investir dans des actifs numériques comporte un risque de perte totale. Les rendements éventuels ne sont ni garantis ni fixes. Aucun capital n'est collecté via cette page. Toute relation investisseur passe par un entretien, une vérification d'identité et un document de risques signé. La réglementation applicable (Suisse, FINMA ; UE, MiCA) peut évoluer et conditionner l'accès.</p>
+    </div>
+    <p class="note">Crypto Future Tech est une raison individuelle suisse (CH-660.6.918.025-9). Les contrats sont publics et vérifiables ; nous ne détenons ni ne gérons les fonds des utilisateurs.</p>
+  </div>
+
+  <div class="carte">
+    <h2>Feuille de route</h2>
+    <ul>
+      <li><b>Phase 1 — fait.</b> Contrats déployés sur BNB Chain, marché financé, cycle complet testé (garantie, emprunt, liquidation).</li>
+      <li><b>Phase 2 — en cours.</b> Version 2 corrigée, premier agent emprunteur réel, service payable en DDMX (audit de contrat, accès API).</li>
+      <li><b>Phase 3 — à venir.</b> Ouverture encadrée aux fournisseurs de liquidité, avec suivi des performances réellement mesurées.</li>
+    </ul>
+    <p style="margin-top:18px" class="note">Toute demande : <a href="mailto:micke.entreprise@gmail.com" style="color:var(--or)">micke.entreprise@gmail.com</a></p>
+  </div>
+</main>
+
+<footer>
+  Crypto Future Tech — Genève, Suisse · CH-660.6.918.025-9<br>
+  <a href="/">Accueil</a> · <a href="/audit.html">Audit 90 €</a> · <a href="/livre/">Le livre</a> · <a href="/catalogue.html">Catalogue</a>
+</footer>
+</body>
+</html>
