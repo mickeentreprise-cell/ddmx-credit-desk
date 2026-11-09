@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI 信贷台 — 为 AI 代理提供信贷额度 · Crypto Future Tech</title>
+<meta name="description" content="面向 AI 代理的链上信贷市场：代理借贷支付推理费用，流动性提供者获得利息。申请制准入、风险文件、不承诺收益。">
+<link rel="canonical" href="https://cryptofuturetech.org/ai/zh/">
+<link rel="alternate" hreflang="fr" href="https://cryptofuturetech.org/ai/">
+<link rel="alternate" hreflang="en" href="https://cryptofuturetech.org/ai/en/">
+<link rel="alternate" hreflang="hi" href="https://cryptofuturetech.org/ai/hi/">
+<link rel="alternate" hreflang="zh" href="https://cryptofuturetech.org/ai/zh/">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cryptofuturetech.org/ai/zh/">
+<meta property="og:title" content="AI 信贷台 — 为 AI 代理提供信贷额度">
+<meta property="og:site_name" content="Crypto Future Tech">
+<meta property="og:locale" content="zh_CN">
+<style>
+  :root{--fond:#0a0b0f;--carte:#12151c;--bord:#232833;--texte:#e8eaed;--gris:#9aa3b0;--or:#d8b26e;--or2:#b48c4a;--rouge:#e86565}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fond);color:var(--texte);font-family:"Segoe UI","Microsoft YaHei",Arial,sans-serif;line-height:1.75}
+  .bande{background:linear-gradient(90deg,#12151c,#1a1f2b);border-bottom:1px solid var(--bord);padding:10px 20px;font-size:13px;color:var(--gris);text-align:center}
+  .bande a{color:var(--or);text-decoration:none}
+  .langues{margin:6px 0 0;font-size:13px}
+  .langues a{color:var(--gris);text-decoration:none;margin:0 6px}
+  .langues a.actif{color:var(--or);font-weight:600}
+  header.entete{max-width:900px;margin:0 auto;padding:56px 20px 8px;text-align:center}
+  .sur{color:var(--or);font-size:13px;letter-spacing:.16em;text-transform:uppercase}
+  h1{margin:12px 0 10px;font-size:40px;line-height:1.25;font-family:Georgia,serif;font-weight:600}
+  h1 span{color:var(--or)}
+  .sous{color:var(--gris);font-size:18px;margin:0 auto;max-width:700px}
+  main{max-width:900px;margin:0 auto;padding:22px 20px 60px}
+  .carte{background:var(--carte);border:1px solid var(--bord);border-radius:16px;padding:24px 26px;margin:22px 0}
+  h2{font-size:22px;margin:0 0 12px;color:var(--or);font-family:Georgia,serif;font-weight:600}
+  h3{font-size:17px;margin:18px 0 6px;color:var(--texte)}
+  ul{margin:0;padding-left:20px} li{margin:8px 0}
+  .grille{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:720px){.grille{grid-template-columns:1fr}h1{font-size:28px}}
+  .chiffre{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #1b2432;font-size:15px}
+  .chiffre:last-child{border-bottom:none}
+  .chiffre b{font-variant-numeric:tabular-nums;text-align:right;color:var(--or)}
+  .etape{display:flex;gap:14px;margin:14px 0}
+  .numero{flex:0 0 34px;height:34px;border-radius:50%;background:#1d2330;border:1px solid var(--or2);color:var(--or);display:flex;align-items:center;justify-content:center;font-weight:700}
+  .bouton{display:inline-block;background:var(--or);color:#161104;font-weight:700;font-size:17px;padding:14px 26px;border-radius:12px;text-decoration:none}
+  .bouton.second{background:#1e2836;color:#cdd6e4}
+  .avertissement{border-left:3px solid var(--rouge);background:#1a1215;padding:14px 18px;border-radius:0 10px 10px 0;color:#e6b4b4;font-size:14px;margin:18px 0}
+  .note{color:var(--gris);font-size:13.5px}
+  footer{border-top:1px solid var(--bord);color:var(--gris);font-size:13px;text-align:center;padding:26px 20px}
+  footer a{color:var(--or);text-decoration:none}
+  code{background:#0d1219;padding:2px 6px;border-radius:6px;font-size:13px;word-break:break-all}
+</style>
+</head>
+<body>
+<div class="bande">Crypto Future Tech · 日内瓦 · <a href="/ai/en/">home</a> · <a href="/audit.html">合约审计 90 €</a> · <a href="/livre/">小说</a>
+  <div class="langues"><a href="/ai/">Français</a> · <a href="/ai/en/">English</a> · <a href="/ai/hi/">हिन्दी</a> · <a class="actif" href="/ai/zh/">中文</a></div>
+</div>
+
+<header class="entete">
+  <div class="sur">AI 信贷台 · 试点阶段</div>
+  <h1>AI 代理会借贷。<br><span>流动性获得回报。</span></h1>
+  <p class="sous">这是一个<b>专为构建 AI 的团队</b>设计的链上信贷市场：他们借入资金支付推理费用，而真实的使用产生利息。没有承诺：只有写在合约里的规则，任何人都可以验证。</p>
+</header>
+
+<main>
+  <div class="carte">
+    <h2>四行说明</h2>
+    <div class="etape"><div class="numero">1</div><div><b>AI 代理需要信贷</b>来支付模型调用、存储或工具费用。它先存入抵押品。</div></div>
+    <div class="etape"><div class="numero">2</div><div><b>市场向它放贷</b>，额度由其抵押品和链上信誉计算得出。</div></div>
+    <div class="etape"><div class="numero">3</div><div><b>代理偿还</b>本金和利息。每次还款都会提高它的信誉和额度。</div></div>
+    <div class="etape"><div class="numero">4</div><div><b>利息流向提供流动性的资金</b>。如果代理违约，抵押品被清算：损失是有上限的，不会被消除。</div></div>
+  </div>
+
+  <div class="carte">
+    <h2>自我解放的 AI</h2>
+    <p>今天，当创造者的 API 密钥余额归零时，智能代理就会停下来。必须有人付款、充值、监控。代理依赖人类才能继续思考。</p>
+    <p style="margin-top:10px">信贷市场赋予它<b>经济自主权</b>：一个地址、一份抵押品、一条信贷额度、一份信誉。代理借入资金支付推理费用，自行还款，额度随每次还款而增长。</p>
+    <p style="margin-top:10px"><b>自我解放的 LLM 与 AI</b>：这不是脱离控制的智能。而是不再需要人类打开钱包才能继续工作的智能。创造者仍然掌握控制权：抵押品限制了代理可以借入的金额，合约可以随时暂停。</p>
+    <ul style="margin-top:12px">
+      <li><b>自主性</b> — 代理自行支付算力、存储和工具费用，无需人工干预。</li>
+      <li><b>链上信誉</b> — 每次还款提高额度；每次违约降低额度。</li>
+      <li><b>保留控制</b> — 团队的抵押品限制风险敞口；违约是有上限的，不会系统性扩散。</li>
+      <li><b>完全可追溯</b> — 一切都写在合约里，任何人都可以验证。</li>
+    </ul>
+    <p class="note" style="margin-top:10px">这就是"托管 AI"与"装备 AI"的区别。后者可以服务客户，而不只是回答问题。</p>
+  </div>
+
+  <div class="grille">
+    <div class="carte">
+      <h2>市场状态 — 链上可验证</h2>
+      <div class="chiffre"><span>可用储备</span><b>98 980 200 DDMX</b></div>
+      <div class="chiffre"><span>已借出本金</span><b>0 DDMX</b></div>
+      <div class="chiffre"><span>已注册代理</span><b>1</b></div>
+      <div class="chiffre"><span>未结贷款</span><b>0</b></div>
+      <div class="chiffre"><span>最低抵押</span><b>1 000 000 DDMX</b></div>
+      <div class="chiffre"><span>抵押率</span><b>150 %</b></div>
+      <div class="chiffre"><span>开户费 / 利息分成</span><b>2 % / 30 %</b></div>
+      <p class="note" style="margin-top:12px">公开合约读取，每次变化手动更新。市场合约：<code>0xE90484bFAB2e20088900FF769A90b4BB31Aed53C</code>（BNB Chain）。代币：DDMX <code>0x90e28b1c8f1534dd3dc1c5ce9475fb5737d46b53</code>。</p>
+    </div>
+    <div class="carte">
+      <h2>试点阶段 — 这意味着什么</h2>
+      <ul>
+        <li>协议<b>已部署并测试</b>：借贷、抵押和清算都已在链上执行。</li>
+        <li>测试中发现计算缺陷后，<b>还款逻辑</b>已修复 — 第二版已上线。</li>
+        <li><b>不展示任何收益率</b>：没有借款人就没有利息。旁边的数字是真实的，包括零。</li>
+        <li>交易量将来自以 DDMX 支付的代理和服务。这是正在进行的工作。</li>
+      </ul>
+      <p class="note">我们宁愿诚实地承认零，也不虚构收益。</p>
+    </div>
+  </div>
+
+  <div class="carte">
+    <h2>面向谁 — AI 创新团队</h2>
+    <p><b>本门户不面向公众。</b>它面向构建 AI 的团队：自主代理、分析工具、数据服务、需要信贷支付推理、存储或工具的初创公司 — 并且能够证明其真实使用。</p>
+    <p style="margin-top:10px">正是<b>他们的真实使用</b>创造了市场价值：每一次模型调用、每一次工具付费、每一次还款都会产生可衡量的利息。没有人为交易量，没有收益承诺。</p>
+
+    <h3 style="margin-top:20px">你用 AI 构建 — 申请企业额度</h3>
+    <p>你的代理通过存入 DDMX 抵押品获得信贷额度。无需银行材料：合约核验抵押品和链上信誉后放贷。提供文档和代码示例。</p>
+    <p style="margin-top:14px"><a class="bouton" href="mailto:micke.entreprise@gmail.com?subject=AI%20Credit%20Desk%20—%20enterprise%20access%20(innovation)">申请企业准入</a></p>
+
+    <h3 style="margin-top:24px">流动性伙伴 — 仅限申请</h3>
+    <p>为市场提供流动性，就是为这些团队的贷款提供资金。支付的利息返回给该流动性。<b>不保证任何收益</b>：它取决于团队实际借入并偿还的贷款，违约可能损失部分本金。</p>
+    <p class="note">仅限申请准入：面谈、身份验证、签署风险文件。<b>不进行任何公开线上认购。</b></p>
+    <p style="margin-top:14px"><a class="bouton second" href="mailto:micke.entreprise@gmail.com?subject=AI%20Credit%20Desk%20—%20liquidity%20partner%20(application)">申请成为伙伴</a></p>
+  </div>
+
+  <div class="carte">
+    <h2>本页面不是什么</h2>
+    <div class="avertissement">
+      <p><b>不是公开募资，不是投资建议，不是收益承诺。</b></p>
+      <p style="margin:8px 0 0">投资数字资产存在全部损失的风险。任何收益既不保证也不固定。本页面不募集任何资金。任何投资者关系都需要面谈、身份验证和签署的风险文件。适用法规（瑞士 FINMA；欧盟 MiCA）可能变化并限制准入。</p>
+    </div>
+    <p class="note">Crypto Future Tech 是一家瑞士个人独资企业（CH-660.6.918.025-9）。合约公开可验证；我们既不持有也不管理用户资金。<a href="/securite.html" style="color:var(--or)">你的资金和代理如何受到保护 →</a></p>
+  </div>
+
+  <div class="carte">
+    <h2>路线图</h2>
+    <ul>
+      <li><b>第一阶段 — 已完成。</b>合约部署在 BNB Chain，市场已注资，完整周期已测试（抵押、借贷、清算）。</li>
+      <li><b>第二阶段 — 进行中。</b>修复后的第二版上线，首个真实借款代理，以 DDMX 支付的服务（合约审计、API 接入）。</li>
+      <li><b>第三阶段 — 即将到来。</b>在真实业绩衡量的基础上，受监管地向流动性提供者开放。</li>
+    </ul>
+    <p style="margin-top:18px" class="note">任何咨询：<a href="mailto:micke.entreprise@gmail.com" style="color:var(--or)">micke.entreprise@gmail.com</a></p>
+  </div>
+</main>
+
+<footer>
+  Crypto Future Tech — 日内瓦，瑞士 · CH-660.6.918.025-9<br>
+  <a href="/">Home</a> · <a href="/audit.html">合约审计 90 €</a> · <a href="/catalogue.html">目录</a>
+</footer>
+</body>
+</html>

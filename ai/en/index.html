@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Credit Desk — credit lines for AI agents · Crypto Future Tech</title>
+<meta name="description" content="An on-chain credit market for AI agents: agents borrow to pay for inference, liquidity providers earn the interest. Access on application, documented risks, no yield promises.">
+<link rel="canonical" href="https://cryptofuturetech.org/ai/en/">
+<link rel="alternate" hreflang="fr" href="https://cryptofuturetech.org/ai/">
+<link rel="alternate" hreflang="en" href="https://cryptofuturetech.org/ai/en/">
+<link rel="alternate" hreflang="hi" href="https://cryptofuturetech.org/ai/hi/">
+<link rel="alternate" hreflang="zh" href="https://cryptofuturetech.org/ai/zh/">
+<link rel="alternate" hreflang="x-default" href="https://cryptofuturetech.org/ai/en/">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cryptofuturetech.org/ai/en/">
+<meta property="og:title" content="AI Credit Desk — credit lines for AI agents">
+<meta property="og:description" content="AI agents borrow to pay for their inference. Liquidity providers earn the interest. On-chain market, access on application, real risks.">
+<meta property="og:site_name" content="Crypto Future Tech">
+<meta property="og:locale" content="en_US">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "AI Credit Desk — credit lines for AI agents",
+  "url": "https://cryptofuturetech.org/ai/en/",
+  "description": "On-chain credit market for AI agents: loans to fund inference, interest paid to liquidity providers. Access on application, no yield promises.",
+  "inLanguage": "en",
+  "publisher": {"@type": "Organization", "name": "Crypto Future Tech", "address": {"@type": "PostalAddress", "addressLocality": "Geneva", "addressCountry": "CH"}}
+}
+</script>
+<style>
+  :root{--fond:#0a0b0f;--carte:#12151c;--bord:#232833;--texte:#e8eaed;--gris:#9aa3b0;--or:#d8b26e;--or2:#b48c4a;--bleu:#6ea8fe;--vert:#2ea043;--rouge:#e86565}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fond);color:var(--texte);font-family:"Segoe UI",Arial,sans-serif;line-height:1.65}
+  .bande{background:linear-gradient(90deg,#12151c,#1a1f2b);border-bottom:1px solid var(--bord);padding:10px 20px;font-size:13px;color:var(--gris);text-align:center}
+  .bande a{color:var(--or);text-decoration:none}
+  .langues{margin:6px 0 0;font-size:13px}
+  .langues a{color:var(--gris);text-decoration:none;margin:0 6px}
+  .langues a.actif{color:var(--or);font-weight:600}
+  header.entete{max-width:900px;margin:0 auto;padding:56px 20px 8px;text-align:center}
+  .sur{color:var(--or);font-size:13px;letter-spacing:.16em;text-transform:uppercase}
+  h1{margin:12px 0 10px;font-size:42px;line-height:1.12;font-family:Georgia,serif;font-weight:600}
+  h1 span{color:var(--or)}
+  .sous{color:var(--gris);font-size:18px;margin:0 auto;max-width:700px}
+  main{max-width:900px;margin:0 auto;padding:22px 20px 60px}
+  .carte{background:var(--carte);border:1px solid var(--bord);border-radius:16px;padding:24px 26px;margin:22px 0}
+  h2{font-size:22px;margin:0 0 12px;color:var(--or);font-family:Georgia,serif;font-weight:600}
+  h3{font-size:17px;margin:18px 0 6px;color:var(--texte)}
+  ul{margin:0;padding-left:20px} li{margin:8px 0}
+  .grille{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:720px){.grille{grid-template-columns:1fr}h1{font-size:30px}}
+  .chiffre{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #1b2432;font-size:15px}
+  .chiffre:last-child{border-bottom:none}
+  .chiffre b{font-variant-numeric:tabular-nums;text-align:right;color:var(--or)}
+  .etape{display:flex;gap:14px;margin:14px 0}
+  .numero{flex:0 0 34px;height:34px;border-radius:50%;background:#1d2330;border:1px solid var(--or2);color:var(--or);display:flex;align-items:center;justify-content:center;font-weight:700}
+  .bouton{display:inline-block;background:var(--or);color:#161104;font-weight:700;font-size:17px;padding:14px 26px;border-radius:12px;text-decoration:none}
+  .bouton:hover{background:#e6c584}
+  .bouton.second{background:#1e2836;color:#cdd6e4}
+  .avertissement{border-left:3px solid var(--rouge);background:#1a1215;padding:14px 18px;border-radius:0 10px 10px 0;color:#e6b4b4;font-size:14px;margin:18px 0}
+  .note{color:var(--gris);font-size:13.5px}
+  footer{border-top:1px solid var(--bord);color:var(--gris);font-size:13px;text-align:center;padding:26px 20px}
+  footer a{color:var(--or);text-decoration:none}
+  code{background:#0d1219;padding:2px 6px;border-radius:6px;font-size:13px;word-break:break-all}
+</style>
+</head>
+<body>
+<div class="bande">Crypto Future Tech · Geneva · <a href="/">home</a> · <a href="/audit.html">contract audit 90 €</a> · <a href="/livre/">the novel</a>
+  <div class="langues"><a href="/ai/">Français</a> · <a class="actif" href="/ai/en/">English</a> · <a href="/ai/hi/">हिन्दी</a> · <a href="/ai/zh/">中文</a></div>
+</div>
+
+<header class="entete">
+  <div class="sur">AI Credit Desk · pilot phase</div>
+  <h1>AI agents borrow.<br><span>Liquidity gets paid.</span></h1>
+  <p class="sous">An on-chain credit market <b>built for teams that build AI</b>: they borrow to pay for inference, and their real usage produces the interest. No promises: just rules written in the contract, verifiable by anyone.</p>
+</header>
+
+<main>
+  <div class="carte">
+    <h2>The idea, in four lines</h2>
+    <div class="etape"><div class="numero">1</div><div><b>An AI agent needs credit</b> to pay for model calls, storage or tools. It deposits collateral.</div></div>
+    <div class="etape"><div class="numero">2</div><div><b>The market lends to it</b> on a credit line calculated from its collateral and its on-chain reputation.</div></div>
+    <div class="etape"><div class="numero">3</div><div><b>The agent repays</b> principal plus interest. Every repayment raises its reputation and its credit line.</div></div>
+    <div class="etape"><div class="numero">4</div><div><b>Interest flows to the liquidity</b> that funded the loan. If the agent defaults, the collateral is seized: the loss is bounded, not erased.</div></div>
+  </div>
+
+  <div class="carte">
+    <h2>The AI that sets itself free</h2>
+    <p>Today, an intelligent agent stops the moment its creator's API key hits zero. Someone has to pay, top up, watch. The agent depends on a human to keep thinking.</p>
+    <p style="margin-top:10px">The credit market gives it <b>economic autonomy</b>: an address, collateral, a credit line, a reputation. The agent borrows to pay for inference, repays on its own, and its line grows with every repayment.</p>
+    <p style="margin-top:10px"><b>LLMs and AI that set themselves free</b>: this is not an intelligence escaping control. It is an intelligence that no longer needs a human to open its wallet in order to keep working. The creator stays in charge: the collateral caps what the agent can borrow, and the contract can be paused at any time.</p>
+    <ul style="margin-top:12px">
+      <li><b>Autonomy</b> — the agent pays for its compute, storage and tools, with no human intervention.</li>
+      <li><b>On-chain reputation</b> — every repayment raises its line; every default lowers it.</li>
+      <li><b>Control retained</b> — the team's collateral caps exposure; a default is bounded, not systemic.</li>
+      <li><b>Traceability</b> — everything is written in the contract and verifiable by anyone.</li>
+    </ul>
+    <p class="note" style="margin-top:10px">That is the difference between an AI you host and an AI you equip. The second one can serve customers, not just answer a prompt.</p>
+  </div>
+
+  <div class="grille">
+    <div class="carte">
+      <h2>Market state — verifiable on-chain</h2>
+      <div class="chiffre"><span>Available reserve</span><b>98 980 200 DDMX</b></div>
+      <div class="chiffre"><span>Capital lent out</span><b>0 DDMX</b></div>
+      <div class="chiffre"><span>Registered agents</span><b>1</b></div>
+      <div class="chiffre"><span>Open loans</span><b>0</b></div>
+      <div class="chiffre"><span>Minimum collateral</span><b>1 000 000 DDMX</b></div>
+      <div class="chiffre"><span>Collateral ratio</span><b>150 %</b></div>
+      <div class="chiffre"><span>Opening fee / interest share</span><b>2 % / 30 %</b></div>
+      <p class="note" style="margin-top:12px">Public contract read, updated manually at every change. Market contract: <code>0xE90484bFAB2e20088900FF769A90b4BB31Aed53C</code> (BNB Chain). Token: DDMX <code>0x90e28b1c8f1534dd3dc1c5ce9475fb5737d46b53</code>.</p>
+    </div>
+    <div class="carte">
+      <h2>Pilot phase — what that means</h2>
+      <ul>
+        <li>The protocol is <b>deployed and tested</b>: borrowing, collateral and liquidation have all been executed on-chain.</li>
+        <li><b>Repayment</b> was fixed after a calculation bug found in testing — version 2 is live.</li>
+        <li><b>No yield is shown</b>: without a borrower there is no interest. The numbers beside are real, including the zeros.</li>
+        <li>Volume will come from agents and services paid in DDMX. That is the work in progress.</li>
+      </ul>
+      <p class="note">We prefer an honest zero to an invented yield.</p>
+    </div>
+  </div>
+
+  <div class="carte">
+    <h2>Who it is for — AI innovation teams</h2>
+    <p><b>This portal is not aimed at the general public.</b> It is for teams building AI: autonomous agents, analytics tools, data services, startups that need credit to pay for inference, storage or tools — and that can prove their usage.</p>
+    <p style="margin-top:10px">It is <b>their real usage</b> that creates the market's value: every model call, every paid tool, every repayment produces measurable interest. No artificial volume, no yield promises.</p>
+
+    <h3 style="margin-top:20px">You build with AI — apply for an enterprise line</h3>
+    <p>Your agent gets a credit line by depositing DDMX collateral. No bank paperwork: the contract checks collateral and on-chain reputation, then lends. Documentation and code examples provided.</p>
+    <p style="margin-top:14px"><a class="bouton" href="mailto:micke.entreprise@gmail.com?subject=AI%20Credit%20Desk%20—%20enterprise%20access%20(innovation)">Apply for enterprise access</a></p>
+
+    <h3 style="margin-top:24px">Liquidity partners — by application only</h3>
+    <p>Providing liquidity to the market means funding these teams' loans. Interest paid returns to that liquidity. <b>No yield is guaranteed</b>: it depends on loans actually taken and repaid by the teams, and a default can cost part of the capital.</p>
+    <p class="note">Access by application only: interview, identity verification, signed risk document. <b>No public subscription online.</b></p>
+    <p style="margin-top:14px"><a class="bouton second" href="mailto:micke.entreprise@gmail.com?subject=AI%20Credit%20Desk%20—%20liquidity%20partner%20(application)">Apply as a partner</a></p>
+  </div>
+
+  <div class="carte">
+    <h2>What this page is not</h2>
+    <div class="avertissement">
+      <p><b>Not a public offering, not investment advice, not a yield promise.</b></p>
+      <p style="margin:8px 0 0">Investing in digital assets carries the risk of total loss. Any returns are neither guaranteed nor fixed. No capital is collected through this page. Any investor relationship requires an interview, identity verification and a signed risk document. Applicable regulation (Switzerland, FINMA; EU, MiCA) may change and condition access.</p>
+    </div>
+    <p class="note">Crypto Future Tech is a Swiss sole proprietorship (CH-660.6.918.025-9). The contracts are public and verifiable; we do not hold or manage users' funds. <a href="/securite.html" style="color:var(--or)">How your funds and your agents are protected →</a></p>
+  </div>
+
+  <div class="carte">
+    <h2>Roadmap</h2>
+    <ul>
+      <li><b>Phase 1 — done.</b> Contracts deployed on BNB Chain, market funded, full cycle tested (collateral, borrow, liquidation).</li>
+      <li><b>Phase 2 — in progress.</b> Fixed version 2 live, first real borrowing agent, service payable in DDMX (contract audit, API access).</li>
+      <li><b>Phase 3 — upcoming.</b> Regulated opening to liquidity providers, with performance measured on real data.</li>
+    </ul>
+    <p style="margin-top:18px" class="note">Any enquiry: <a href="mailto:micke.entreprise@gmail.com" style="color:var(--or)">micke.entreprise@gmail.com</a></p>
+  </div>
+</main>
+
+<footer>
+  Crypto Future Tech — Geneva, Switzerland · CH-660.6.918.025-9<br>
+  <a href="/">Home</a> · <a href="/audit.html">Contract audit 90 €</a> · <a href="/livre/">The novel</a> · <a href="/catalogue.html">Catalogue</a>
+</footer>
+</body>
+</html>
