@@ -3,381 +3,369 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Crypto Future Tech — contrats intelligents vérifiés sur BNB Chain</title>
-<meta name="description" content="Déploiement de jetons BEP-20 avec code source vérifié sur BscScan. Sans fonction de création, sans taxe, sans liste noire, sans propriétaire. Devis clair, livraison en 3 à 7 jours.">
-<style>
-  :root{--fond:#0b0e13;--carte:#141a23;--bord:#232b38;--texte:#e8eaed;--gris:#8b949e;--bleu:#2f6feb;--bleu2:#1a3f8f;--vert:#2ea043;--or:#d4a72c}
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--fond);color:var(--texte);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased}
-  a{color:#6ea8fe;text-decoration:none}
-  a:hover{text-decoration:underline}
-  .enveloppe{max-width:1060px;margin:0 auto;padding:0 20px}
-  nav{position:sticky;top:0;z-index:50;background:rgba(11,14,19,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--bord)}
-  nav .enveloppe{display:flex;align-items:center;gap:22px;flex-wrap:wrap;padding:13px 20px;font-size:14px}
-  .marque{font-weight:650;color:var(--texte);margin-right:auto;display:flex;align-items:center;gap:9px}
-  .mono{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#2f6feb,#1a3f8f);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
-  nav a{color:var(--gris)}
-  nav a:hover{color:var(--texte);text-decoration:none}
-  header{padding:64px 0 44px;text-align:center;border-bottom:1px solid var(--bord)}
-  h1{font-size:clamp(28px,5vw,46px);line-height:1.15;margin:0 0 16px;font-weight:700;letter-spacing:-.5px}
-  .accroche{font-size:clamp(15px,2vw,18px);color:var(--gris);max-width:660px;margin:0 auto 26px}
-  .bleu{color:#6ea8fe}
-  .boutons{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-  .btn{display:inline-block;padding:13px 26px;border-radius:9px;font-weight:600;font-size:15px;border:1px solid transparent}
-  .btn-primaire{background:var(--bleu);color:#fff}
-  .btn-primaire:hover{background:#3d7bf5;text-decoration:none}
-  .btn-second{border-color:var(--bord);color:var(--texte);background:var(--carte)}
-  .btn-second:hover{border-color:var(--gris);text-decoration:none}
-  section{padding:56px 0;border-bottom:1px solid var(--bord)}
-  h2{font-size:clamp(21px,3vw,28px);margin:0 0 10px;font-weight:650}
-  .sous{color:var(--gris);margin:0 0 30px;max-width:680px}
-  .grille{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:18px}
-  .offre{background:var(--carte);border:1px solid var(--bord);border-radius:13px;padding:22px;display:flex;flex-direction:column}
-  .offre.mise{border-color:var(--bleu);box-shadow:0 0 0 1px rgba(47,111,235,.28)}
-  .offre h3{margin:0 0 6px;font-size:17px;font-weight:650}
-  .prix{font-size:29px;font-weight:700;margin:6px 0 4px}
-  .prix small{font-size:14px;color:var(--gris);font-weight:400}
-  .delai{font-size:12.5px;color:var(--gris);margin-bottom:16px}
-  .offre ul{padding-left:0;list-style:none;margin:0 0 20px;font-size:14.4px}
-  .offre li{margin:8px 0;padding-left:22px;position:relative;color:#c9cfd8}
-  .offre li::before{content:"";position:absolute;left:0;top:7px;width:8px;height:8px;border-radius:50%;background:var(--vert)}
-  .offre .btn{margin-top:auto;text-align:center}
-  .outil{background:linear-gradient(135deg,rgba(47,111,235,.10),rgba(26,63,143,.05));border:1px solid rgba(47,111,235,.32)}
-  .liste-propre{padding-left:0;list-style:none;margin:18px 0 0}
-  .liste-propre li{margin:11px 0;padding-left:26px;position:relative}
-  .liste-propre li::before{content:"\2713";position:absolute;left:0;color:var(--vert);font-weight:700}
-  .non li::before{content:"\2715";color:#f85149}
-  table{width:100%;border-collapse:collapse;font-size:14.4px;margin-top:12px}
-  th,td{text-align:left;padding:11px 10px;border-bottom:1px solid var(--bord);vertical-align:top}
-  th{color:var(--gris);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.4px}
-  code{background:#0d1117;border:1px solid var(--bord);border-radius:5px;padding:2px 7px;font-size:13px;font-family:ui-monospace,Consolas,monospace}
-  .note{background:rgba(212,167,44,.08);border-left:3px solid var(--or);border-radius:0 9px 9px 0;padding:15px 19px;margin:20px 0;font-size:14.6px;color:#f0e2c0}
-  .contact{text-align:center;padding:56px 0}
-  footer{padding:28px 0 40px;color:var(--gris);font-size:13px;text-align:center}
-  footer a{color:var(--gris);text-decoration:underline}
-</style>
-
-<!-- === SEO === -->
+<title>Crypto Future Tech — contrats vérifiés, crédit décentralisé, livres · Genève</title>
+<meta name="description" content="Crypto Future Tech, Genève. Audit de contrats intelligents, rapport de risque de jeton, scanner gratuit, crédit décentralisé DDMX, et les livres L'Empereur Stellaire. Tout est vérifiable on-chain.">
 <link rel="canonical" href="https://cryptofuturetech.org/">
-<meta name="robots" content="index, follow">
+<meta property="og:site_name" content="Crypto Future Tech">
+<meta property="og:title" content="Crypto Future Tech — contrats vérifiés, crédit décentralisé, livres">
+<meta property="og:description" content="Genève. Audit de contrats, rapport de risque, scanner gratuit, crédit décentralisé DDMX, livres.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cryptofuturetech.org/">
-<meta property="og:title" content="Crypto Future Tech — contrats intelligents vérifiés sur BNB Chain">
-<meta property="og:description" content="Déploiement de jetons BEP-20 avec code source vérifié sur BscScan. Sans fonction de création, sans taxe, sans liste noire, sans propriétaire. Devis clair, livraison en 3 à 7 jours.">
-<meta property="og:site_name" content="Crypto Future Tech">
-<meta property="og:locale" content="fr_FR">
-<meta property="og:image" content="https://cryptofuturetech.org/livre/partage.jpg">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Crypto Future Tech — contrats intelligents vérifiés sur BNB Chain">
-<meta name="twitter:description" content="Déploiement de jetons BEP-20 avec code source vérifié sur BscScan. Devis clair, livraison en 3 à 7 jours.">
+<meta name="robots" content="index, follow">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "Crypto Future Tech",
-  "legalName": "Edmond Mickael, raison individuelle Crypto Future Tech",
-  "description": "Maison d'édition et de technologie à Genève : livres, série animée, contrats intelligents vérifiables sur BNB Chain.",
   "url": "https://cryptofuturetech.org/",
-  "logo": "https://cryptofuturetech.org/livre/couverture.jpg",
   "email": "micke.entreprise@gmail.com",
-  "inLanguage": "fr",
   "founder": { "@type": "Person", "name": "Edmond Mickael" },
   "address": { "@type": "PostalAddress", "addressLocality": "Genève", "addressCountry": "CH" },
-  "sameAs": [ "https://payhip.com/b/8tTcM", "https://cryptofuturetech.org/livre/", "https://cryptofuturetech.org/boutique/boutique.html" ]
+  "identifier": "CH-660.6.918.025-9"
 }
 </script>
-<!-- === fin SEO === -->
+<style>
+  :root{
+    --fond:#08090d; --fond2:#0d1017; --carte:#12161f; --carte2:#161b26;
+    --bord:#232a38; --bord2:#2e3648;
+    --texte:#eef1f6; --gris:#98a2b3; --gris2:#6b7688;
+    --or:#d9b571; --or2:#b08d4a;
+    --vert:#3fb950; --rouge:#e86565; --bleu:#6aa9ff;
+    --r:18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--fond); color:var(--texte);
+    font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,Arial,sans-serif;
+    line-height:1.6; -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none}
+  .enveloppe{max-width:1140px;margin:0 auto;padding:0 22px}
+
+  /* ── barre ── */
+  .barre{
+    position:sticky;top:0;z-index:50;
+    background:rgba(8,9,13,.82);backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--bord);
+  }
+  .barre .enveloppe{display:flex;align-items:center;justify-content:space-between;height:66px;gap:18px}
+  .marque{display:flex;align-items:center;gap:11px;font-weight:700;font-size:16px;letter-spacing:.01em}
+  .marque .pastille{
+    width:34px;height:34px;border-radius:10px;flex:0 0 34px;
+    background:linear-gradient(135deg,var(--or),var(--or2));
+    display:grid;place-items:center;color:#0a0b0f;font-weight:800;font-size:15px;font-family:Georgia,serif;
+  }
+  .marque small{display:block;font-weight:400;font-size:11px;color:var(--gris2);letter-spacing:.08em;text-transform:uppercase}
+  .nav{display:flex;gap:6px;align-items:center}
+  .nav a{
+    padding:8px 13px;border-radius:10px;font-size:14px;color:var(--gris);
+    transition:.18s;
+  }
+  .nav a:hover{color:var(--texte);background:var(--carte)}
+  .nav a.actif{color:var(--or)}
+  .nav .cta{
+    background:linear-gradient(180deg,var(--or),var(--or2));color:#0a0b0f;font-weight:700;
+  }
+  .nav .cta:hover{filter:brightness(1.08);color:#0a0b0f;background:linear-gradient(180deg,var(--or),var(--or2))}
+  @media(max-width:880px){.nav a:not(.cta){display:none}}
+
+  /* ── héros ── */
+  .heros{padding:72px 0 26px;position:relative}
+  .heros::before{
+    content:"";position:absolute;inset:-160px 0 auto 0;height:520px;pointer-events:none;
+    background:radial-gradient(700px 340px at 50% 0%, rgba(217,181,113,.13), transparent 70%);
+  }
+  .sur{
+    display:inline-flex;align-items:center;gap:9px;
+    font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--or);
+    background:rgba(217,181,113,.08);border:1px solid rgba(217,181,113,.22);
+    padding:7px 15px;border-radius:100px;font-weight:600;
+  }
+  .sur .pt{width:6px;height:6px;border-radius:50%;background:var(--vert);box-shadow:0 0 10px var(--vert)}
+  h1{
+    font-family:Georgia,"Times New Roman",serif;font-weight:600;
+    font-size:clamp(34px,5.4vw,60px);line-height:1.08;letter-spacing:-.02em;
+    margin:22px 0 0;max-width:880px;position:relative;
+  }
+  h1 em{font-style:normal;color:var(--or)}
+  .chapeau{color:var(--gris);font-size:clamp(16px,1.5vw,19px);max-width:660px;margin:20px 0 0;position:relative}
+  .actions{display:flex;gap:12px;flex-wrap:wrap;margin:34px 0 0;position:relative}
+  .btn{
+    display:inline-flex;align-items:center;gap:9px;
+    padding:14px 26px;border-radius:13px;font-weight:700;font-size:15px;
+    transition:.18s;border:1px solid transparent;cursor:pointer;
+  }
+  .btn-or{background:linear-gradient(180deg,var(--or),var(--or2));color:#0a0b0f}
+  .btn-or:hover{filter:brightness(1.09);transform:translateY(-1px)}
+  .btn-ligne{border-color:var(--bord2);color:var(--texte);background:var(--carte)}
+  .btn-ligne:hover{border-color:var(--or);color:var(--or)}
+
+  /* ── chiffres ── */
+  .chiffres{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--bord);border:1px solid var(--bord);border-radius:var(--r);overflow:hidden;margin:48px 0 0}
+  .chiffres div{background:var(--fond2);padding:20px 18px;text-align:center}
+  .chiffres b{display:block;font-family:Georgia,serif;font-size:26px;color:var(--or);line-height:1.2}
+  .chiffres span{font-size:12px;color:var(--gris2);letter-spacing:.06em;text-transform:uppercase}
+  @media(max-width:720px){.chiffres{grid-template-columns:repeat(2,1fr)}}
+
+  /* ── sections ── */
+  section{padding:64px 0}
+  .entete-section{margin-bottom:34px}
+  .entete-section h2{
+    font-family:Georgia,serif;font-weight:600;font-size:clamp(26px,3.4vw,36px);
+    line-height:1.15;letter-spacing:-.015em;
+  }
+  .entete-section p{color:var(--gris);margin-top:10px;max-width:620px;font-size:15.5px}
+
+  /* ── les 4 univers ── */
+  .univers{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  @media(max-width:820px){.univers{grid-template-columns:1fr}}
+  .uni{
+    background:var(--carte);border:1px solid var(--bord);border-radius:var(--r);
+    padding:26px;transition:.22s;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden;
+  }
+  .uni:hover{border-color:var(--bord2);transform:translateY(-2px);background:var(--carte2)}
+  .uni .ico{
+    width:46px;height:46px;border-radius:13px;display:grid;place-items:center;
+    background:rgba(217,181,113,.1);border:1px solid rgba(217,181,113,.2);
+    color:var(--or);
+  }
+  .uni .ico svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  .uni h3{font-size:19px;font-weight:650;letter-spacing:-.01em}
+  .uni p{color:var(--gris);font-size:14.5px;flex:1}
+  .uni .lien{color:var(--or);font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+  .uni .lien::after{content:"→";transition:.2s}
+  .uni:hover .lien::after{transform:translateX(4px)}
+  .uni .prix{
+    position:absolute;top:22px;right:22px;font-size:12px;font-weight:700;color:var(--or);
+    background:rgba(217,181,113,.1);border:1px solid rgba(217,181,113,.24);
+    padding:4px 10px;border-radius:100px;
+  }
+
+  /* ── preuve ── */
+  .preuve{
+    background:linear-gradient(180deg,var(--fond2),var(--fond));
+    border-top:1px solid var(--bord);border-bottom:1px solid var(--bord);
+  }
+  .grille-preuve{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:820px){.grille-preuve{grid-template-columns:1fr}}
+  .preuve-item{background:var(--carte);border:1px solid var(--bord);border-radius:14px;padding:20px}
+  .preuve-item .t{font-weight:650;font-size:15px;margin-bottom:6px}
+  .preuve-item .d{color:var(--gris);font-size:13.5px}
+  .preuve-item code{background:#0a0d13;padding:2px 7px;border-radius:6px;font-size:12px;color:#bcd3ff;word-break:break-all}
+
+  /* ── alertes ── */
+  .alerte-ligne{
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    background:#160f11;border:1px solid #4a2226;border-radius:14px;padding:16px 20px;margin-top:16px;
+  }
+  .alerte-ligne .pt{width:9px;height:9px;border-radius:50%;background:var(--rouge);box-shadow:0 0 12px var(--rouge);flex:0 0 9px}
+  .alerte-ligne p{flex:1;font-size:14.5px;color:#f0dada;min-width:220px}
+  .alerte-ligne a{color:var(--or);font-weight:600;font-size:14px;white-space:nowrap}
+
+  /* ── ce que je ne fais pas ── */
+  .refus{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:720px){.refus{grid-template-columns:1fr}}
+  .refus div{background:var(--carte);border:1px solid var(--bord);border-radius:12px;padding:15px 18px;font-size:14.5px;color:var(--gris);display:flex;gap:11px}
+  .refus div::before{content:"✕";color:var(--rouge);font-weight:800;flex:0 0 auto}
+
+  /* ── contact ── */
+  .contact{
+    background:var(--carte);border:1px solid var(--bord);border-radius:22px;
+    padding:44px 34px;text-align:center;
+  }
+  .contact h2{font-family:Georgia,serif;font-size:clamp(24px,3vw,32px);font-weight:600}
+  .contact p{color:var(--gris);margin:12px auto 26px;max-width:520px}
+
+  footer{border-top:1px solid var(--bord);padding:36px 0;color:var(--gris2);font-size:13.5px}
+  footer .enveloppe{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+  footer a{color:var(--gris);transition:.15s}
+  footer a:hover{color:var(--or)}
+  footer .liens{display:flex;gap:18px;flex-wrap:wrap}
+</style>
 </head>
 <body>
 
-<nav>
+<!-- barre -->
+<div class="barre">
   <div class="enveloppe">
-    <span class="marque"><span class="mono">CFT</span> Crypto Future Tech</span>
-    <a href="catalogue.html">Catalogue</a>
-    <a href="audit.html" style="color:#d8b26e;font-weight:600">Audit 90 €</a>
-    <a href="rapport.html">Rapport jeton 19 €</a>
-    <a href="ai/">AI Credit Desk</a>
-    <a href="scanner.html">Scanner de jetons</a>
-    <a href="boutique/boutique.html">Boutique</a>
-    <a href="livre/index.html">Le livre</a>
-    <a href="jeton/index.html">Le jeton DDMX</a>
-    <a href="ddmx/">DDMX — valeur</a>
-    <a href="entreprise/index.html">Vérification</a>
-    <a href="#contact" style="color:#6ea8fe;font-weight:600">Demander un devis</a>
+    <a class="marque" href="/">
+      <span class="pastille">CFT</span>
+      <span>Crypto Future Tech<small>Genève</small></span>
+    </a>
+    <nav class="nav">
+      <a href="/catalogue.html">Catalogue</a>
+      <a href="/livre/">Le livre</a>
+      <a href="/jeton/">DDMX</a>
+      <a href="/audit.html">Audit 90 €</a>
+      <a href="/scanner.html">Scanner</a>
+      <a class="cta" href="#contact">Me contacter</a>
+    </nav>
   </div>
-</nav>
+</div>
 
-<header>
+<!-- héros -->
+<div class="enveloppe">
+  <div class="heros">
+    <span class="sur"><span class="pt"></span>Contrats déployés et vérifiés on-chain</span>
+    <h1>Des contrats que n'importe qui peut vérifier. <em>Des produits qui existent vraiment.</em></h1>
+    <p class="chapeau">
+      Audit de contrats intelligents, rapport de risque de jeton, scanner gratuit, crédit
+      décentralisé DDMX — et les livres <em>L'Empereur Stellaire</em>. Chaque contrat est
+      déployé sur BNB Chain, chaque transaction est publique, chaque chiffre est vérifiable.
+    </p>
+    <div class="actions">
+      <a class="btn btn-or" href="/audit.html">Faire auditer un contrat — 90 €</a>
+      <a class="btn btn-ligne" href="/scanner.html">Vérifier un jeton — gratuit</a>
+    </div>
+
+    <div class="chiffres">
+      <div><b>6</b><span>contrats déployés</span></div>
+      <div><b>18</b><span>pages vérifiées</span></div>
+      <div><b>15/15</b><span>tests qui passent</span></div>
+      <div><b>0</b><span>promesse de gain</span></div>
+    </div>
+
+    <div class="alerte-ligne">
+      <span class="pt"></span>
+      <p><strong>Dossier ouvert :</strong> 18 352 USDT tracés on-chain sur un contrat
+      présenté comme un outil d'arbitrage. Les adresses sont publiques.</p>
+      <a href="/alerte.html">Lire le dossier →</a>
+    </div>
+  </div>
+</div>
+
+<!-- les 4 univers -->
+<section>
   <div class="enveloppe">
-    <h1>Contrats intelligents<br><span class="bleu">que n'importe qui peut vérifier</span></h1>
-    <p class="accroche">
-      Je déploie des jetons BEP-20 sur BNB Chain dont le code source est
-      <strong>vérifié sur BscScan</strong>. Pas de fonction de création, pas de
-      taxe cachée, pas de liste noire, pas de propriétaire. Le code est public :
-      lisez-le vous-même.
-    </p>
-    <div class="boutons">
-      <a class="btn btn-primaire" href="#services">Voir les tarifs</a>
-      <a class="btn btn-second" href="scanner.html">Vérifier un jeton gratuitement</a>
+    <div class="entete-section">
+      <h2>Quatre univers, un seul domaine</h2>
+      <p>Tout ce que je fais, rangé par usage. Chaque univers a son site, ses prix, sa
+      page — rien n'est mélangé.</p>
     </div>
-  </div>
-</header>
+    <div class="univers">
 
-<section class="enveloppe outil" style="border-radius:14px;margin-top:34px;padding:30px">
-  <h2 style="font-size:20px">Vérifiez un jeton avant d'acheter — outil gratuit</h2>
-  <p class="sous" style="margin-bottom:16px">
-    Collez une adresse de contrat BEP-20 : l'outil lit la chaîne et vous dit ce
-    qui est présent, et surtout <strong>ce qui n'est pas prouvable</strong>.
-  </p>
-  <a class="btn btn-primaire" href="scanner.html">Ouvrir le scanner</a>
-</section>
+      <a class="uni" href="/audit.html">
+        <span class="prix">90 €</span>
+        <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/><path d="M10.5 7.5v6M7.5 10.5h6"/></svg></span>
+        <h3>Audit de contrat</h3>
+        <p>Relecture d'un contrat Solidity avant mise en production : accès, reentrancy,
+        gestion des erreurs, chemins de paiement. Rapport écrit classé par gravité, correctif
+        pour chaque point, sous 48 h.</p>
+        <span class="lien">Voir l'offre</span>
+      </a>
 
-<section class="enveloppe" id="services">
-  <h2>Ce que je fais, et à quel prix</h2>
-  <p class="sous">Prix fermes. Délais tenus. Aucun rendement promis, aucun prix de jeton annoncé, aucun référencement garanti.</p>
+      <a class="uni" href="/livre/">
+        <span class="prix">4 €</span>
+        <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v16H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 19a2.5 2.5 0 0 1 2.5-2.5H19"/><path d="M8 7h7M8 10.5h5"/></svg></span>
+        <h3>L'Empereur Stellaire</h3>
+        <p>Le roman — Volume I : L'Arche de Lumière. 26 chapitres. Édition papier et Kindle
+        sur Amazon, EPUB et DOCX ici. Les 8 premiers chapitres sont gratuits.</p>
+        <span class="lien">Lire l'extrait</span>
+      </a>
 
-  <div class="grille">
+      <a class="uni" href="/jeton/">
+        <span class="prix">DDMX</span>
+        <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 13.5a4 4 0 0 0 5.7 0l2.8-2.8a4 4 0 0 0-5.7-5.7L11.5 6.3"/><path d="M14 10.5a4 4 0 0 0-5.7 0l-2.8 2.8a4 4 0 0 0 5.7 5.7l1.3-1.3"/></svg></span>
+        <h3>DDMX — le crédit des agents</h3>
+        <p>Le token déployé sur BNB Chain, et le marché de crédit qui avance des fonds aux
+        agents IA contre un score de réputation. Tout est lisible dans le contrat.</p>
+        <span class="lien">Explorer le token</span>
+      </a>
 
-    <div class="offre mise">
-      <h3>Déployer votre jeton BEP-20</h3>
-      <div class="prix">285 $ <small>· 250 €</small></div>
-      <div class="delai">Livré en 3 jours</div>
-      <ul>
-        <li>Jeton déployé sur BNB Chain</li>
-        <li>Code source vérifié sur BscScan</li>
-        <li>Aucune fonction de création</li>
-        <li>0 % de taxe sur les transferts</li>
-        <li>Aucune liste noire, aucun propriétaire</li>
-        <li>Rapport de déploiement complet</li>
-      </ul>
-      <a class="btn btn-primaire" href="#contact">Commander</a>
-    </div>
+      <a class="uni" href="/catalogue.html">
+        <span class="prix">catalogue</span>
+        <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/><path d="M9 12h7M9 15.5h7M9 8.5h3"/></svg></span>
+        <h3>Tous les produits et services</h3>
+        <p>Rapport de risque de jeton à 19 €, pack de visuels, coffret de la série,
+        analyse de token à 285 $, pack site à 570 $. Prix fermes, délais annoncés.</p>
+        <span class="lien">Ouvrir le catalogue</span>
+      </a>
 
-    <div class="offre">
-      <h3>Verrouiller la liquidité</h3>
-      <div class="prix">570 $ <small>· 500 €</small></div>
-      <div class="delai">Livré en 5 jours</div>
-      <ul>
-        <li>Pool PancakeSwap créée</li>
-        <li>Liquidité verrouillée, vérifiable</li>
-        <li>Calendrier de déblocage sur mesure</li>
-        <li>Contrats publiés et vérifiés</li>
-        <li>Page de transparence publique</li>
-      </ul>
-      <a class="btn btn-second" href="#contact">Commander</a>
-    </div>
-
-    <div class="offre">
-      <h3>Vérifier un jeton</h3>
-      <div class="prix">90 $ <small>· 80 €</small></div>
-      <div class="delai">Livré en 24 heures</div>
-      <ul>
-        <li>Lecture du contrat sur la chaîne</li>
-        <li>Fonctions dangereuses recherchées</li>
-        <li>Propriétaire et supply réels</li>
-        <li>Réserves de la pool et leur valeur</li>
-        <li>Verdict écrit, limites incluses</li>
-      </ul>
-      <a class="btn btn-second" href="#contact">Commander</a>
-    </div>
-
-    <div class="offre">
-      <h3>Analyse de sécurité</h3>
-      <div class="prix">570 $ <small>· 500 €</small></div>
-      <div class="delai">Livré en 4 jours</div>
-      <ul>
-        <li>Analyse statique de votre contrat</li>
-        <li>Chaque résultat expliqué simplement</li>
-        <li>Ce qui est critique, ce qui est du bruit</li>
-        <li>Ce que les outils ne peuvent pas voir</li>
-        <li>Rapport remis à votre équipe</li>
-      </ul>
-      <a class="btn btn-second" href="#contact">Commander</a>
-    </div>
-
-  </div>
-
-  <div class="note">
-    <strong>Une analyse automatisée n'est pas un audit humain.</strong>
-    Je livre le résultat des outils et je dis clairement ce qu'ils ne peuvent pas
-    voir. Je ne délivre aucun badge « audité » et je ne certifie aucune sécurité.
-  </div>
-</section>
-
-<section class="enveloppe">
-  <h2>Mes propres produits, déjà prêts</h2>
-  <p class="sous">Téléchargement immédiat. Fichiers vérifiés, sommes de contrôle incluses.</p>
-  <div class="grille">
-    <div class="offre mise">
-      <h3>L'Empereur Stellaire — Volume I</h3>
-      <div class="prix">4 €</div>
-      <div class="delai">Roman · 26 chapitres · EPUB + DOCX · téléchargement immédiat</div>
-      <ul>
-        <li>Le roman complet, 26 chapitres</li>
-        <li>EPUB, DOCX et couverture 1600×2560</li>
-        <li>Les 8 premiers chapitres en lecture libre</li>
-        <li>Amazon Kindle : en cours de validation (2,99 €)</li>
-      </ul>
-      <a class="btn btn-primaire" href="https://payhip.com/b/8tTcM" rel="noopener">⚡ Télécharger — 4 €</a>
-      <a class="btn btn-second" href="livre/index.html" style="margin-top:10px">Découvrir le livre</a>
-    </div>
-    <div class="offre">
-      <h3>Coffret L'Empereur Céleste — Saison 1</h3>
-      <div class="prix">15 €</div>
-      <div class="delai">12 épisodes + bande-annonce · 1,38 Go</div>
-      <ul>
-        <li>12 épisodes en 1920×1080</li>
-        <li>Bande-annonce incluse</li>
-        <li>Fichiers MP4, téléchargement immédiat</li>
-      </ul>
-      <a class="btn btn-second" href="boutique/coffret/index.html">Voir le coffret</a>
-    </div>
-    <div class="offre">
-      <h3>Pack de 741 visuels</h3>
-      <div class="prix">19 €</div>
-      <div class="delai">807 Mo · classés par épisode</div>
-      <ul>
-        <li>741 images haute définition</li>
-        <li>Classées par épisode</li>
-        <li>Utilisables pour vos propres projets</li>
-      </ul>
-      <a class="btn btn-second" href="boutique/boutique.html">Voir la boutique</a>
     </div>
   </div>
 </section>
 
-<section class="enveloppe">
-  <h2>La maison Crypto Future Tech</h2>
-  <p class="sous">Quatre métiers, un seul nom. Tout est vérifiable, tout est public.</p>
-  <div class="grille">
-    <div class="offre">
-      <h3>📕 Édition</h3>
-      <ul>
-        <li><strong>L'Empereur Stellaire</strong> — Volume I, 4 € en direct</li>
-        <li>Kindle Amazon — en cours de validation</li>
-        <li>Maison : <strong>Crypto Future Tech</strong>, Genève</li>
-        <li>Extrait gratuit en 8 chapitres</li>
-      </ul>
-      <a class="btn btn-second" href="livre/index.html">Le livre</a>
+<!-- preuve -->
+<div class="preuve">
+  <section>
+    <div class="enveloppe">
+      <div class="entete-section">
+        <h2>Comment vérifier que je ne raconte pas d'histoires</h2>
+        <p>Je ne demande pas de me croire. Je donne les moyens de me contredire.</p>
+      </div>
+      <div class="grille-preuve">
+        <div class="preuve-item">
+          <div class="t">Les contrats sont sur la chaîne</div>
+          <div class="d">DDMX vit à l'adresse
+            <code>0x90e28b1c…7d46b53</code> sur BNB Chain. Le code, les soldes et chaque
+            transaction sont publics sur BscScan.</div>
+        </div>
+        <div class="preuve-item">
+          <div class="t">Les tests passent — et sont relançables</div>
+          <div class="d">15 tests couvrent les contrats de crédit : ratio, intérêts,
+            liquidation, boucles, oracle. Ils tournent sur Linux et le résultat est
+            reproductible.</div>
+        </div>
+        <div class="preuve-item">
+          <div class="t">Le scanner est gratuit</div>
+          <div class="d">Collez une adresse de jeton BEP-20 : le scanner lit le contrat et
+            vous dit s'il contient une fonction dangereuse. Sans compte, sans payer.</div>
+        </div>
+      </div>
     </div>
-    <div class="offre">
-      <h3>🎬 Série animée</h3>
-      <ul>
-        <li><strong>L'Empereur Céleste</strong> — Saison 1, 12 épisodes</li>
-        <li>Coffret 15 € · bande-annonce incluse</li>
-        <li>Le même univers que le roman</li>
-      </ul>
-      <a class="btn btn-second" href="boutique/coffret/index.html">Le coffret</a>
-    </div>
-    <div class="offre">
-      <h3>⛓ Technologie DDMX</h3>
-      <ul>
-        <li>Contrats BEP-20 vérifiables sur BscScan</li>
-        <li>Scanner de jetons gratuit</li>
-        <li>Jeton DDMX et crédit pour agents</li>
-      </ul>
-      <a class="btn btn-second" href="jeton/index.html">Le jeton</a>
-    </div>
-    <div class="offre">
-      <h3>🛠 Services</h3>
-      <ul>
-        <li>Déploiement de jetons (code vérifié)</li>
-        <li>Audit de contrats et vérification</li>
-        <li>Devis clair, livraison en 3 à 7 jours</li>
-      </ul>
-      <a class="btn btn-second" href="#services">Voir les tarifs</a>
-    </div>
-  </div>
-  <p class="petit" style="text-align:center;margin-top:22px">
-    Catalogue complet, produits et prix : <a href="catalogue.html">catalogue Crypto Future Tech</a>.
-  </p>
-</section>
+  </section>
+</div>
 
-<section class="enveloppe">
-  <h2>Ce que je ne fais pas</h2>
-  <p class="sous">Ces limites sont écrites, publiées et opposables.</p>
-  <ul class="liste-propre non">
-    <li>Je ne promets <strong>aucun prix, aucun rendement, aucun référencement</strong>.</li>
-    <li>Je ne détiens <strong>aucun fonds de tiers</strong> et je ne gère aucun avoir de client.</li>
-    <li>Je ne signe <strong>aucune transaction à votre place</strong> : je n'ai jamais vos clés.</li>
-    <li>Je ne déploie <strong>aucune fonction de création ni taxe cachée</strong>.</li>
-    <li>Je ne pratique <strong>aucun faux volume</strong> ni transaction fictive.</li>
-    <li>Je ne fournis <strong>aucun conseil en placement</strong>.</li>
-  </ul>
-</section>
-
-<section class="enveloppe">
-  <h2>Comment vérifier que je ne vous raconte pas d'histoires</h2>
-  <p class="sous">Mon propre jeton est en ligne. Ouvrez-le et lisez le code.</p>
-  <table>
-    <tr><th>Élément</th><th>Valeur vérifiable</th></tr>
-    <tr><td>Mon jeton, déployé et vérifié</td><td><code>0x90e28b1c…7d46b53</code> — 1 779 octets, sans <code>mint</code>, sans <code>owner</code></td></tr>
-    <tr><td>Fonction de création de jetons</td><td>absente — vérifié dans le code publié</td></tr>
-    <tr><td>Propriétaire du contrat</td><td>aucun — il n'y a rien à administrer</td></tr>
-    <tr><td>Taxe sur les transferts</td><td>0 %</td></tr>
-    <tr><td>Entreprise</td><td>Crypto Future Tech, Edmond Mickael — <code>CH-660.6.918.025-9</code></td></tr>
-    <tr><td>Registre officiel</td><td><a href="https://www.zefix.ch/fr/search/entity/list?name=Crypto%20Future%20Tech" target="_blank" rel="noopener">Zefix, registre du commerce suisse</a></td></tr>
-    <tr><td>Ma page de vérification</td><td><a href="entreprise/index.html">entreprise/</a></td></tr>
-  </table>
-  <div class="note">
-    Le registre du commerce atteste que mon entreprise existe. Il n'atteste
-    <strong>ni sa solidité, ni sa rentabilité, ni la qualité de mes services</strong>.
-    Je préfère l'écrire moi-même.
+<!-- ce que je ne fais pas -->
+<section>
+  <div class="enveloppe">
+    <div class="entete-section">
+      <h2>Ce que je ne fais pas</h2>
+      <p>La liste est aussi importante que l'autre.</p>
+    </div>
+    <div class="refus">
+      <div>Aucune promesse de rendement — jamais, sur aucun produit</div>
+      <div>Aucun prix de jeton annoncé ou garanti</div>
+      <div>Aucun référencement garanti sur les moteurs ou les IA</div>
+      <div>Aucune gestion de votre portefeuille, aucune signature à votre place</div>
+    </div>
   </div>
 </section>
 
-<section class="enveloppe" id="contact" style="border-bottom:none">
-  <div class="contact">
-    <h2>Parlons de votre projet</h2>
-    <p class="sous" style="margin:0 auto 24px">
-      Dites-moi le nom de votre jeton et à quoi il sert. Je vous réponds
-      honnêtement, y compris si je ne peux pas vous aider.
-    </p>
-    <div class="boutons">
-      <a class="btn btn-primaire" href="mailto:micke.entreprise@gmail.com?subject=Demande%20de%20devis%20—%20jeton%20BEP-20">micke.entreprise@gmail.com</a>
-      <a class="btn btn-second" href="https://www.fiverr.com/micke64971" target="_blank" rel="noopener">Commander sur Fiverr</a>
+<!-- contact -->
+<section id="contact">
+  <div class="enveloppe">
+    <div class="contact">
+      <h2>Parlons de votre projet</h2>
+      <p>Un contrat à auditer, un jeton à analyser, une question sur le crédit des agents.
+      Réponse le jour même, en français ou en anglais.</p>
+      <div class="actions" style="justify-content:center">
+        <a class="btn btn-or" href="mailto:micke.entreprise@gmail.com?subject=Demande%20%E2%80%94%20Crypto%20Future%20Tech">Écrire un email</a>
+        <a class="btn btn-ligne" href="/entreprise/">Qui je suis</a>
+      </div>
     </div>
-    <p style="color:var(--gris);font-size:13.5px;margin-top:20px">
-      Téléphone : +41 77 958 23 36 · Réponse sous 24 heures
-    </p>
   </div>
 </section>
 
-<footer class="enveloppe">
-  <p>
-    <strong>Crypto Future Tech, Edmond Mickael</strong> — entreprise individuelle
-    inscrite au registre du commerce du canton de Genève.<br>
-    N° registre CH-660.6.918.025-9 · IDE CHE-210.303.236 · Cours des Bastions 13, 1205 Genève<br>
-    <a href="entreprise/index.html">Vérifier l'entreprise</a> ·
-    <a href="https://www.zefix.ch/fr/search/entity/list?name=Crypto%20Future%20Tech" target="_blank" rel="noopener">Zefix</a> ·
-    <a href="boutique/boutique.html">Boutique</a> ·
-    <a href="livre/index.html">Le livre</a> ·
-    <a href="audit.html">Audit 90 €</a> ·
-    <a href="ai/">AI Credit Desk</a> ·
-    <a href="securite.html">Sécurité</a>
-  </p>
-  <p style="margin-top:16px;max-width:700px;margin-left:auto;margin-right:auto">
-    Cette page n'est ni une offre d'investissement ni une promesse de rendement.
-    Elle ne décrit aucune opportunité de placement. Aucun prix de jeton, aucun
-    rendement et aucun référencement ne sont promis.
-  </p>
+<footer>
+  <div class="enveloppe">
+    <div>
+      <strong style="color:var(--texte)">Crypto Future Tech</strong> · Genève · Edmond Mickael<br>
+      <span style="font-size:12px">Raison individuelle CH-660.6.918.025-9</span>
+    </div>
+    <div class="liens">
+      <a href="/livre/">Le livre</a>
+      <a href="/jeton/">DDMX</a>
+      <a href="/audit.html">Audit</a>
+      <a href="/catalogue.html">Catalogue</a>
+      <a href="/securite.html">Sécurité</a>
+      <a href="/alerte.html">Alerte</a>
+      <a href="/entreprise/">Entreprise</a>
+    </div>
+  </div>
 </footer>
 
-
-<div style="max-width:900px;margin:26px auto;padding:20px;border:1px solid #2f6feb;
-border-radius:12px;background:rgba(47,111,235,.08);font-family:system-ui,sans-serif">
-<p style="margin:0 0 12px;font-weight:600;font-size:16px">Payer par PayPal</p>
-<p style="margin:0 0 14px;color:#8b949e;font-size:14px">
-Le paiement se fait sur le compte PayPal de l'entreprise. Aucune donnee
-bancaire n'est transmise a ce site.</p>
-<p style="margin:0;display:flex;gap:10px;flex-wrap:wrap">
-<a style="background:#2f6feb;color:#fff;padding:11px 20px;border-radius:8px;
-text-decoration:none;font-weight:600" href="https://www.paypal.com/ncp/payment/PLB-8A4NL5YCHT2F">Coffret — 15 EUR</a>
-<a style="background:#2f6feb;color:#fff;padding:11px 20px;border-radius:8px;
-text-decoration:none;font-weight:600" href="https://www.paypal.com/ncp/payment/PLB-S4X3C9TVAB7K">Pack images — 19 EUR</a>
-<a style="background:#1a3f8f;color:#fff;padding:11px 20px;border-radius:8px;
-text-decoration:none;font-weight:600" href="https://www.paypal.com/ncp/payment/PLB-NH6T92K3S73G">Jeton BEP-20 — 285 USD</a>
-</p>
-</div>
 </body>
 </html>
